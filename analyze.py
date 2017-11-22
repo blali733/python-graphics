@@ -1,4 +1,4 @@
 
 
-class analyze
+class analyze:
     
