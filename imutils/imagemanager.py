@@ -51,7 +51,7 @@ class ImageManager:
                 x = contour[i, 0, 0]
                 y = contour[i, 0, 1]
                 dist = math.sqrt(math.pow(x+centerX, 2)+math.pow(y+centerY, 2))
-                anglerad = math.atan2(y, x)
+                anglerad = math.atan2(y-centerY, x-centerX)
                 newContours.append([dist, self.rad2deg(anglerad), x, y])
         print(newContours)
         newContours = sorted(newContours, key=self.getKey)
