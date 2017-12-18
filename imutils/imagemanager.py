@@ -7,7 +7,7 @@ import math
 
 class ImageManager:
     def rad2deg(self, anglerad):
-        angledeg = anglerad*180/math.pi
+        angledeg = anglerad*180/math.pi + 180
         return angledeg
 
     def getKey(self, item):
