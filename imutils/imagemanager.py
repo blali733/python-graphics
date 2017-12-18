@@ -53,7 +53,34 @@ class ImageManager:
                 dist = math.sqrt(math.pow(x+centerX, 2)+math.pow(y+centerY, 2))
                 anglerad = math.atan2(y-centerY, x-centerX)
                 newContours.append([dist, self.rad2deg(anglerad), x, y])
-        print(newContours)
         newContours = sorted(newContours, key=self.getKey)
-        print(newContours)
         return newContours
+
+    def checkPoint(self, chosenPoint, point, targetDistance, offset):
+        newChosenPoint = chosenPoint
+        newTargetDistance = targetDistance
+        conditionIsMet = False
+        if point[0] <= targetDistance:
+            newChosenPoint = point
+            newTargetDistance = point[0]
+        if newTargetDistance >= offset:
+            conditionIsMet = True
+        return newChosenPoint, newTargetDistance, conditionIsMet
+
+    def choosePointsForExpectingContour(self, contours, offset):
+        expectedContours = []
+        targetAngle = contours[0][1]
+        targetDistance = contours[0][0]
+        chosenPoint = contours[0]
+        conditionIsMet = False
+        for i in range(0, len(contours) - 1):
+            if contours[i][1] <= (targetAngle + 0.5):
+                chosenPoint, targetDistance, conditionIsMet = self.checkPoint(chosenPoint, contours[i], targetDistance, offset)
+            else:
+                targetAngle = contours[i][1]
+                targetDistance = contours[i][0]
+                if conditionIsMet:
+                    expectedContours.append(chosenPoint)
+                conditionIsMet = False
+                chosenPoint, targetDistance, conditionIsMet = self.checkPoint(chosenPoint, contours[i], targetDistance, offset)
+        return expectedContours
