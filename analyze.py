@@ -7,6 +7,7 @@ class Analyze:
         print("I am the main now!")
         imageManager = imagemanager.ImageManager()
         image = imageManager.readImage('brain.jpg')
+        threshold, image = imageManager.binearizeImage(image, 20)
         imageManager.showImage(image, "title")
 
 
