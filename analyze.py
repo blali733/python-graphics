@@ -8,6 +8,7 @@ class Analyze:
         imageManager = imagemanager.ImageManager()
         image = imageManager.readImage('brain.jpg')
         threshold, image = imageManager.binearizeImage(image, 20)
+        imageManager.findContours(image)
         imageManager.showImage(image, "title")
 
 
