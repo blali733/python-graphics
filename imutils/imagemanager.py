@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 import cv2
-
+import copy
 
 class ImageManager:
     def readImage(self, fileName):
@@ -20,6 +20,20 @@ class ImageManager:
         return threshold, image
 
     def findContours(self, image):
-        workingCopy = image
+        workingCopy = copy.copy(image)
         targetImage, contours, hierarchy = cv2.findContours(workingCopy, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        contourPerimeters = []
+        for contour in contours:
+            perimeter = cv2.arcLength(contour, False)
+            contourPerimeters.append(perimeter)
+        chosenIndex = 0
+        actualIndex = 0
+        targetPerimeter = 0
+        for perimeter in contourPerimeters:
+            if perimeter > targetPerimeter:
+                targetPerimeter = perimeter
+                chosenIndex = actualIndex
+            actualIndex = actualIndex + 1
         
+        
+            
