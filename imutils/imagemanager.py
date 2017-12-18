@@ -13,6 +13,9 @@ class ImageManager:
     def getKey(self, item):
         return item[1]
 
+    def getKeyForCoords(self, item):
+        return item[3]
+
     def readImage(self, fileName):
         file = cv2.imread(fileName, 0)
         return file
@@ -23,8 +26,8 @@ class ImageManager:
         cv2.destroyAllWindows()
 
     def binearizeImage(self, image, offset):
-        im = cv2.GaussianBlur(image, (5,5), 0)
-        threshold, image = cv2.threshold(im, offset, 255, cv2.THRESH_BINARY)
+        #im = cv2.GaussianBlur(image, (7,7), 0)
+        threshold, image = cv2.threshold(image, offset, 255, cv2.THRESH_BINARY)
         return threshold, image
 
     def findContours(self, image):
@@ -50,37 +53,35 @@ class ImageManager:
             for i in range(0, contour.shape[0]-1):
                 x = contour[i, 0, 0]
                 y = contour[i, 0, 1]
-                dist = math.sqrt(math.pow(x+centerX, 2)+math.pow(y+centerY, 2))
+                dist = math.sqrt(math.pow(x-centerX, 2)+math.pow(y-centerY, 2))
                 anglerad = math.atan2(y-centerY, x-centerX)
                 newContours.append([dist, self.rad2deg(anglerad), x, y])
         newContours = sorted(newContours, key=self.getKey)
         return newContours
 
-    def checkPoint(self, chosenPoint, point, targetDistance, offset):
-        newChosenPoint = chosenPoint
-        newTargetDistance = targetDistance
-        conditionIsMet = False
-        if point[0] <= targetDistance:
-            newChosenPoint = point
-            newTargetDistance = point[0]
-        if newTargetDistance >= offset:
-            conditionIsMet = True
-        return newChosenPoint, newTargetDistance, conditionIsMet
+    def getPointWithLowerDistance(self, contours, minimalDistance):
+        chosenPoint = None
+        distance = contours[0][0]
+        contours.sort()
+        for contour in contours:
+            if contour[0] >= minimalDistance:
+                chosenPoint = contour
+                return chosenPoint
+        return chosenPoint
 
-    def choosePointsForExpectingContour(self, contours, offset):
+    def choosePointsForExpectingContour(self, contours, minimalDistance, angleOffset):
         expectedContours = []
         targetAngle = contours[0][1]
-        targetDistance = contours[0][0]
-        chosenPoint = contours[0]
-        conditionIsMet = False
-        for i in range(0, len(contours) - 1):
-            if contours[i][1] <= (targetAngle + 1):
-                chosenPoint, targetDistance, conditionIsMet = self.checkPoint(chosenPoint, contours[i], targetDistance, offset)
+        temporaryContourList = []
+        for contour in contours:
+            if contour[1] <= targetAngle + angleOffset:
+                temporaryContourList.append(contour)
             else:
-                targetAngle = contours[i][1]
-                targetDistance = contours[i][0]
-                if conditionIsMet:
+                chosenPoint = self.getPointWithLowerDistance(temporaryContourList, minimalDistance)
+                if chosenPoint != None:
                     expectedContours.append(chosenPoint)
-                conditionIsMet = False
-                chosenPoint, targetDistance, conditionIsMet = self.checkPoint(chosenPoint, contours[i], targetDistance, offset)
+                temporaryContourList = []
+                targetAngle = contour[1]
+                temporaryContourList.append(contour)
+        print(expectedContours)
         return expectedContours
