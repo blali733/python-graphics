@@ -3,8 +3,16 @@ import sys
 import numpy as np
 import cv2
 import copy
+import math
 
 class ImageManager:
+    def rad2deg(self, anglerad):
+        angledeg = anglerad*180/math.pi
+        return angledeg
+
+    def getKey(self, item):
+        return item[1]
+
     def readImage(self, fileName):
         file = cv2.imread(fileName, 0)
         return file
@@ -34,6 +42,18 @@ class ImageManager:
                 targetPerimeter = perimeter
                 chosenIndex = actualIndex
             actualIndex = actualIndex + 1
+        return contours
         
-        
-            
+    def contours2angdist(self, contours, centerX, centerY):
+        newContours=[]
+        for contour in contours:
+            for i in range(0, contour.shape[0]-1):
+                x = contour[i, 0, 0]
+                y = contour[i, 0, 1]
+                dist = math.sqrt(math.pow(x+centerX, 2)+math.pow(y+centerY, 2))
+                anglerad = math.atan2(y, x)
+                newContours.append([dist, self.rad2deg(anglerad), x, y])
+        print(newContours)
+        newContours = sorted(newContours, key=self.getKey)
+        print(newContours)
+        return newContours
