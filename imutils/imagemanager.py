@@ -16,6 +16,9 @@ class ImageManager:
     def getKeyForCoords(self, item):
         return item[3]
 
+    def getKeyForContours(self, item):
+        return item[0]
+
     def readImage(self, fileName):
         file = cv2.imread(fileName, 0)
         return file
@@ -84,4 +87,19 @@ class ImageManager:
                 targetAngle = contour[1]
                 temporaryContourList.append(contour)
         print(expectedContours)
+        return expectedContours
+
+    def choosePointsForExpectedTopResults(self, contours, numberOfTopResults):
+        expectedContours = []
+        temporaryExpectedContours = [[]]
+        for contour in contours:
+            temporaryExpectedContours.append([cv2.contourArea(contour), contour])
+        temporaryExpectedContours = sorted(temporaryExpectedContours, key=self.getKeyForContours)
+        counter = 1
+        for contour in temporaryExpectedContours:
+            if counter <= 5:
+                expectedContours.append(contour)
+                counter = counter + 1
+            else:
+                break
         return expectedContours
