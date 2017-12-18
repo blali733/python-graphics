@@ -74,7 +74,7 @@ class ImageManager:
         chosenPoint = contours[0]
         conditionIsMet = False
         for i in range(0, len(contours) - 1):
-            if contours[i][1] <= (targetAngle + 0.5):
+            if contours[i][1] <= (targetAngle + 1):
                 chosenPoint, targetDistance, conditionIsMet = self.checkPoint(chosenPoint, contours[i], targetDistance, offset)
             else:
                 targetAngle = contours[i][1]
