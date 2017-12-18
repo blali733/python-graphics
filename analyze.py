@@ -5,6 +5,8 @@ from imutils import imagemanager
 class Analyze:
     def run(self, argv):
         print("I am the main now!")
+        imageManager = imagemanager.ImageManager()
+        image = imageManager.readImage('brain.jpg')
 
 
 if __name__ == "__main__":
