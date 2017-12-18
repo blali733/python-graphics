@@ -20,5 +20,6 @@ class ImageManager:
         return threshold, image
 
     def findContours(self, image):
-        contours, hierarchy = cv2.findContours(image, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(image, contours, -1, (0, 255, 0), 3)
+        workingCopy = image
+        targetImage, contours, hierarchy = cv2.findContours(workingCopy, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        
