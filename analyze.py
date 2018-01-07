@@ -1,8 +1,6 @@
-import sys  #for command line arguments
+import sys  # for command line arguments
 from imutils import imagemanager
 from imutils import imagecrop
-import cv2
-
 
 
 class Analyze:
@@ -18,7 +16,6 @@ class Analyze:
         finContours = imageManager.choosePointsForExpectingContour(newContours, 100, 7.5)
         image2 = imageCrop.excludeBackground(finContours,image)
         imageManager.showImage(image2, "title")
-
 
 
 if __name__ == "__main__":
