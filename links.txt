@@ -1,0 +1,4 @@
+https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html - learning from small sets.
+
+https://www.pyimagesearch.com/2017/12/11/image-classification-with-keras-and-deep-learning/ - step by step learning + testing.
+
