@@ -1,7 +1,6 @@
-import sys  #for command line arguments
+import sys  # for command line arguments
 from imutils import imagemanager
 from imutils import imagecrop
-import cv2
 
 
 class Analyze:
