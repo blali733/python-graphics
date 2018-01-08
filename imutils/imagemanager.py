@@ -23,6 +23,10 @@ class ImageManager:
         file = cv2.imread(fileName, 0)
         return file
 
+    def writeImage(self, fileName, filePath, image):
+        fileRelPath = "../../parsed/"+filePath+"/"+fileName
+        cv2.imwrite(fileRelPath, image)
+
     def showImage(self, image, title):
         cv2.imshow(title, image)
         cv2.waitKey(0)
