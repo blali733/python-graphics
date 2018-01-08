@@ -1,4 +1,5 @@
 import sys  # for command line arguments
+from imutils import imageconvert
 from imutils import imagemanager
 from imutils import imagecrop
 
