@@ -2,3 +2,7 @@
 numpy
 opencv-python
 matplotlib
+nibabel
+pydicom
+medpy
+itk
