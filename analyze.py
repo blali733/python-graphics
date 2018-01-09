@@ -33,7 +33,8 @@ class Analyze:
             if mode == 0:
                 exit(0)
             elif mode == 1:
-                pass
+                imc = imageconvert.ImageConvert()
+                imc.main()
             elif mode == 2:
                 pass
             elif mode == 3:
