@@ -62,6 +62,8 @@ class Preview:
                     if axis > 0:
                         axis -= 1
                     msc.med_plot(msc.med_slice(image_data, axis, slice_id))
+                if key == "5":
+                    print(image_data.shape, image_data.dtype)
 
 
 if __name__ == "__main__":
