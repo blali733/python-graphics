@@ -11,8 +11,20 @@ except ImportError:
 
 
 class ImageConvert:
+    def __init__(self):
+        self.image_count = 0
+        self.processed_image_count = 0
+
     def main(self):
-        pass
+        print("Please provide input directory for images")
+
+    def info(self):
+        print("Processing image "+self.processed_image_count.__str__()+" of "+self.image_count.__str__())
+        print()
+        print("Key bindings:")
+        print("X - breaks execution")
+        print("0 - saves image")
+        print("1 - discards image")
 
     def prepareSlices(self, path, image, spacing=1):
         i, h = load(path+"/"+image)
