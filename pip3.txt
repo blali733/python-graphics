@@ -5,4 +5,8 @@ matplotlib
 nibabel
 pydicom
 medpy
-itk
+cmake
+scikit-build
+scipy #installed by scikit-build
+wheel # installed by scikit-build
+itk   # depends on scikit-build
