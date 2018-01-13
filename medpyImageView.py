@@ -2,12 +2,16 @@
 import sys
 from imutils import medimageservicing as msc
 import matplotlib.pyplot as plt
-import msvcrt
+try:
+    from osutils import windows as osutil
+except ImportError:
+    from osutils import posix as osutil
 
 
 class Preview:
-    plt.ion()
     def main(self):
+        osutil.start_key_listener()
+        plt.ion()
         main_loop_fuse = 1
         while main_loop_fuse == 1:
             image_path = input("Image file in RAW directory: ")
@@ -18,13 +22,14 @@ class Preview:
             fig = msc.med_plot(msc.med_slice(image_data, axis, slice_id))
             inner_loop_fuse = 1
             while inner_loop_fuse == 1:
-                key = msvcrt.getwch()
+                key = osutil.get_key_value()
                 # print(key)
                 if key == "Q":
                     inner_loop_fuse = 0
                 if key == "X":
                     main_loop_fuse = 0
                     inner_loop_fuse = 0
+                    osutil.stop_key_listener()
                 if key == "4":
                     if slice_id > 1:
                         slice_id -= 1
