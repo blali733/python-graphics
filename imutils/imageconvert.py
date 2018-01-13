@@ -2,6 +2,7 @@ from medpy.io import load
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+from . import medimageservicing as msc
 import cv2
 
 
