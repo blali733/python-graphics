@@ -2,10 +2,6 @@ import sys  # for command line arguments
 from imutils import imageconvert
 from imutils import imagemanager
 from imutils import imagecrop
-try:
-    from osutils import windows as osutil
-except ImportError:
-    from osutils import posix as osutil
 
 
 class Analyze:

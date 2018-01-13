@@ -4,6 +4,10 @@ import matplotlib.cm as cm
 import numpy as np
 from . import medimageservicing as msc
 import cv2
+try:
+    from osutils import windows as osutil
+except ImportError:
+    from osutils import posix as osutil
 
 
 class ImageConvert:
