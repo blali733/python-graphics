@@ -20,6 +20,7 @@ class Preview:
             axis = 0
             slice_id = 0
             fig = msc.med_plot(msc.med_slice(image_data, axis, slice_id))
+            self.my_help()
             inner_loop_fuse = 1
             while inner_loop_fuse == 1:
                 key = osutil.get_key_value()
@@ -62,6 +63,21 @@ class Preview:
                     if axis > 0:
                         axis -= 1
                     msc.med_plot(msc.med_slice(image_data, axis, slice_id))
+                if key == "5":
+                    print(image_data.shape, image_data.dtype)
+                if key == "3":
+                    print("Saving file in csv format...")
+                    msc.med_2_csv(msc.med_slice(image_data, axis, slice_id), image_path+"_"+axis.__str__()+"_"+slice_id.__str__())
+                    print("File saved.")
+
+    def my_help(self):
+        print("4, 7 - navigate left")
+        print("6, 9 - navigate right")
+        print("2, 8 - change axis")
+        print("5 - File info")
+        print("3 - save current slice to csv file")
+        print("Q - close image")
+        print("X - exit")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,13 @@
-from medpy.io import load
+# from medpy.io import load
+import SimpleITK as sitk
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import pathlib
 
 
 def med_load(path):
-    i, h = load(path)
-    return i, h
+    i = sitk.GetArrayFromImage(sitk.ReadImage(path))
+    return i, 0
 
 
 def med_slice(med_image, axis, slice_id):
@@ -39,3 +41,13 @@ def med_get_size(med_image, axis):
         return med_image.shape[1]
     else:
         return med_image.shape[2]
+
+
+def med_2_csv(med_image_slice, csv_file_name):
+    pathlib.Path('./data/raw/csv').mkdir(parents=True, exist_ok=True)
+    file = open("./data/raw/csv/"+csv_file_name+".csv", "w")
+    for y in range(med_image_slice.shape[1]):
+        for x in range(med_image_slice.shape[0]):
+            file.write(med_image_slice[y, x].__str__()+"; ")
+        file.write("\n")
+    file.close()
