@@ -2,6 +2,7 @@ import sys  # for command line arguments
 from imutils import imageconvert
 from imutils import imagemanager
 from imutils import imagecrop
+from imageSorter import Sorter
 
 
 class Analyze:
@@ -33,6 +34,10 @@ class Analyze:
             if mode == 0:
                 exit(0)
             elif mode == 1:
+                test = input("Do you want to prepare training images (y/N): ")
+                if 'y' in test:
+                    subapp = Sorter()
+                    subapp.main()
                 imc = imageconvert.ImageConvert()
                 imc.main()
             elif mode == 2:
