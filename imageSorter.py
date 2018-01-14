@@ -37,7 +37,7 @@ class Sorter:
                 elif "T2" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/t2/pat"+self.get_patient_id_from_dir(rootd).__str__()+".mha")
                     print("copied " + file + " to T2")
-                elif "more" in file:
+                elif ".mha" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/more/pat"+self.get_patient_id_from_dir(rootd).__str__()+".mha")
                     print("copied " + file + " to MORE")
                 else:
