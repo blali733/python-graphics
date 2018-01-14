@@ -1,11 +1,12 @@
-from medpy.io import load
+# from medpy.io import load
+import SimpleITK as sitk
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
 def med_load(path):
-    i, h = load(path)
-    return i, h
+    i = sitk.GetArrayFromImage(sitk.ReadImage(path))
+    return i, 0
 
 
 def med_slice(med_image, axis, slice_id):
