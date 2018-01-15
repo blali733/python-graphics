@@ -51,7 +51,7 @@ def med_2_uint8(med_image_slice):
         for y in range(med_image_slice.shape[1] - 1):
             temp[x, y] = med_image_slice[x, y]/max_val
             # print(temp[x, y], med_image_slice[x, y], max_val, med_image_slice[x, y]/max_val)
-    med_2_csv(temp, "temp")
+    # med_2_csv(temp, "temp")
     return temp
 
 
