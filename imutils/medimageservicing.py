@@ -1,4 +1,4 @@
-# from medpy.io import load
+from imutils.mha import mhaIO
 import numpy as np
 import SimpleITK as sitk
 import matplotlib.pyplot as plt
@@ -12,22 +12,7 @@ def med_load(path):
 
 
 def med_slice(med_image, axis, slice_id):
-    if axis == 0:
-        if slice_id <= med_image.shape[0]:
-            return med_image[slice_id, :, :]
-        else:
-            return 0
-    elif axis == 1:
-        if slice_id <= med_image.shape[1]:
-            return med_image[:, slice_id, :]
-        else:
-            return 0
-    else:
-        if slice_id <= med_image.shape[2]:
-            return med_image[:, :, slice_id]
-        else:
-            return 0
-
+    return mhaIO.get_nth_slice(med_image, axis, slice_id)
 
 def med_plot(med_image_slice):
     plt.imshow(med_image_slice, cmap=cm.Greys_r)
