@@ -3,7 +3,7 @@ import pathlib
 import numpy as np
 
 
-def prepare_trainig_pairs(file_name, discard_bg, axis=1):
+def prepare_training_pairs(file_name, discard_bg, axis=1):
     path_flair = "./data/raw/flair/"+file_name+".mha"
     path_t1 = "./data/raw/t1/" + file_name + ".mha"
     path_t1c = "./data/raw/t1c/" + file_name + ".mha"
@@ -28,25 +28,25 @@ def prepare_trainig_pairs(file_name, discard_bg, axis=1):
     for mslice in slice(mha_flair, axis):
         if mslice.max() >= discard_bg:
             sitk.WriteImage(sitk.GetImageFromArray([mslice, desc_slices[iterator]]),
-                            "./data/parsed/flair/" + file_name + "_flair_" + iterator + ".mha")
+                            "./data/parsed/flair/" + file_name + "_flair_" + iterator.__str__() + ".mha")
         iterator += 1
     iterator = 0
     for mslice in slice(mha_t1, axis):
         if mslice.max() >= discard_bg:
             sitk.WriteImage(sitk.GetImageFromArray([mslice, desc_slices[iterator]]),
-                            "./data/parsed/flair/" + file_name + "_t1_" + iterator + ".mha")
+                            "./data/parsed/t1/" + file_name + "_t1_" + iterator.__str__() + ".mha")
         iterator += 1
     iterator = 0
     for mslice in slice(mha_t1c, axis):
         if mslice.max() >= discard_bg:
             sitk.WriteImage(sitk.GetImageFromArray([mslice, desc_slices[iterator]]),
-                            "./data/parsed/flair/" + file_name + "_t1c_" + iterator + ".mha")
+                            "./data/parsed/t1c/" + file_name + "_t1c_" + iterator.__str__() + ".mha")
         iterator += 1
     iterator = 0
     for mslice in slice(mha_t2, axis):
         if mslice.max() >= discard_bg:
             sitk.WriteImage(sitk.GetImageFromArray([mslice, desc_slices[iterator]]),
-                            "./data/parsed/flair/" + file_name + "_t2_" + iterator + ".mha")
+                            "./data/parsed/t2/" + file_name + "_t2_" + iterator.__str__() + ".mha")
         iterator += 1
 
 
