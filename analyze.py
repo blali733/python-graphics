@@ -1,7 +1,9 @@
 import sys  # for command line arguments
+import os
 from imutils import imageconvert
 from imutils import imagemanager
 from imutils import imagecrop
+from imutils.mha import mhaslicer
 from imageSorter import Sorter
 
 
@@ -38,6 +40,14 @@ class Analyze:
                 if 'y' in test:
                     subapp = Sorter()
                     subapp.main()
+                test = input("Do you want to prepare training image pairs (y/N): ")
+                if 'y' in test:
+                    for root, subFolders, files in os.walk("./data/raw/flair"):
+                        for file in files:
+                            file_name_parts = file.split(".")
+                            print("Slicing file "+file_name_parts[0])
+                            mhaslicer.prepare_training_pairs(file_name_parts[0], 10)
+                            print("done")
                 imc = imageconvert.ImageConvert()
                 imc.main()
             elif mode == 2:
