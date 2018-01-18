@@ -2,12 +2,12 @@ import msvcrt
 
 
 def start_key_listener():
-    pass
+    return 0
 
 
 def get_key_value():
     return msvcrt.getwch()
 
 
-def stop_key_listener():
+def stop_key_listener(params):
     pass
