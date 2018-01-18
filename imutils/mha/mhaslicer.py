@@ -1,9 +1,26 @@
-import pathlib
 from imutils.mha import mhaIO
+from imutils.mha import mhaMath
 import numpy as np
 
 
-def prepare_training_pairs(file_name, discard_bg, axis=1):
+def prepare_training_pairs(file_name, discard_bg=10, axis=1):
+    """
+    Function generating pairs of image slice and its mask.
+
+    Parameters
+    ----------
+    file_name : string
+        Defines file name to be converted
+    discard_bg : int
+        Defines value of max value in image to be treated as valid slice, default 10
+    axis : int
+        Value defining in which axis slicing would take place, default 1
+
+    Returns
+    -------
+    flair_pairs, t1_pairs, t1c_pairs, t2_pairs
+        Lists of tuples containing image slice and corresponding mask
+    """
     path_flair = "./data/raw/flair/"+file_name+".mha"
     path_t1 = "./data/raw/t1/" + file_name + ".mha"
     path_t1c = "./data/raw/t1c/" + file_name + ".mha"
@@ -22,36 +39,37 @@ def prepare_training_pairs(file_name, discard_bg, axis=1):
         exit(-1)
     if mha_desc.shape != mha_t2.shape:
         exit(-1)
-    touch_dirs()
     desc_slices = mhaIO.get_all_slices(mha_desc, axis)
+    print("Binearizing masks, please wait...")
+    for i in range(desc_slices.__len__()):
+        if desc_slices[i].max() > 0:
+            desc_slices[i] = mhaMath.med_image_binearize(desc_slices[i])
+    flair_pairs = []
+    t1_pairs = []
+    t1c_pairs = []
+    t2_pairs = []
     iterator = 0
+    print("Pairing FLAIR images, please wait...")
     for mslice in mhaIO.get_all_slices(mha_flair, axis):
         if mslice.max() >= discard_bg:
-            mhaIO.save_mha([mslice, desc_slices[iterator]],
-                           "./data/parsed/flair/" + file_name + "_flair_" + iterator.__str__() + ".mha")
+            flair_pairs.append((mslice, desc_slices[iterator]))
         iterator += 1
     iterator = 0
+    print("Pairing T1 images, please wait...")
     for mslice in mhaIO.get_all_slices(mha_t1, axis):
         if mslice.max() >= discard_bg:
-            mhaIO.save_mha([mslice, desc_slices[iterator]],
-                           "./data/parsed/t1/" + file_name + "_t1_" + iterator.__str__() + ".mha")
+            t1_pairs.append((mslice, desc_slices[iterator]))
         iterator += 1
     iterator = 0
+    print("Pairing T1C images, please wait...")
     for mslice in mhaIO.get_all_slices(mha_t1c, axis):
         if mslice.max() >= discard_bg:
-            mhaIO.save_mha([mslice, desc_slices[iterator]],
-                           "./data/parsed/t1c/" + file_name + "_t1c_" + iterator.__str__() + ".mha")
+            t1c_pairs.append((mslice, desc_slices[iterator]))
         iterator += 1
     iterator = 0
+    print("Pairing T2 images, please wait...")
     for mslice in mhaIO.get_all_slices(mha_t2, axis):
         if mslice.max() >= discard_bg:
-            mhaIO.save_mha([mslice, desc_slices[iterator]],
-                           "./data/parsed/t2/" + file_name + "_t2_" + iterator.__str__() + ".mha")
+            t2_pairs.append((mslice, desc_slices[iterator]))
         iterator += 1
-
-
-def touch_dirs():
-    pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./data/parsed/t1').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./data/parsed/t1c').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./data/parsed/t2').mkdir(parents=True, exist_ok=True)
+    return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
