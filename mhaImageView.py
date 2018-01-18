@@ -1,6 +1,6 @@
 # Windows only version, sorry
 import sys
-from imutils import medimageservicing as msc
+from pimutils import medimageservicing as msc
 import matplotlib.pyplot as plt
 try:
     from osutils import windows as osutil

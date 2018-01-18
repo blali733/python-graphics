@@ -1,7 +1,7 @@
 __pycache__/*
-imutils/__pycache__/*
-imutils/mha/__pycache__/*
-imutils/mask/__pycache__/*
-imutils/segmentation/__pycache__/*
+pimutils/__pycache__/*
+pimutils/mha/__pycache__/*
+pimutils/mask/__pycache__/*
+pimutils/segmentation/__pycache__/*
 osutils/__pycache__/*
 fileutils/__pycache__/*

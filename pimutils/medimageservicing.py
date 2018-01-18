@@ -1,4 +1,4 @@
-from imutils.mha import mhaIO, mhaMath
+from pimutils.mha import mhaIO, mhaMath
 import numpy as np
 import SimpleITK as sitk
 import matplotlib.pyplot as plt

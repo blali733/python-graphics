@@ -2,9 +2,9 @@ import functools
 import sys  # for command line arguments
 import os
 import timeit
-from imutils.segmentation import segment as seg
-from imutils.mask import separator
-from imutils.mha import mhaslicer
+from pimutils.segmentation import segment as seg
+from pimutils.mask import separator
+from pimutils.mha import mhaslicer
 from imageSorter import Sorter
 
 
@@ -38,12 +38,12 @@ class Analyze:
                 exit(0)
             elif mode == 1:
                 test = input("Do you want to prepare training images (y/N): ")
-                if 'y' in test:
+                if 'Y' in test.capitalize():
                     subapp = Sorter()
                     subapp.main()
                 test = input("Do you want to prepare training image pairs (y/N): ")
                 sep = separator.Separator(10)
-                if 'y' in test:
+                if 'Y' in test.capitalize():
                     for root, subFolders, files in os.walk("./data/raw/flair"):
                         for file in files:
                             file_name_parts = file.split(".")
@@ -68,8 +68,6 @@ class Analyze:
                             for imTuple in t2:
                                 ret_list = sep.get_list_of_stains(imTuple)
                             print("done")
-                # imc = imageconvert.ImageConvert()
-                # imc.main()
             elif mode == 2:
                 pass
             elif mode == 3:

@@ -1,5 +1,5 @@
-from imutils.mha import mhaIO
-from imutils.mha import mhaMath
+from pimutils.mha import mhaIO
+from pimutils.mha import mhaMath
 import numpy as np
 
 
