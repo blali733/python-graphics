@@ -4,4 +4,4 @@ pimutils/mha/__pycache__/*
 pimutils/mask/__pycache__/*
 pimutils/segmentation/__pycache__/*
 osutils/__pycache__/*
-fileutils/__pycache__/*
+nnutils/__pycache__/*

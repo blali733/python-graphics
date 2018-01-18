@@ -48,7 +48,7 @@ class Analyze:
                         for file in files:
                             file_name_parts = file.split(".")
                             print("Slicing file "+file_name_parts[0])
-                            flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], 10)
+                            flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
                             # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[0]))
                             # print(t.timeit(1))
                             # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[50]))
