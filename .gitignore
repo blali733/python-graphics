@@ -1,0 +1,4 @@
+__pycache__/*
+imutils/__pycache__/*
+osutils/__pycache__/*
+fileutils/__pycache__/*
