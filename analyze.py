@@ -2,6 +2,7 @@ import functools
 import sys  # for command line arguments
 import os
 import timeit
+from imutils.segmentation import segment as seg
 from imutils.mask import separator
 from imutils.mha import mhaslicer
 from imageSorter import Sorter
@@ -48,24 +49,24 @@ class Analyze:
                             file_name_parts = file.split(".")
                             print("Slicing file "+file_name_parts[0])
                             flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], 10)
-                            t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[0]))
-                            print(t.timeit(1))
-                            t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[50]))
-                            print(t.timeit(1))
-                            t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
-                            print(t.timeit(1))
+                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[0]))
+                            # print(t.timeit(1))
+                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[50]))
+                            # print(t.timeit(1))
+                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
+                            # print(t.timeit(1))
                             print("Dismantling FLAIR")
                             for imTuple in flair:
-                                sep.get_list_of_stains(imTuple)
+                                ret_list = sep.get_list_of_stains(imTuple)
                             print("Dismantling T1")
                             for imTuple in t1:
-                                sep.get_list_of_stains(imTuple)
+                                ret_list = sep.get_list_of_stains(imTuple)
                             print("Dismantling T1C")
                             for imTuple in t1c:
-                                sep.get_list_of_stains(imTuple)
+                                ret_list = sep.get_list_of_stains(imTuple)
                             print("Dismantling T2")
                             for imTuple in t2:
-                                sep.get_list_of_stains(imTuple)
+                                ret_list = sep.get_list_of_stains(imTuple)
                             print("done")
                 # imc = imageconvert.ImageConvert()
                 # imc.main()

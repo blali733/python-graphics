@@ -33,7 +33,6 @@ class Separator:
         """
         stains = []  # List of results
         pixels = []  # List of neighbouring unchecked pixels as address tuples
-        # pixels_done = []
         image = two_layer_image[0]
         mask = two_layer_image[1]
         temp_mask = np.zeros(mask.shape)
@@ -93,7 +92,6 @@ class Separator:
                                         mask[tx - 1, ty] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
-                                # pixels_done.append(pixels[0])
                                 pixels.pop(0)  # Remove checked pixel from list
                             if temp_mask.sum() > self.min_area:
                                 # Addition caused by rules of a:b which expands to a<=x<b,
