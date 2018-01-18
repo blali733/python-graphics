@@ -1,12 +1,4 @@
 # here list of required modules with reason should be kept:
 numpy
-opencv-python
 matplotlib
-nibabel
-pydicom
-cmake
-scikit-build
-scipy #installed by scikit-build
-wheel # installed by scikit-build
-itk   # depends on scikit-build
 simpleitk - help: https://stackoverflow.com/a/42594949
