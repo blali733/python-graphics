@@ -6,7 +6,7 @@
 ## 1. File Construction:  
 ### 1.1. Header
 Header consists of 6 parts:
-* 3 bytes - `ADF` code to check if file is actually in our format
+* 3 bytes - `ADF` as `0x41, 0x44, 0x46` code to check if file is actually in our format
 * 1 byte - joint informations:
     * 4 bits representing format version
     * 4 bits representing data type (Consult part 1.3)
