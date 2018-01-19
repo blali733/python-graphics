@@ -54,39 +54,40 @@ class Analyze:
                     for root, subFolders, files in os.walk("./data/raw/flair"):
                         for file in files:
                             file_name_parts = file.split(".")
-                            print("Slicing file "+file_name_parts[0])
-                            flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
-                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[0]))
-                            # print(t.timeit(1))
-                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[50]))
-                            # print(t.timeit(1))
-                            # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
-                            # print(t.timeit(1))
-                            print("Dismantling FLAIR")
-                            for imTuple in flair:
-                                ret_list = sep.get_list_of_stains(imTuple)
-                                for ret_tuple in ret_list:
-                                    adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/'+flair_no.__str__())
-                                    flair_no += 1
-                            print("Dismantling T1")
-                            for imTuple in t1:
-                                ret_list = sep.get_list_of_stains(imTuple)
-                                for ret_tuple in ret_list:
-                                    adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/'+t1_no.__str__())
-                                    t1_no += 1
-                            print("Dismantling T1C")
-                            for imTuple in t1c:
-                                ret_list = sep.get_list_of_stains(imTuple)
-                                for ret_tuple in ret_list:
-                                    adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/'+t1c_no.__str__())
-                                    t1c_no += 1
-                            print("Dismantling T2")
-                            for imTuple in t2:
-                                ret_list = sep.get_list_of_stains(imTuple)
-                                for ret_tuple in ret_list:
-                                    adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/'+t2_no.__str__())
-                                    t2_no += 1
-                            print("done")
+                            if file_name_parts[0] == 'pat1':
+                                print("Slicing file "+file_name_parts[0])
+                                flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
+                                # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[0]))
+                                # print(t.timeit(1))
+                                # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[50]))
+                                # print(t.timeit(1))
+                                # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
+                                # print(t.timeit(1))
+                                print("Dismantling FLAIR")
+                                for imTuple in flair:
+                                    ret_list = sep.get_list_of_stains(imTuple)
+                                    for ret_tuple in ret_list:
+                                        adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/'+flair_no.__str__())
+                                        flair_no += 1
+                                print("Dismantling T1")
+                                for imTuple in t1:
+                                    ret_list = sep.get_list_of_stains(imTuple)
+                                    for ret_tuple in ret_list:
+                                        adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/'+t1_no.__str__())
+                                        t1_no += 1
+                                print("Dismantling T1C")
+                                for imTuple in t1c:
+                                    ret_list = sep.get_list_of_stains(imTuple)
+                                    for ret_tuple in ret_list:
+                                        adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/'+t1c_no.__str__())
+                                        t1c_no += 1
+                                print("Dismantling T2")
+                                for imTuple in t2:
+                                    ret_list = sep.get_list_of_stains(imTuple)
+                                    for ret_tuple in ret_list:
+                                        adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/'+t2_no.__str__())
+                                        t2_no += 1
+                                print("done")
             elif mode == 2:
                 pass
             elif mode == 3:
