@@ -1,6 +1,5 @@
 # Array Data File:
  Format was created to allow fast and disk space efficient way of storing 2 dimensional arrays onto disk.
-
 `version 1.0 - 19.01.2018`
 
 ## 1. File Construction:  
@@ -17,5 +16,5 @@ Header length: 9 bytes
 ### 1.2. Payload:
 Simply series of values according to data type specification
 ### 1.3. Data formats:
-* `0x0` - int8
-* `0x1` - int16
+* `0x0` - int16
+* `0x1` - int32

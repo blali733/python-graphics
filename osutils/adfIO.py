@@ -23,13 +23,14 @@ def save(array, path):
     """
     # version and data-type code:
     code = 1 << 4
-    if array.dtype == np.uint8:
+    if array.dtype == np.int16:
         code += 0
-        type = np.uint8
-    elif array.dtype == np.uint16:
+        type = np.int16
+    elif array.dtype == np.int32:
         code += 1
-        type = np.uint16
+        type = np.int32
     else:
+        print("Unsupported data type! "+array.dtype.__str__())
         return -1
     with open(path+'.adf', "wb") as f:
         f.write(bytes([0x41, 0x44, 0x46]))
@@ -62,9 +63,9 @@ def load(path):
             val = int.from_bytes(val, byteorder='big', signed=False)
             data_type = val - (val >> 4 << 4)
             if data_type == 0:
-                data_type = np.uint8
+                data_type = np.int16
             elif data_type == 1:
-                data_type = np.uint16
+                data_type = np.int32
             else:
                 return -1
             x = int.from_bytes(f.read(2), byteorder='big')

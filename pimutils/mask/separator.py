@@ -28,14 +28,14 @@ class Separator:
         Returns
         -------
         list
-            List of arrays in form: nparray, nparray, int, int containing masked image fragment, mask fragment, x and y
+            List of tuples in form: nparray, nparray, int, int containing masked image fragment, mask fragment, x and y
             of left upper corner of fragment in whole image
         """
         stains = []  # List of results
         pixels = []  # List of neighbouring unchecked pixels as address tuples
         image = two_layer_image[0]
         mask = two_layer_image[1]
-        temp_mask = np.zeros(mask.shape)
+        temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         if mask.max() == 1:
             for x in range(mask.shape[0]-1):
                 if mask[x, :].max() == 1:
@@ -99,5 +99,5 @@ class Separator:
                                 temp_mask_reduced = temp_mask[lowx:(hix+1), lowy:(hiy+1)]
                                 temp_image_reduced = np.multiply(image[lowx:(hix+1), lowy:(hiy+1)], temp_mask_reduced)
                                 stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
-                            temp_mask = np.zeros(mask.shape)
+                            temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         return stains
