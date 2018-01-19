@@ -8,7 +8,7 @@ import pathlib
 
 def med_load(path):
     i = sitk.GetArrayFromImage(sitk.ReadImage(path))
-    return i, 0
+    return i
 
 
 def med_slice(med_image, axis, slice_id):

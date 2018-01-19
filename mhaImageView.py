@@ -15,7 +15,7 @@ class Preview:
         while main_loop_fuse == 1:
             image_path = input("Image file in RAW directory: ")
             image_full_path = "./data/raw/"+image_path
-            image_data, image_header = msc.med_load(image_full_path)
+            image_data = msc.med_load(image_full_path)
             axis = 0
             slice_id = 0
             fig = msc.med_plot(msc.med_slice(image_data, axis, slice_id))
@@ -27,13 +27,15 @@ class Preview:
             while inner_loop_fuse == 1:
                 while single_mode_fuse == 1:
                     key = osutil.get_key_value()
-                    # print(key)
+                    print(key)
                     if key == "Q":
                         inner_loop_fuse = 0
+                        single_mode_fuse = 0
                         osutil.stop_key_listener(params)
                     elif key == "X":
                         main_loop_fuse = 0
                         inner_loop_fuse = 0
+                        single_mode_fuse = 0
                         osutil.stop_key_listener(params)
                     elif key == "4":
                         if slice_id > 1:
@@ -55,7 +57,7 @@ class Preview:
                             slice_id += 5
                             msc.med_plot(msc.med_slice(image_data, axis, slice_id))
                         else:
-                            slice_id = msc.med_get_size(image_data, axis)
+                            slice_id = msc.med_get_size(image_data, axis)-1
                             msc.med_plot(msc.med_slice(image_data, axis, slice_id))
                     elif key == "8":
                         slice_id = 0
@@ -82,8 +84,8 @@ class Preview:
                     osutil.stop_key_listener(params)
                     image2_path = input("Second image file in RAW directory: ")
                     image2_full_path = "./data/raw/" + image2_path
-                    image2_data, image2_header = msc.med_load(image2_full_path)
-                    mask_cutoff = 1
+                    image2_data = msc.med_load(image2_full_path)
+                    mask_cutoff = 0
                     osutil.start_key_listener()
                     msc.med_color_plot(
                         msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
@@ -92,7 +94,7 @@ class Preview:
                         if key == "Q":
                             dual_mode_fuse = 0
                             single_mode_fuse = 1
-                            osutil.stop_key_listener(params)
+                            # osutil.stop_key_listener(params)
                         elif key == "X":
                             dual_mode_fuse = 0
                             main_loop_fuse = 0
@@ -144,7 +146,7 @@ class Preview:
                             msc.med_color_plot(
                                 msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
                         elif key == "-":
-                            if mask_cutoff > 1:
+                            if mask_cutoff > 0:
                                 mask_cutoff -= 1
                                 msc.med_color_plot(
                                     msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
