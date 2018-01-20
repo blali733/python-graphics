@@ -9,6 +9,7 @@ from pimutils.mask import separator
 from pimutils.mha import mhaslicer
 from imageSorter import Sorter
 from osutils import adfIO
+from nnutils import teach, test
 
 # Kept as reference for checking execution time:
 # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
@@ -16,12 +17,14 @@ from osutils import adfIO
 
 
 class Analyze:
+    def __init__(self):
+        self.classifier_load_status = False
+        self.classifier_name = ""
+
     def run(self):
         fuse = 1
-        classifier_load_status = False
-        classifier_name = ""
         while fuse == 1:
-            self.menu(classifier_load_status, classifier_name)
+            self.menu()
             try:
                 mode = int(input('Your choice:'))
             except ValueError:
@@ -34,9 +37,9 @@ class Analyze:
             elif mode == 2:  # Teaching
                 self.teach_classifier()
             elif mode == 3:  # Load classifier
-                classifier_load_status, classifier_name = self.load_classifier()
+                self.load_classifier()
             elif mode == 4:  # Classify images
-                self.classify_images(classifier_load_status)
+                self.classify_images()
 
     # <editor-fold desc="Menu options">
     def prepare_data(self):
@@ -95,28 +98,15 @@ class Analyze:
 
     def load_classifier(self):
         """
-        Method responsible for loading saved classifier
-
-        Returns
-        -------
-        bool
-            Result of loading classifier
-        string
-            Name of loaded classifier
+        Method responsible for loading saved classifier.
         """
-        return False, ""
+        pass
 
-    def classify_images(self, classifier_load_status, classifier_name):
+    def classify_images(self):
         """
-
-        Parameters
-        ----------
-        classifier_load_status : bool
-            Boolean value stating if any classifier is loaded.
-        classifier_name : string
-            Name of loaded classifier.
+        Method responsible for initiating image classification loop.
         """
-        if classifier_load_status == 0:
+        if self.classifier_load_status == 0:
             print("Load any classifier first.")
             return
         else:
@@ -147,8 +137,7 @@ class Analyze:
         pathlib.Path('./data/parsed/t2/tumor').mkdir(parents=True, exist_ok=True)
         pathlib.Path('./data/parsed/t2/not').mkdir(parents=True, exist_ok=True)
 
-    @staticmethod
-    def menu(is_classifier_loaded, classifier_name):
+    def menu(self):
         if is_classifier_loaded:
             print("Classifier is NOT LOADED")
         else:
