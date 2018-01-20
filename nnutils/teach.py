@@ -160,7 +160,7 @@ class Teacher:
                 print("T2 model:")
                 name = "t2"
             print("STEP 4: Compiling model")
-            model = self.model_cooker.build(width=self.image_size, height=self.image_size, depth=3, classes=2)
+            model = self.model_cooker.build(width=self.image_size, height=self.image_size, depth=1, classes=2)
             opt = Adam(lr=self.initial_learning_rate, decay=self.initial_learning_rate/self.epochs)
             model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
             print("STEP 5: Training network")
