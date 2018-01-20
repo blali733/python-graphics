@@ -5,7 +5,7 @@ import os
 import timeit
 import shutil
 from pimutils.segmentation import segment as seg
-from pimutils.mask import separator
+from pimutils.mask import separator, common
 from pimutils.mha import mhaslicer
 from imageSorter import Sorter
 from osutils import adfIO
@@ -54,6 +54,10 @@ class Analyze:
         test = input("Do you want to prepare training image pairs (y/N): ")
         sep = separator.Separator(10)
         if 'Y' in test.capitalize():
+            flair_yes = 0
+            t1_yes = 0
+            t1c_yes = 0
+            t2_yes = 0
             flair_no = 0
             t1_no = 0
             t1c_no = 0
@@ -62,31 +66,66 @@ class Analyze:
             for root, subFolders, files in os.walk("./data/raw/flair"):
                 for file in files:
                     file_name_parts = file.split(".")
-                    if file_name_parts[0] == 'pat1':  # TODO delete this line when testing finshes
+                    if file_name_parts[0] == 'pat1':  # TODO delete this line when testing finishes
                         print("Slicing file " + file_name_parts[0])
                         flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
                         print("Dismantling FLAIR")
                         for imTuple in flair:
                             ret_list = sep.get_list_of_stains(imTuple)
                             for ret_tuple in ret_list:
+                                adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
+                                flair_yes += 1
+                            auto_segmentation = seg.flair(imTuple[0])
+                            ret_positive, ret_negative = common.find_common_parts(imTuple[1],ret_list, auto_segmentation)
+                            for ret_tuple in ret_positive:
+                                adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
+                                flair_yes += 1
+                            for ret_tuple in ret_negative:
                                 adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_no.__str__())
                                 flair_no += 1
                         print("Dismantling T1")
                         for imTuple in t1:
                             ret_list = sep.get_list_of_stains(imTuple)
                             for ret_tuple in ret_list:
+                                adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
+                                t1_yes += 1
+                            auto_segmentation = seg.t1(imTuple[0])
+                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
+                                                                                  auto_segmentation)
+                            for ret_tuple in ret_positive:
+                                adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
+                                t1_yes += 1
+                            for ret_tuple in ret_negative:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_no.__str__())
                                 t1_no += 1
                         print("Dismantling T1C")
                         for imTuple in t1c:
                             ret_list = sep.get_list_of_stains(imTuple)
                             for ret_tuple in ret_list:
+                                adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
+                                t1c_yes += 1
+                            auto_segmentation = seg.t1c(imTuple[0])
+                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
+                                                                                  auto_segmentation)
+                            for ret_tuple in ret_positive:
+                                adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
+                                t1c_yes += 1
+                            for ret_tuple in ret_negative:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_no.__str__())
                                 t1c_no += 1
                         print("Dismantling T2")
                         for imTuple in t2:
                             ret_list = sep.get_list_of_stains(imTuple)
                             for ret_tuple in ret_list:
+                                adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
+                                t2_yes += 1
+                            auto_segmentation = seg.t2(imTuple[0])
+                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
+                                                                                  auto_segmentation)
+                            for ret_tuple in ret_positive:
+                                adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
+                                t2_yes += 1
+                            for ret_tuple in ret_negative:
                                 adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_no.__str__())
                                 t2_no += 1
                         print("done")
