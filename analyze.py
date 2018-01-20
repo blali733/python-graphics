@@ -5,7 +5,7 @@ import os
 import timeit
 import shutil
 from pimutils.segmentation import segment as seg
-from pimutils.mask import separator, common
+from pimutils.mask import separator
 from pimutils.mha import mhaslicer
 from imageSorter import Sorter
 from osutils import adfIO
@@ -76,7 +76,8 @@ class Analyze:
                                 adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
                                 flair_yes += 1
                             auto_segmentation = seg.flair(imTuple[0])
-                            ret_positive, ret_negative = common.find_common_parts(imTuple[1],ret_list, auto_segmentation)
+                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1],ret_list, auto_segmentation,
+                                                                               imTuple[0])
                             for ret_tuple in ret_positive:
                                 adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
                                 flair_yes += 1
@@ -90,8 +91,8 @@ class Analyze:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
                                 t1_yes += 1
                             auto_segmentation = seg.t1(imTuple[0])
-                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
-                                                                                  auto_segmentation)
+                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                                                                               imTuple[0])
                             for ret_tuple in ret_positive:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
                                 t1_yes += 1
@@ -105,8 +106,8 @@ class Analyze:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
                                 t1c_yes += 1
                             auto_segmentation = seg.t1c(imTuple[0])
-                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
-                                                                                  auto_segmentation)
+                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                                                                               imTuple[0])
                             for ret_tuple in ret_positive:
                                 adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
                                 t1c_yes += 1
@@ -120,8 +121,8 @@ class Analyze:
                                 adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
                                 t2_yes += 1
                             auto_segmentation = seg.t2(imTuple[0])
-                            ret_positive, ret_negative = common.find_common_parts(imTuple[1], ret_list,
-                                                                                  auto_segmentation)
+                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                                                                               imTuple[0])
                             for ret_tuple in ret_positive:
                                 adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
                                 t2_yes += 1
