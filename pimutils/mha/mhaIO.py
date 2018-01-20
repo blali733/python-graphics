@@ -1,7 +1,7 @@
 import SimpleITK as sitk
 
 
-def get_all_slices(image, axis):
+def get_all_slices(image, axis=0):
     slices = []
     if axis == 0:
         for i in range(image.shape[0]):
