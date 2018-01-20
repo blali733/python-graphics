@@ -18,6 +18,7 @@ from nnutils import teach, test
 
 class Analyze:
     def __init__(self):
+        self.classifier_class = None
         self.classifier_load_status = False
         self.classifier_name = ""
 
@@ -94,13 +95,25 @@ class Analyze:
         """
         Method responsible for teaching classifier basing on learning sets.
         """
-        pass
+        # TODO implement checking if any training images are present
+        name = int(input('Please provide model name:'))
+        # TODO implement asking for custom parameters
+        teacher = teach.Teacher()
+        teacher.teach(name)
 
     def load_classifier(self):
         """
         Method responsible for loading saved classifier.
         """
-        pass
+        name = int(input('Please provide model name:'))
+        try:
+            self.classifier_class = test.TestClassification(name)
+            self.classifier_load_status = True
+            self.classifier_name = name
+        except NotADirectoryError:
+            print("Unable to load classifier with name \""+name+"\" - directory does not exist.")
+        except FileNotFoundError:
+            print("Unable to load classifier with name \"" + name + "\" - at least one file does not exist.")
 
     def classify_images(self):
         """
