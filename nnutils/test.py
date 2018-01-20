@@ -51,3 +51,7 @@ class TestClassification:
         image = np.expand_dims(image, axis=0)
         (tumor, not_tumor) = self.t2_model.predict(image)[0]
         return tumor, not_tumor
+
+
+if __name__ == "__main__":
+    pass

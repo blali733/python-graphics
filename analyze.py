@@ -62,7 +62,7 @@ class Analyze:
             for root, subFolders, files in os.walk("./data/raw/flair"):
                 for file in files:
                     file_name_parts = file.split(".")
-                    if file_name_parts[0] == 'pat1':
+                    if file_name_parts[0] == 'pat1':  # TODO delete this line when testing finshes
                         print("Slicing file " + file_name_parts[0])
                         flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
                         print("Dismantling FLAIR")
@@ -155,10 +155,10 @@ class Analyze:
         pathlib.Path('./data/parsed/t2/not').mkdir(parents=True, exist_ok=True)
 
     def menu(self):
-        if is_classifier_loaded:
-            print("Classifier is NOT LOADED")
+        if self.classifier_load_status:
+            print("Classifier " + self.classifier_name + " is LOADED")
         else:
-            print("Classifier "+classifier_name+" is LOADED")
+            print("Classifier is NOT LOADED")
         print()
         print("Please select mode:")
         print("1 - prepare input data")
