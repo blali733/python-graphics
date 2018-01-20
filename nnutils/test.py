@@ -8,7 +8,7 @@ from pimutils import resizer
 
 # TESTME check if this code works
 # TODO Check if images shouldn't be converted into 0.0-1.0 floats
-# TODO think of way of passing used classifier max resolution.
+# NOTES Use JSON file to store and pass classifier settings
 # TODO implement way of passing used classifier max resolution.
 # TODO implement checking if files in classifier exist, and throw proper exceptions
 

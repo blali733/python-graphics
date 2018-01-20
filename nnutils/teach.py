@@ -17,6 +17,7 @@ from pimutils import resizer
 from osutils import inlineprogress as pbar, adfIO, pathtools
 
 # TESTME check if this code works
+# TODO Implement storeing classifier parameters into JSON file.
 # TODO Check if images shouldn't be converted into 0.0-1.0 floats
 
 
