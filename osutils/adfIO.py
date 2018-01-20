@@ -12,7 +12,7 @@ def save(array, path):
     Parameters
     ----------
     array : nparray
-        2 dimensional aray to be serialized
+        2 dimensional array to be serialized
     path : string
         path of output file
 
