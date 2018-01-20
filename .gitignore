@@ -5,3 +5,4 @@ pimutils/mask/__pycache__/*
 pimutils/segmentation/__pycache__/*
 osutils/__pycache__/*
 nnutils/__pycache__/*
+.idea/*
