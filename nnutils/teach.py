@@ -15,9 +15,9 @@ import random
 import os
 from pimutils import resizer
 from osutils import inlineprogress as pbar, adfIO, pathtools
+import json
 
 # TESTME check if this code works
-# TODO Implement storeing classifier parameters into JSON file.
 # TODO Check if images shouldn't be converted into 0.0-1.0 floats
 
 
@@ -30,6 +30,7 @@ def prepare_dirs(model_name):
 
 class Teacher:
     def __init__(self, epochs=25, initial_learning_rate=1e-3, batch_size=25, model_frame_size=28):
+        self.settings = {"version": 1, "size": model_frame_size}
         self.epochs = epochs
         self.initial_learning_rate = initial_learning_rate
         self.batch_size = batch_size
@@ -184,4 +185,6 @@ class Teacher:
             plt.ylabel("Loss/Accuracy")
             plt.legend(loc="lower left")
             plt.savefig("./data/classifiers/"+model_name+"/plots/"+name+".png")
+        json.dump(self.settings, open("./data/classifiers/"+model_name+"/models/settings.json", "w"))
+
 

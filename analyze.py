@@ -95,11 +95,15 @@ class Analyze:
         """
         Method responsible for teaching classifier basing on learning sets.
         """
-        # TODO implement checking if any training images are present
         name = int(input('Please provide model name:'))
-        # TODO implement asking for custom parameters
-        teacher = teach.Teacher()
-        teacher.teach(name)
+        test = input('Do you want to use advanced configuration? (y/N) ')
+        if test.capitalize() == 'Y':
+            # TODO implement asking for custom parameters
+            teacher = teach.Teacher()
+            teacher.teach(name)
+        else:
+            teacher = teach.Teacher()
+            teacher.teach(name)
 
     def load_classifier(self):
         """
