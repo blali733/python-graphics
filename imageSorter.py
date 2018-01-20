@@ -1,7 +1,7 @@
 import os
-import sys
 import shutil
 import pathlib
+from osutils import pathtools
 
 
 class Sorter:
@@ -44,16 +44,9 @@ class Sorter:
                     excludes.append(file)
         print(excludes)
 
-    def get_patient_folder_name_from_path(self, path, dir_position):
-        if os.name == "nt":
-            folders = path.split('\\')
-        else:
-            folders = path.split('/')
-        return folders[dir_position]
-
     def get_patient_id_from_dir(self, path):
         try:
-            id = self.patient_dict[self.get_patient_folder_name_from_path(path, -2)]
+            id = self.patient_dict[pathtools.get_folder_name_from_path(path, -2)]
         except TypeError:
             id = 0
         return id
