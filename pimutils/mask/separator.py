@@ -37,67 +37,111 @@ class Separator:
         mask = two_layer_image[1]
         temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         if mask.max() == 1:
-            for x in range(mask.shape[0]-1):
-                if mask[x, :].max() == 1:
-                    for y in range(mask.shape[1] - 1):
-                        if mask[x, y] == 1:  # Got hit
+            for y in range(mask.shape[0]-1):
+                if mask[y, :].max() == 1:
+                    for x in range(mask.shape[1] - 1):
+                        if mask[y, x] == 1:  # Got hit
                             # Copy address values
                             lowx = x  # Would be set to left border of image
                             lowy = y  # Doubles as upper bound of image - scanning method makes it impossible to go higher
                             hix = x   # Would be set to right border of image
                             hiy = y   # Would be set to bottom border of image
                             # Activate in new mask
-                            mask[x, y] = 0
-                            temp_mask[lowx, lowy] = 1
+                            mask[y, x] = 0
+                            temp_mask[lowy, lowx] = 1
                             # Add to list of pixels waiting for neighbourhood check
-                            pixels.append((lowx, lowy))
+                            pixels.append((lowy, lowx))
                             while len(pixels) > 0:  # Check neighbours
-                                tx = pixels[0][0]
-                                ty = pixels[0][1]
+                                ty = pixels[0][0]
+                                tx = pixels[0][1]
                                 # top
                                 try:
-                                    if mask[tx, ty - 1] == 1:
-                                        temp_mask[tx, ty - 1] = 1
-                                        pixels.append((tx, ty - 1))
-                                        # mask[tx, ty - 1] = 0
+                                    if mask[ty - 1, tx] == 1:
+                                        temp_mask[ty - 1, tx] = 1
+                                        pixels.append((ty - 1, tx))
+                                        mask[ty - 1, tx] = 0
+                                except IndexError:  # In case of addressing pixel not in range
+                                    pass
+                                # top - right
+                                try:
+                                    if mask[ty - 1, tx + 1] == 1:
+                                        temp_mask[ty - 1, tx + 1] = 1
+                                        pixels.append((ty - 1, tx + 1))
+                                        if tx + 1 > hix:
+                                            hix = tx + 1
+                                        mask[ty - 1, tx + 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
                                 # right
                                 try:
-                                    if mask[tx + 1, ty] == 1:
-                                        temp_mask[tx + 1, ty] = 1
-                                        pixels.append((tx + 1, ty))
+                                    if mask[ty, tx + 1] == 1:
+                                        temp_mask[ty, tx + 1] = 1
+                                        pixels.append((ty, tx + 1))
                                         if tx + 1 > hix:
                                             hix = tx + 1
-                                        mask[tx + 1, ty] = 0
+                                        mask[ty, tx + 1] = 0
+                                except IndexError:  # In case of addressing pixel not in range
+                                    pass
+                                # bottom - right
+                                try:
+                                    if mask[ty + 1, tx + 1] == 1:
+                                        temp_mask[ty + 1, tx + 1] = 1
+                                        pixels.append((ty + 1, tx + 1))
+                                        if tx + 1 > hix:
+                                            hix = tx + 1
+                                        if ty + 1 > hiy:
+                                            hiy = ty + 1
+                                        mask[ty + 1, tx + 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
                                 # bottom
                                 try:
-                                    if mask[tx, ty + 1] == 1:
-                                        temp_mask[tx, ty + 1] = 1
-                                        pixels.append((tx, ty + 1))
+                                    if mask[ty + 1, tx] == 1:
+                                        temp_mask[ty + 1, tx] = 1
+                                        pixels.append((ty + 1, tx))
                                         if ty + 1 > hiy:
                                             hiy = ty + 1
-                                        mask[tx, ty + 1] = 0
+                                        mask[ty + 1, tx] = 0
+                                except IndexError:  # In case of addressing pixel not in range
+                                    pass
+                                # bottom - left
+                                try:
+                                    if mask[ty + 1, tx - 1] == 1:
+                                        temp_mask[ty + 1, tx - 1] = 1
+                                        pixels.append((ty + 1, tx - 1))
+                                        if tx - 1 < lowx:
+                                            lowx = tx - 1
+                                        if ty + 1 > hiy:
+                                            hiy = ty + 1
+                                        mask[ty + 1, tx - 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
                                 # left
                                 try:
-                                    if mask[tx - 1, ty] == 1:
-                                        temp_mask[tx - 1, ty] = 1
-                                        pixels.append((tx - 1, ty))
+                                    if mask[ty, tx - 1] == 1:
+                                        temp_mask[ty, tx - 1] = 1
+                                        pixels.append((ty, tx - 1))
                                         if tx - 1 < lowx:
                                             lowx = tx - 1
-                                        mask[tx - 1, ty] = 0
+                                        mask[ty, tx - 1] = 0
+                                except IndexError:  # In case of addressing pixel not in range
+                                    pass
+                                # top - left
+                                try:
+                                    if mask[ty - 1, tx - 1] == 1:
+                                        temp_mask[ty - 1, tx - 1] = 1
+                                        pixels.append((ty - 1, tx - 1))
+                                        if tx - 1 < lowx:
+                                            lowx = tx - 1
+                                        mask[ty - 1, tx - 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
                                 pixels.pop(0)  # Remove checked pixel from list
                             if temp_mask.sum() > self.min_area:
                                 # Addition caused by rules of a:b which expands to a<=x<b,
                                 # so to include upper bound we have to add 1
-                                temp_mask_reduced = temp_mask[lowx:(hix+1), lowy:(hiy+1)]
-                                temp_image_reduced = np.multiply(image[lowx:(hix+1), lowy:(hiy+1)], temp_mask_reduced)
+                                temp_mask_reduced = temp_mask[lowy:(hiy+1), lowx:(hix+1)]
+                                temp_image_reduced = np.multiply(image[lowy:(hiy+1), lowx:(hix+1)], temp_mask_reduced)
                                 stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
                             temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         return stains
