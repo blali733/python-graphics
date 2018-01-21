@@ -8,7 +8,7 @@ import os
 import timeit
 import shutil
 from pimutils.segmentation import segment as seg
-from pimutils.mask import separator
+from pimutils.mask import separator, mirrorMask
 from pimutils.mha import mhaslicer
 from imageSorter import Sorter
 from osutils import adfIO
@@ -45,6 +45,30 @@ class Analyze:
             elif mode == 4:  # Classify images
                 self.classify_images()
 
+    # <editor-fold desc="Prepare data">
+    def save_stains(self, list_of_stains, mode, classified_type, name, numerator):
+        """
+        
+        Parameters
+        ----------
+        list_of_stains : list
+        mode : string
+        classified_type : string
+        name : string
+        numerator : int
+
+        Returns
+        -------
+        int
+            updated numerator value
+        """
+        for ret_tuple in list_of_stains:
+            adfIO.save(ret_tuple[0], './data/parsed/' + mode + '/' + classified_type + '/'
+                       + name + '_' + numerator.__str__())
+            numerator += 1
+        return numerator
+    # </editor-fold>
+
     # <editor-fold desc="Menu options">
     def prepare_data(self):
         """
@@ -57,7 +81,7 @@ class Analyze:
         test = input("Do you want to prepare training image pairs (y/N): ")
         sep = separator.Separator(10)
         if 'Y' in test.capitalize():
-            flair_yes = 0
+            flair_yes = int()
             t1_yes = 0
             t1c_yes = 0
             t2_yes = 0
@@ -75,63 +99,47 @@ class Analyze:
                         print("Dismantling FLAIR")
                         for imTuple in flair:
                             ret_list = sep.get_list_of_stains(imTuple)
-                            for ret_tuple in ret_list:
-                                adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
-                                flair_yes += 1
+                            flair_yes = self.save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
+                            nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                            flair_no = self.save_stains(nret_list, "flair", "not", "flip", flair_no)
                             auto_segmentation = seg.flair(imTuple[0])
                             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                                imTuple[0])
-                            for ret_tuple in ret_positive:
-                                adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
-                                flair_yes += 1
-                            for ret_tuple in ret_negative:
-                                adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_no.__str__())
-                                flair_no += 1
+                            flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
+                            flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
                         print("Dismantling T1")
                         for imTuple in t1:
                             ret_list = sep.get_list_of_stains(imTuple)
-                            for ret_tuple in ret_list:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
-                                t1_yes += 1
+                            t1_yes = self.save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
+                            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                            t1_no = self.save_stains(ret_list, "t1", "not", "flip", t1_no)
                             auto_segmentation = seg.t1(imTuple[0])
                             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                                imTuple[0])
-                            for ret_tuple in ret_positive:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_yes.__str__())
-                                t1_yes += 1
-                            for ret_tuple in ret_negative:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1/tumor/' + t1_no.__str__())
-                                t1_no += 1
+                            t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
+                            t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
                         print("Dismantling T1C")
                         for imTuple in t1c:
                             ret_list = sep.get_list_of_stains(imTuple)
-                            for ret_tuple in ret_list:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
-                                t1c_yes += 1
+                            t1c_yes = self.save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
+                            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                            t1c_no = self.save_stains(ret_list, "t1c", "not", "flip", t1c_no)
                             auto_segmentation = seg.t1c(imTuple[0])
                             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                                imTuple[0])
-                            for ret_tuple in ret_positive:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_yes.__str__())
-                                t1c_yes += 1
-                            for ret_tuple in ret_negative:
-                                adfIO.save(ret_tuple[0], './data/parsed/t1c/tumor/' + t1c_no.__str__())
-                                t1c_no += 1
+                            t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
+                            t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
                         print("Dismantling T2")
                         for imTuple in t2:
                             ret_list = sep.get_list_of_stains(imTuple)
-                            for ret_tuple in ret_list:
-                                adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
-                                t2_yes += 1
+                            t2_yes = self.save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
+                            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                            t2_no = self.save_stains(ret_list, "t2", "not", "flip", t2_no)
                             auto_segmentation = seg.t2(imTuple[0])
                             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                                imTuple[0])
-                            for ret_tuple in ret_positive:
-                                adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_yes.__str__())
-                                t2_yes += 1
-                            for ret_tuple in ret_negative:
-                                adfIO.save(ret_tuple[0], './data/parsed/t2/tumor/' + t2_no.__str__())
-                                t2_no += 1
+                            t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
+                            t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
                         print("done")
 
     def teach_classifier(self):

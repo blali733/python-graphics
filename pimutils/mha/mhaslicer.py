@@ -3,7 +3,7 @@ from pimutils.mha import mhaMath
 import numpy as np
 
 
-def prepare_training_pairs(file_name, discard_bg=10, axis=1):
+def prepare_training_pairs(file_name, discard_bg=10, axis=0):
     """
     Function generating pairs of image slice and its mask.
 

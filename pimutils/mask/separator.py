@@ -38,7 +38,7 @@ class Separator:
         stains = []  # List of results
         pixels = []  # List of neighbouring unchecked pixels as address tuples
         image = two_layer_image[0]
-        mask = two_layer_image[1]
+        mask = np.copy(two_layer_image[1]).astype(two_layer_image[1].dtype)
         temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         if mask.max() == 1:
             for y in range(mask.shape[0]-1):

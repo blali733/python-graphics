@@ -86,4 +86,4 @@ def expand(mask, origin, size, desired_size):
     y = origin[1]
     mx = x + size[0]
     my = y + size[1]
-    return np.pad(mask, ([y, desired_size[0]-my], [x, desired_size[1]-mx]), mode="constant")
+    return np.pad(mask, ([x, desired_size[1]-mx], [y, desired_size[0]-my]), mode="constant")
