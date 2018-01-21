@@ -51,3 +51,36 @@ def resize(image, x, y=0, upscale=False):
                 diff_x = (size[1] - isize[1]) / 2
                 return np.pad(image, ((math.floor(diff_y), math.ceil(diff_y)), (math.floor(diff_x), math.ceil(diff_x))),
                               mode="constant")
+
+
+def shrink(mask, origin, size):
+    x = origin[0]
+    y = origin[1]
+    mx = x+size[0]
+    my = y+size[1]
+    return mask[y:my, x:mx]
+
+
+def expand(mask, origin, size, desired_size):
+    """
+    Expands np.array by zeroes.
+
+    DOES NOT check if desired size is big enough, think before use.
+
+    Parameters
+    ----------
+    mask
+    origin
+    size
+    desired_size
+    expand_offset
+
+    Returns
+    -------
+
+    """
+    x = origin[0]
+    y = origin[1]
+    mx = x + size[0]
+    my = y + size[1]
+    return np.pad(mask, ([y, desired_size[0]-my], [x, desired_size[1]-mx]), mode="constant")
