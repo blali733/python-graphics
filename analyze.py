@@ -69,6 +69,22 @@ class Analyze:
         return numerator
     
     def parse_slices(self, slices_tuple, yes_counters, no_counters, sep, axis):
+        """
+        Method responsible for turning sets of slices into training .adf files.
+
+        Parameters
+        ----------
+        slices_tuple : tuple of lists
+        yes_counters : tuple of ints
+        no_counters : tuple of ints
+        sep : Separator class instance
+        axis : int
+
+        Returns
+        -------
+        tuple, tuple
+            Updated values of yes and no counters.
+        """
         flair_yes = yes_counters[0]
         t1_yes = yes_counters[1]
         t1c_yes = yes_counters[2]
@@ -202,7 +218,7 @@ class Analyze:
             print("Load any classifier first.")
             return
         else:
-            pass
+            print("This would classify ALL images in .")
     # </editor-fold>
 
     # <editor-fold desc="Static functions">
