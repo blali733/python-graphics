@@ -53,11 +53,15 @@ def resize(image, x, y=0, upscale=False):
                               mode="constant")
 
 
-def shrink(mask, origin, size):
+def shrink(mask, origin, size, absolute=False):
     x = origin[0]
     y = origin[1]
-    mx = x+size[0]
-    my = y+size[1]
+    if absolute:
+        mx = size[0]
+        my = size[1]
+    else:
+        mx = x + size[0]
+        my = y + size[1]
     return mask[y:my, x:mx]
 
 

@@ -146,7 +146,7 @@ class Separator:
                             if temp_mask.sum() > self.min_area:
                                 # Addition caused by rules of a:b which expands to a<=x<b,
                                 # so to include upper bound we have to add 1
-                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy])  # temp_mask[lowy:(hiy+1), lowx:(hix+1)]
+                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy], True)  # temp_mask[lowy:(hiy+1), lowx:(hix+1)]
                                 temp_image_reduced = np.multiply(image[lowy:(hiy+1), lowx:(hix+1)], temp_mask_reduced)
                                 stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
                             temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
@@ -289,7 +289,7 @@ class Separator:
                             m1, com, m2 = comparator.raw_compare(manual_segmentation, temp_mask)
                             if com / (com + m1) > common_percentage:
                                 if temp_mask.sum() > self.min_area:
-                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy])  # temp_mask[lowy:(hiy + 1), lowx:(hix + 1)]
+                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy], True)  # temp_mask[lowy:(hiy + 1), lowx:(hix + 1)]
                                     temp_image_reduced = np.multiply(image[lowy:(hiy + 1), lowx:(hix + 1)],
                                                                      temp_mask_reduced)
                                     tumor.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
@@ -299,5 +299,5 @@ class Separator:
                                 print("Tumor candidate dropped - to big overshoot")
                 # endregion
             if automatic_segmentation.sum() != 0:
-                not_tumor = self.get_list_of_stains([image, automatic_segmentation])
+                not_tumor = self.get_list_of_stains((image, automatic_segmentation))
         return tumor, not_tumor

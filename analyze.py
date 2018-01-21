@@ -79,7 +79,7 @@ class Analyze:
                                 adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
                                 flair_yes += 1
                             auto_segmentation = seg.flair(imTuple[0])
-                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1],ret_list, auto_segmentation,
+                            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                                imTuple[0])
                             for ret_tuple in ret_positive:
                                 adfIO.save(ret_tuple[0], './data/parsed/flair/tumor/' + flair_yes.__str__())
