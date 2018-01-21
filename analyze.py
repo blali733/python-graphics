@@ -69,52 +69,60 @@ class Analyze:
         return numerator
     
     def parse_slices(self, slices_tuple, yes_counters, no_counters, sep, axis):
+        flair_yes = yes_counters[0]
+        t1_yes = yes_counters[1]
+        t1c_yes = yes_counters[2]
+        t2_yes = yes_counters[3]
+        flair_no = no_counters[0]
+        t1_no = no_counters[1]
+        t1c_no = no_counters[2]
+        t2_no = no_counters[3]
         print("Dismantling FLAIR, axis "+axis.__str__())
         for imTuple in slices_tuple[0]:
             ret_list = sep.get_list_of_stains(imTuple)
-            yes_counters[0] = self.save_stains(ret_list, "flair", "tumor", "manual", yes_counters[0])
+            flair_yes = self.save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
             nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            no_counters[0] = self.save_stains(nret_list, "flair", "not", "flip", no_counters[0])
+            flair_no = self.save_stains(nret_list, "flair", "not", "flip", flair_no)
             auto_segmentation = seg.flair(imTuple[0])
             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                imTuple[0])
-            yes_counters[0] = self.save_stains(ret_positive, "flair", "tumor", "auto", yes_counters[0])
-            no_counters[0] = self.save_stains(ret_negative, "flair", "not", "auto", no_counters[0])
+            flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
+            flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
         print("Dismantling T1, axis "+axis.__str__())
         for imTuple in slices_tuple[1]:
             ret_list = sep.get_list_of_stains(imTuple)
-            yes_counters[1] = self.save_stains(ret_list, "t1", "tumor", "manual", yes_counters[1])
+            t1_yes = self.save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            no_counters[1] = self.save_stains(ret_list, "t1", "not", "flip", no_counters[1])
+            t1_no = self.save_stains(ret_list, "t1", "not", "flip", t1_no)
             auto_segmentation = seg.t1(imTuple[0])
             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                imTuple[0])
-            yes_counters[1] = self.save_stains(ret_positive, "t1", "tumor", "auto", yes_counters[1])
-            no_counters[1] = self.save_stains(ret_negative, "t1", "not", "auto", no_counters[1])
+            t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
+            t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
         print("Dismantling T1C, axis "+axis.__str__())
         for imTuple in slices_tuple[2]:
             ret_list = sep.get_list_of_stains(imTuple)
-            yes_counters[2] = self.save_stains(ret_list, "t1c", "tumor", "manual", yes_counters[2])
+            t1c_yes = self.save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            no_counters[2] = self.save_stains(ret_list, "t1c", "not", "flip", no_counters[2])
+            t1c_no = self.save_stains(ret_list, "t1c", "not", "flip", t1c_no)
             auto_segmentation = seg.t1c(imTuple[0])
             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                imTuple[0])
-            yes_counters[2] = self.save_stains(ret_positive, "t1c", "tumor", "auto", yes_counters[2])
-            no_counters[2] = self.save_stains(ret_negative, "t1c", "not", "auto", no_counters[2])
+            t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
+            t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
         print("Dismantling T2, axis "+axis.__str__())
         for imTuple in slices_tuple[3]:
             ret_list = sep.get_list_of_stains(imTuple)
-            yes_counters[3] = self.save_stains(ret_list, "t2", "tumor", "manual", yes_counters[3])
+            t2_yes = self.save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            no_counters[3] = self.save_stains(ret_list, "t2", "not", "flip", no_counters[3])
+            t2_no = self.save_stains(ret_list, "t2", "not", "flip", t2_no)
             auto_segmentation = seg.t2(imTuple[0])
             ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
                                                                imTuple[0])
-            yes_counters[3] = self.save_stains(ret_positive, "t2", "tumor", "auto", yes_counters[3])
-            no_counters[3] = self.save_stains(ret_negative, "t2", "not", "auto", no_counters[3])
+            t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
+            t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
         print("done")
-        return yes_counters, no_counters
+        return (flair_yes, t1_yes, t1c_yes, t2_yes), (flair_no, t1_no, t1c_no, t2_no)
     # </editor-fold>
 
     # <editor-fold desc="Menu options">
