@@ -2,6 +2,8 @@
 import sys
 from pimutils import medimageservicing as msc
 import matplotlib.pyplot as plt
+from pimutils.mha import mhaMath
+import numpy as np
 try:
     from osutils import windows as osutil
 except ImportError:
@@ -27,7 +29,7 @@ class Preview:
             while inner_loop_fuse == 1:
                 while single_mode_fuse == 1:
                     key = osutil.get_key_value()
-                    print(key)
+                    # print(key)
                     if key == "Q":
                         inner_loop_fuse = 0
                         single_mode_fuse = 0
@@ -80,6 +82,9 @@ class Preview:
                         # Switch to dual mode:
                         single_mode_fuse = 0
                         dual_mode_fuse = 1
+                    elif key == "0":
+                        t_slice = mhaMath.med_2_uint8(msc.med_slice(image_data, axis, slice_id))
+                        msc.med_color_plot(np.stack((t_slice, t_slice, t_slice), axis=2))
                 while dual_mode_fuse == 1:
                     osutil.stop_key_listener(params)
                     image2_path = input("Second image file in RAW directory: ")
@@ -162,6 +167,7 @@ class Preview:
         print("2, 8 - change axis")
         print("5 - File info")
         print("3 - save current slice to csv file")
+        print("0 - show real colors")
         print("1 - enable mask overlay:")
         print("    1 - hide overlay")
         print("    0 - show overlay")
