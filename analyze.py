@@ -1,4 +1,5 @@
 import matplotlib
+# set the matplotlib backend so figures can be saved in the background
 matplotlib.use("Agg")
 import functools
 import pathlib

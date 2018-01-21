@@ -73,7 +73,6 @@ def expand(mask, origin, size, desired_size):
     origin
     size
     desired_size
-    expand_offset
 
     Returns
     -------

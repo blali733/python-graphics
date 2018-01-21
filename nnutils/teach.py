@@ -1,4 +1,3 @@
-# set the matplotlib backend so figures can be saved in the background
 import pathlib
 import matplotlib
 import shutil
