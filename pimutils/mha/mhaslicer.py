@@ -73,3 +73,37 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
             t2_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
         iterator += 1
     return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
+
+
+def prepare_testing_pairs(file_name, patient, axis=0):
+    """
+    Function generating pairs of image slice and its mask.
+
+    Parameters
+    ----------
+    file_name : string
+        Defines file name to be converted
+    patient : string
+        patient directory name
+    axis : int
+        Value defining in which axis slicing would take place, default 1
+
+    Returns
+    -------
+    list of tuples
+        Lists of tuples containing image slice and layer id
+    """
+    path_string = "./classify/structured/"+patient+"/"+file_name+".mha"
+    mha_file = mhaIO.load_mha(path_string)
+    slices = []
+    iterator = 0
+    print("Pairing FLAIR images, please wait...")
+    for mslice in mhaIO.get_all_slices(mha_file, axis):
+        slices.append((mslice, iterator))
+        iterator += 1
+    return slices
+
+
+def save_segmentaion(segmentation, patient):
+    # TODO implement me.
+    pass

@@ -45,7 +45,7 @@ class Analyze:
             elif mode == 4:  # Classify images
                 self.classify_images()
 
-    # <editor-fold desc="Prepare data">
+    # region Prepare data
     def save_stains(self, list_of_stains, mode, classified_type, name, numerator):
         """
         
@@ -139,20 +139,44 @@ class Analyze:
             t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
         print("done")
         return (flair_yes, t1_yes, t1c_yes, t2_yes), (flair_no, t1_no, t1c_no, t2_no)
-    # </editor-fold>
+    # endregion
 
-    # <editor-fold desc="Menu options">
+    # region Testing sub methods
+    @staticmethod
+    def check_classify_input_dir():
+        # TODO implement me.
+        pass
+
+    @staticmethod
+    def generate_list_of_patients():
+        """
+
+        Returns
+        -------
+        list of tuples : (string, string, string, string, string)
+            patient directory and file names.
+        """
+        patients_list = []
+        # TODO implement me.
+        return patients_list
+
+    def generate_tumor_map(self, indexed_slices_list):
+        # TODO implement me.
+        return 0
+    # endregion
+
+    # region Menu options
     def prepare_data(self):
         """
         Method responsible for converting input data from mha files to learning sets.
         """
-        test = input("Do you want to prepare training images (y/N): ")
-        if 'Y' in test.capitalize():
+        answer = input("Do you want to prepare training images (y/N): ")
+        if 'Y' in answer.capitalize():
             subapp = Sorter()
             subapp.main()
-        test = input("Do you want to prepare training image pairs (y/N): ")
+        answer = input("Do you want to prepare training image pairs (y/N): ")
         sep = separator.Separator(10)
-        if 'Y' in test.capitalize():
+        if 'Y' in answer.capitalize():
             flair_yes = 0
             t1_yes = 0
             t1c_yes = 0
@@ -200,7 +224,7 @@ class Analyze:
         """
         Method responsible for loading saved classifier.
         """
-        name = int(input('Please provide model name:'))
+        name = input('Please provide model name:')
         try:
             self.classifier_class = test.TestClassification(name)
             self.classifier_load_status = True
@@ -219,20 +243,20 @@ class Analyze:
             return
         else:
             print("This would classify ALL images in ./classify/raw directory.")
-            self.check_classify_input_dir()
-            patients_list = self.generate_list_of_patients()
-    # </editor-fold>
+            answer = input("Do you want to proceed? (y/N): ")
+            if 'Y' in answer.capitalize():
+                self.check_classify_input_dir()
+                patients_list = self.generate_list_of_patients()
+                for patient in patients_list:
+                    flair_slices = mhaslicer.prepare_testing_pairs(patient[1], patient[0])
+                    t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
+                    t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
+                    t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
+                    segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
+                    mhaslicer.save_segmentation(segmentation, patient[0])
+    # endregion
 
-    # <editor-fold desc="Static functions">
-    @staticmethod
-    def check_classify_input_dir():
-        pass
-
-    @staticmethod
-    def generate_list_of_patients():
-        patients_list = []
-        return patients_list
-
+    # region Static functions
     @staticmethod
     def check_parsed_dirs():
         pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
@@ -269,7 +293,7 @@ class Analyze:
         print("4 - prepare and classify image")
         print("0 - exit")
         print()
-    # </editor-fold>
+    # endregion
 
 
 if __name__ == "__main__":
