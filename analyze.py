@@ -95,8 +95,9 @@ class Analyze:
                     file_name_parts = file.split(".")
                     if file_name_parts[0] == 'pat1':  # TODO delete this line when testing finishes
                         print("Slicing file " + file_name_parts[0])
+                        # <editor-fold name="Axis 0">
                         flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0])
-                        print("Dismantling FLAIR")
+                        print("Dismantling FLAIR, axis 0")
                         for imTuple in flair:
                             ret_list = sep.get_list_of_stains(imTuple)
                             flair_yes = self.save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
@@ -107,7 +108,7 @@ class Analyze:
                                                                                imTuple[0])
                             flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
                             flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
-                        print("Dismantling T1")
+                        print("Dismantling T1, axis 0")
                         for imTuple in t1:
                             ret_list = sep.get_list_of_stains(imTuple)
                             t1_yes = self.save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
@@ -118,7 +119,7 @@ class Analyze:
                                                                                imTuple[0])
                             t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
                             t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
-                        print("Dismantling T1C")
+                        print("Dismantling T1C, axis 0")
                         for imTuple in t1c:
                             ret_list = sep.get_list_of_stains(imTuple)
                             t1c_yes = self.save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
@@ -129,7 +130,7 @@ class Analyze:
                                                                                imTuple[0])
                             t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
                             t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
-                        print("Dismantling T2")
+                        print("Dismantling T2, axis 0")
                         for imTuple in t2:
                             ret_list = sep.get_list_of_stains(imTuple)
                             t2_yes = self.save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
@@ -141,6 +142,55 @@ class Analyze:
                             t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
                             t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
                         print("done")
+                        # </editor-fold>
+                        # # <editor-fold name="Axis 1">
+                        # flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=1)
+                        # print("Dismantling FLAIR, axis 1")
+                        # for imTuple in flair:
+                        #     ret_list = sep.get_list_of_stains(imTuple)
+                        #     flair_yes = self.save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
+                        #     nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                        #     flair_no = self.save_stains(nret_list, "flair", "not", "flip", flair_no)
+                        #     auto_segmentation = seg.flair(imTuple[0])
+                        #     ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                        #                                                        imTuple[0])
+                        #     flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
+                        #     flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
+                        # print("Dismantling T1, axis 1")
+                        # for imTuple in t1:
+                        #     ret_list = sep.get_list_of_stains(imTuple)
+                        #     t1_yes = self.save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
+                        #     ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                        #     t1_no = self.save_stains(ret_list, "t1", "not", "flip", t1_no)
+                        #     auto_segmentation = seg.t1(imTuple[0])
+                        #     ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                        #                                                        imTuple[0])
+                        #     t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
+                        #     t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
+                        # print("Dismantling T1C, axis 1")
+                        # for imTuple in t1c:
+                        #     ret_list = sep.get_list_of_stains(imTuple)
+                        #     t1c_yes = self.save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
+                        #     ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                        #     t1c_no = self.save_stains(ret_list, "t1c", "not", "flip", t1c_no)
+                        #     auto_segmentation = seg.t1c(imTuple[0])
+                        #     ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                        #                                                        imTuple[0])
+                        #     t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
+                        #     t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
+                        # print("Dismantling T2, axis 1")
+                        # for imTuple in t2:
+                        #     ret_list = sep.get_list_of_stains(imTuple)
+                        #     t2_yes = self.save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
+                        #     ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+                        #     t2_no = self.save_stains(ret_list, "t2", "not", "flip", t2_no)
+                        #     auto_segmentation = seg.t2(imTuple[0])
+                        #     ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
+                        #                                                        imTuple[0])
+                        #     t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
+                        #     t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
+                        # print("done")
+                        # # </editor-fold>
 
     def teach_classifier(self):
         """
