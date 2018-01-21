@@ -4,13 +4,13 @@ import SimpleITK as sitk
 def get_all_slices(image, axis=0):
     slices = []
     if axis == 0:
-        for i in range(image.shape[0]):
+        for i in range(image.shape[0]-60):
             slices.append(image[i, :, :])
     elif axis == 1:
-        for i in range(image.shape[1]):
+        for i in range(image.shape[1]-110):
             slices.append(image[:, i, :])
     elif axis == 2:
-        for i in range(image.shape[2]):
+        for i in range(image.shape[2]-110):
             slices.append(image[:, :, i])
     return slices
 
