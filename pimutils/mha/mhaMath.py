@@ -1,13 +1,20 @@
 import numpy as np
 
 
-def med_2_uint8(med_image_slice):
-    max_val = med_image_slice.max()
-    max_val = max(max_val, 1)
-    temp = np.zeros(med_image_slice.shape, dtype=np.float)
-    for x in range(med_image_slice.shape[0] - 1):
-        for y in range(med_image_slice.shape[1] - 1):
-            temp[x, y] = med_image_slice[x, y]/max_val
+def med_2_uint8(med_image_slice, relative=True):
+    if relative:
+        max_val = med_image_slice.max()
+        max_val = max(max_val, 1)
+    else:
+        max_val = np.iinfo(np.int16).max
+    # temp = np.zeros(med_image_slice.shape, dtype=np.float)
+    # for x in range(med_image_slice.shape[0] - 1):
+    #     for y in range(med_image_slice.shape[1] - 1):
+    #         temp[x, y] = med_image_slice[x, y]/max_val
+    # return temp
+    val = 1/max_val
+    temp = med_image_slice.astype(np.float).copy()
+    temp *= val
     return temp
 
 
