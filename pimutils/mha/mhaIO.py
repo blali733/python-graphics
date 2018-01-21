@@ -1,4 +1,5 @@
 import SimpleITK as sitk
+import numpy as np
 
 
 def get_all_slices(image, axis=0):
@@ -34,7 +35,7 @@ def get_nth_slice(med_image, axis, slice_id):
 
 
 def load_mha(path):
-    return sitk.GetArrayFromImage(sitk.ReadImage(path))
+    return sitk.GetArrayFromImage(sitk.ReadImage(path)).astype(np.int16)
 
 
 def save_mha(array_of_layers, path):
