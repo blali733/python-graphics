@@ -11,7 +11,7 @@ def med_2_uint8(med_image_slice, relative=True):
         Numpy array representing image
     relative : bool
         Defines if scaling value should be taken as max image value (default), or max of int16 (as stated in BRATS15
-        dataset.
+        dataset).
 
     Returns
     -------
