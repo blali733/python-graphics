@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def med_2_uint8(med_image_slice):
     max_val = med_image_slice.max()
     max_val = max(max_val, 1)
