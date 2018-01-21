@@ -2,6 +2,22 @@ import numpy as np
 
 
 def med_2_uint8(med_image_slice, relative=True):
+    """
+    Converts any np.array into float format compatible with images.
+
+    Parameters
+    ----------
+    med_image_slice : np.array
+        Numpy array representing image
+    relative : bool
+        Defines if scaling value should be taken as max image value (default), or max of int16 (as stated in BRATS15
+        dataset.
+
+    Returns
+    -------
+    np.array
+        normalized image.
+    """
     if relative:
         max_val = med_image_slice.max()
         max_val = max(max_val, 1)
