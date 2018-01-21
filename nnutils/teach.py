@@ -1,10 +1,7 @@
 # set the matplotlib backend so figures can be saved in the background
 import pathlib
-
 import matplotlib
 import shutil
-
-matplotlib.use("Agg")
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split

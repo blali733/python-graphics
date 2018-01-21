@@ -67,8 +67,8 @@ def med_get_size(med_image, axis):
 def med_2_csv(med_image_slice, csv_file_name):
     pathlib.Path('./data/raw/csv').mkdir(parents=True, exist_ok=True)
     file = open("./data/raw/csv/"+csv_file_name+".csv", "w")
-    for y in range(med_image_slice.shape[1]):
-        for x in range(med_image_slice.shape[0]):
+    for y in range(med_image_slice.shape[0]):
+        for x in range(med_image_slice.shape[1]):
             file.write(med_image_slice[y, x].__str__()+"; ")
         file.write("\n")
     file.close()

@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use("Agg")
 import functools
 import pathlib
 import sys  # for command line arguments
