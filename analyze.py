@@ -218,10 +218,21 @@ class Analyze:
             print("Load any classifier first.")
             return
         else:
-            print("This would classify ALL images in .")
+            print("This would classify ALL images in ./classify/raw directory.")
+            self.check_classify_input_dir()
+            patients_list = self.generate_list_of_patients()
     # </editor-fold>
 
     # <editor-fold desc="Static functions">
+    @staticmethod
+    def check_classify_input_dir():
+        pass
+
+    @staticmethod
+    def generate_list_of_patients():
+        patients_list = []
+        return patients_list
+
     @staticmethod
     def check_parsed_dirs():
         pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
