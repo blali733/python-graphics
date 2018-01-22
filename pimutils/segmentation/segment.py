@@ -12,7 +12,7 @@ from pimutils.mha import mhaMath
 def flair(image_slice):
     img = mhaMath.med_2_uint8(image_slice)
     blur = cv2.GaussianBlur(img, (5, 5), 0)
-    ret, th = cv2.threshold(blur, 187, 255, cv2.THRESH_BINARY)
+    ret, th = cv2.threshold(blur, 138, 255, cv2.THRESH_BINARY)
     return mhaMath.med_image_binearize(th)
 
 
