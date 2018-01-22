@@ -75,7 +75,7 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
     return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
 
 
-def prepare_testing_pairs(file_name, patient, axis=0):
+def prepare_testing_pairs(file_name, patient):
     """
     Function generating pairs of image slice and its mask.
 
@@ -85,22 +85,34 @@ def prepare_testing_pairs(file_name, patient, axis=0):
         Defines file name to be converted
     patient : string
         patient directory name
-    axis : int
-        Value defining in which axis slicing would take place, default 1
 
     Returns
     -------
-    list of tuples
+    list of list of tuples
         Lists of tuples containing image slice and layer id
     """
     path_string = "./classify/structured/"+patient+"/"+file_name+".mha"
     mha_file = mhaIO.load_mha(path_string)
     slices = []
+    slices0 = []
+    slices1 = []
+    slices2 = []
     iterator = 0
     print("Pairing FLAIR images, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_file, axis):
-        slices.append((mslice, iterator))
+    for mslice in mhaIO.get_all_slices(mha_file, 0):
+        slices0.append((mslice, iterator))
         iterator += 1
+    slices.append(slices0)
+    iterator = 0
+    for mslice in mhaIO.get_all_slices(mha_file, 1):
+        slices1.append((mslice, iterator))
+        iterator += 1
+    slices.append(slices1)
+    iterator = 0
+    for mslice in mhaIO.get_all_slices(mha_file, 2):
+        slices2.append((mslice, iterator))
+        iterator += 1
+    slices.append(slices2)
     return slices
 
 

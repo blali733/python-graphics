@@ -210,7 +210,47 @@ class Analyze:
         return patients_list
 
     def generate_tumor_map(self, indexed_slices_list):
-        # TODO implement me.
+        # NOTES 1) use auto segmentation on slices
+        # TODO 2) use classification on slices
+        # TODO 3) multiply tumor slices by result of classification
+        # TODO 4) reconstruct mha brick from 3 axes of image type
+        # TODO 5) merge all 4 type of classification
+        # TODO 6) normalize mha brick
+        # TODO 7) return result
+        flair0 = []
+        flair1 = []
+        flair2 = []
+        t10 = []
+        t11 = []
+        t12 = []
+        t1c0 = []
+        t1c1 = []
+        t1c2 = []
+        t20 = []
+        t21 = []
+        t22 = []
+        sep = separator.Separator(3)
+        # I had to: You are not supposed to understand this.
+        for image in indexed_slices_list:
+            for axis in image[0]:
+                for mslice in axis[0]:
+                    accepted = []
+                    stains_mask = seg.flair(mslice[0])
+                    if stains_mask.sum() != 0:
+                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                        for stain in stains:
+                            pass
+                    flair0.append(stains_mask)
+                for mslice in axis[1]:
+                    pass
+                for mslice in axis[2]:
+                    pass
+            for axis in image[1]:
+                pass
+            for axis in image[2]:
+                pass
+            for axis in image[3]:
+                pass
         return 0
     # endregion
 
@@ -301,6 +341,7 @@ class Analyze:
                 t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
                 t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
                 t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
+                # TESTME OutOfMemory risk !!!
                 segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
                 mhaslicer.save_segmentation(segmentation, patient[0])
     # endregion
