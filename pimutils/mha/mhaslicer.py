@@ -44,34 +44,43 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
     for i in range(desc_slices.__len__()):
         if desc_slices[i].max() > 0:
             desc_slices[i] = mhaMath.med_image_binearize(desc_slices[i])
+    flair_slices = mhaIO.get_all_slices(mha_flair, axis)
+    t1_slices = mhaIO.get_all_slices(mha_t1, axis)
+    t1c_slices = mhaIO.get_all_slices(mha_t1c, axis)
+    t2_slices = mhaIO.get_all_slices(mha_t2, axis)
     flair_pairs = []
     t1_pairs = []
     t1c_pairs = []
     t2_pairs = []
-    iterator = 0
-    print("Pairing FLAIR images, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_flair, axis):
-        if mslice.max() >= discard_bg:
-            flair_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-        iterator += 1
-    iterator = 0
-    print("Pairing T1 images, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_t1, axis):
-        if mslice.max() >= discard_bg:
-            t1_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-        iterator += 1
-    iterator = 0
-    print("Pairing T1C images, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_t1c, axis):
-        if mslice.max() >= discard_bg:
-            t1c_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-        iterator += 1
-    iterator = 0
-    print("Pairing T2 images, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_t2, axis):
-        if mslice.max() >= discard_bg:
-            t2_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-        iterator += 1
+    for iterat in range(desc_slices.__len__()):
+        flair_pairs.append((flair_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+        t1_pairs.append((t1_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+        t1c_pairs.append((t1c_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+        t2_pairs.append((t2_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+    # iterator = 0
+    # print("Pairing FLAIR images, please wait...")
+    # for mslice in mhaIO.get_all_slices(mha_flair, axis):
+    #     if mslice.max() >= discard_bg:
+    #         flair_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
+    #     iterator += 1
+    # iterator = 0
+    # print("Pairing T1 images, please wait...")
+    # for mslice in mhaIO.get_all_slices(mha_t1, axis):
+    #     if mslice.max() >= discard_bg:
+    #         t1_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
+    #     iterator += 1
+    # iterator = 0
+    # print("Pairing T1C images, please wait...")
+    # for mslice in mhaIO.get_all_slices(mha_t1c, axis):
+    #     if mslice.max() >= discard_bg:
+    #         t1c_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
+    #     iterator += 1
+    # iterator = 0
+    # print("Pairing T2 images, please wait...")
+    # for mslice in mhaIO.get_all_slices(mha_t2, axis):
+    #     if mslice.max() >= discard_bg:
+    #         t2_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
+    #     iterator += 1
     return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
 
 

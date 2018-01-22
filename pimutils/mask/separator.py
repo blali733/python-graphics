@@ -153,7 +153,7 @@ class Separator:
         return stains
 
     def find_common_parts(self, manual_segmentation, manual_segmentation_stains, automatic_segmentation, image,
-                          common_percentage=0.85):
+                          common_percentage=0.80):
         """
 
         Parameters
@@ -183,8 +183,8 @@ class Separator:
                 offset = stain[1].shape
                 x_limit = stain[2]
                 y_limit = stain[3]
-                for x in range(offset[1], x_limit, 1):
-                    for y in range(offset[0], y_limit, 1):
+                for x in range(x_limit, x_limit + offset[0], 1):
+                    for y in range(y_limit, y_limit + offset[1], 1):
                         if automatic_segmentation[y, x] == 1:  # Got hit
                             # Copy address values
                             lowx = x  # Would be set to left border of image
@@ -302,10 +302,6 @@ class Separator:
                                     print("Tumor candidate dropped - low area")
                             else:
                                 print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
-            if not manual_segmentation_stains:
-                print("empty manual")
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
-        else:
-            print("empty")
         return tumor, not_tumor

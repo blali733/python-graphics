@@ -112,8 +112,7 @@ class Analyze:
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
             t1_no = self.save_stains(ret_list, "t1", "not", "flip", t1_no)
             auto_segmentation = seg.t1(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
-                                                               imTuple[0])
+            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
             t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
             t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
         print("Dismantling T1C, axis "+axis.__str__())
@@ -123,8 +122,7 @@ class Analyze:
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
             t1c_no = self.save_stains(ret_list, "t1c", "not", "flip", t1c_no)
             auto_segmentation = seg.t1c(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
-                                                               imTuple[0])
+            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
             t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
             t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
         print("Dismantling T2, axis "+axis.__str__())
@@ -134,8 +132,7 @@ class Analyze:
             ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
             t2_no = self.save_stains(ret_list, "t2", "not", "flip", t2_no)
             auto_segmentation = seg.t2(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
-                                                               imTuple[0])
+            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
             t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
             t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
         print("done")
