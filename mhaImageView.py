@@ -165,6 +165,16 @@ class Preview:
                             print(k, k2)
                             msc.med_color_plot(
                                 msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
+                        elif key == "A":
+                            k += 0.0001
+                            print(k, k2)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
+                        elif key == "Z":
+                            k -= 0.0001
+                            print(k, k2)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
                         elif key == "s":
                             k2 += 0.001
                             print(k, k2)
@@ -172,6 +182,16 @@ class Preview:
                                 msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
                         elif key == "d":
                             k2 -= 0.001
+                            print(k, k2)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
+                        elif key == "S":
+                            k2 += 0.0001
+                            print(k, k2)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
+                        elif key == "D":
+                            k2 -= 0.0001
                             print(k, k2)
                             msc.med_color_plot(
                                 msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k, k2))
