@@ -19,6 +19,7 @@ class Separator:
         self.min_area = min_area
 
     def get_list_of_stains(self, two_layer_image):
+        # TODO clean mess in varible naming
         """
         Separates stains from cumulative image.
 
@@ -148,12 +149,13 @@ class Separator:
                                 # so to include upper bound we have to add 1
                                 temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1], True)  # temp_mask[lowy:(hiy+1), lowx:(hix+1)]
                                 temp_image_reduced = np.multiply(image[lowy:(hiy+1), lowx:(hix+1)], temp_mask_reduced)
-                                stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
+                                stains.append((temp_image_reduced, temp_mask_reduced, lowy, lowx))
                             temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         return stains
 
     def find_common_parts(self, manual_segmentation, manual_segmentation_stains, automatic_segmentation, image,
                           common_percentage=0.80):
+        # TODO Cleanup variable names
         """
 
         Parameters
@@ -183,8 +185,8 @@ class Separator:
                 offset = stain[1].shape
                 x_limit = stain[2]
                 y_limit = stain[3]
-                for x in range(x_limit, x_limit + offset[0], 1):
-                    for y in range(y_limit, y_limit + offset[1], 1):
+                for y in range(x_limit, x_limit + offset[0], 1):
+                    for x in range(y_limit, y_limit + offset[1], 1):
                         if automatic_segmentation[y, x] == 1:  # Got hit
                             # Copy address values
                             lowx = x  # Would be set to left border of image

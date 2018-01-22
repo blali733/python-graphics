@@ -126,4 +126,4 @@ def prepare_testing_pairs(file_name, patient):
 
 
 def save_segmentation(segmentation, patient):
-    mhaIO.save_mha(segmentation, "./classify/structured/"+patient+"/classification.mha")
+    mhaIO.save_mha(segmentation, "./classify/structured/pat_"+patient.__str__()+"/classification.mha")
