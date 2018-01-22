@@ -102,8 +102,7 @@ class Analyze:
             nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
             flair_no = self.save_stains(nret_list, "flair", "not", "flip", flair_no)
             auto_segmentation = seg.flair(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation,
-                                                               imTuple[0])
+            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
             flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
             flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
         print("Dismantling T1, axis "+axis.__str__())

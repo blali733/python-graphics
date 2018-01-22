@@ -302,6 +302,8 @@ class Separator:
                                     print("Tumor candidate dropped - low area")
                             else:
                                 print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
+            if not manual_segmentation_stains:
+                print("empty manual")
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
         else:
