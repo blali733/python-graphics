@@ -20,15 +20,19 @@ def med_plot(med_image_slice):
     plt.pause(0.0001)
 
 
-def med_dual_slice(med_image, med_image2, mask_offset, axis, slice_id, bin_step):
+def med_dual_slice(med_image, med_image2, mask_offset, axis, slice_id, bin_step, bin_2):
     if axis == 0:
         if slice_id <= med_image.shape[0]:
             mask = mhaMath.med_image_binearize(med_image2[slice_id, :, :], mask_offset)
             med_image_float = mhaMath.med_2_float(med_image[slice_id, :, :])
-            med_image_uint = mhaMath.med_2_uint8(med_image[slice_id, :, :])
-            return np.stack([med_image_float,
-                             np.multiply(med_image_float, (med_image_uint > bin_step)*1),
-                             np.multiply(med_image_float, mask)], axis=2)
+            med_image_uint = mhaMath.med_2_float(med_image[slice_id, :, :], False)
+            # med_image_uint *= 25*255
+            # med_image_uint = med_image_uint.astype(np.uint8)
+            print(med_image_uint.max())
+            if bin_step > 0:
+                return np.stack([med_image_float,
+                                 np.multiply(med_image_float, (med_image_uint > bin_2)*(med_image_uint < bin_step)*1),
+                                 np.multiply(med_image_float, mask)], axis=2)
         else:
             return 0
     elif axis == 1:
