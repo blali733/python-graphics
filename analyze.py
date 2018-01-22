@@ -8,7 +8,7 @@ import os
 import timeit
 import shutil
 from pimutils.segmentation import segment as seg
-from pimutils.mask import separator, mirrorMask
+from pimutils.mask import separator, mirrorMask, recreate
 from pimutils.mha import mhaslicer
 from pimutils import resizer
 from imageSorter import Sorter
@@ -215,7 +215,7 @@ class Analyze:
         # NOTES 1) use auto segmentation on slices
         # NOTES 2) use classification on slices
         # NOTES 3) multiply tumor slices by result of classification
-        # TODO 4) reconstruct mha brick from 3 axes of image type
+        # NOTES 4) reconstruct mha brick from 3 axes of image type
         # TODO 5) merge all 4 type of classification
         # TODO 6) normalize mha brick
         # TODO 7) return result
@@ -235,6 +235,7 @@ class Analyze:
         # I had to: You are not supposed to understand this.
         for image in indexed_slices_list:
             for axis in image[0]:
+                # region Mask slices classification
                 for mslice in axis[0]:
                     accepted = []
                     stains_mask = (seg.flair(mslice[0])).astype(np.float)
@@ -289,12 +290,26 @@ class Analyze:
                             new_mask = np.add(new_mask, new_mask_part)
                         stains_mask = new_mask
                     flair2.append(stains_mask)
+                # endregion
+                # region Mask cuboid reconstruction
+                flair0_array = recreate.create_3d_array(flair0, 0)
+                flair1_array = recreate.create_3d_array(flair1, 1)
+                flair2_array = recreate.create_3d_array(flair2, 2)
+                flair_array = np.add(flair0_array, flair1_array)
+                flair_array = np.add(flair_array, flair2_array)
+                # endregion
             for axis in image[1]:
                 pass
             for axis in image[2]:
                 pass
             for axis in image[3]:
                 pass
+        # region Mask cuboids compression
+
+        # endregion
+        # region Final cuboid normalization
+
+        # endregion
         return 0
     # endregion
 
