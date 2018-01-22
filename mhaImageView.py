@@ -1,4 +1,5 @@
 # Windows only version, sorry
+import json
 import sys
 from pimutils import medimageservicing as msc
 import matplotlib.pyplot as plt
@@ -89,79 +90,80 @@ class Preview:
                         msc.med_color_plot(np.stack((t_slice, t_slice, t_slice), axis=2))
                 while dual_mode_fuse == 1:
                     osutil.stop_key_listener(params)
+                    k = 128
+                    dictionary = {}
                     image2_path = input("Second image file in RAW directory: ")
                     image2_full_path = "./data/raw/" + image2_path
                     image2_data = msc.med_load(image2_full_path)
                     mask_cutoff = 0
                     osutil.start_key_listener()
                     msc.med_color_plot(
-                        msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                        msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                     while dual_mode_fuse == 1:
                         key = osutil.get_key_value()
                         if key == "Q":
                             dual_mode_fuse = 0
                             single_mode_fuse = 1
+                            json.dump(dictionary, open("./data/raw/" + image_path + ".json", "w"))
                             # osutil.stop_key_listener(params)
                         elif key == "X":
                             dual_mode_fuse = 0
                             main_loop_fuse = 0
                             inner_loop_fuse = 0
+                            json.dump(dictionary, open("./data/raw/" + image_path + ".json", "w"))
                             osutil.stop_key_listener(params)
                         elif key == "4":
                             if slice_id > 1:
+                                dictionary[slice_id] = k
                                 slice_id -= 1
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         elif key == "6":
                             if slice_id < msc.med_get_size(image_data, axis) - 2:
+                                dictionary[slice_id] = k
                                 slice_id += 1
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         elif key == "7":
+                            dictionary[slice_id] = k
                             if slice_id > 5:
                                 slice_id -= 5
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                             else:
                                 slice_id = 0
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         elif key == "9":
+                            dictionary[slice_id] = k
                             if slice_id < msc.med_get_size(image_data, axis) - 6:
                                 slice_id += 5
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                             else:
                                 slice_id = msc.med_get_size(image_data, axis) - 1
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
-                        elif key == "8":
-                            slice_id = 0
-                            if axis < 2:
-                                axis += 1
-                            msc.med_color_plot(
-                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
-                        elif key == "2":
-                            slice_id = 0
-                            if axis > 0:
-                                axis -= 1
-                            msc.med_color_plot(
-                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
-                        elif key == "1":
-                            msc.med_plot(msc.med_slice(image_data, axis, slice_id))
-                        elif key == "0":
-                            msc.med_color_plot(
-                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         elif key == "-":
                             if mask_cutoff > 0:
                                 mask_cutoff -= 1
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         elif key == "+":
                             if mask_cutoff < image2_data.max():
                                 mask_cutoff += 1
                                 msc.med_color_plot(
-                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id))
+                                    msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
+                        elif key == "a":
+                            k += 5
+                            print(k)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
+                        elif key == "z":
+                            k -= 5
+                            print(k)
+                            msc.med_color_plot(
+                                msc.med_dual_slice(image_data, image2_data, mask_cutoff, axis, slice_id, k))
                         
     def my_help(self):
         print("4, 7 - navigate left")
