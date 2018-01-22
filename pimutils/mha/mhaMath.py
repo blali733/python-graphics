@@ -67,6 +67,23 @@ def med_2_uint8(med_image_slice, relative=True):
     return temp.astype(np.uint8)
 
 
+def med_2_16col(med_image_slice, linear=True, relative=True):
+    if relative:
+        max_val = med_image_slice.max()
+        max_val = max(max_val, 1)
+    else:
+        max_val = np.iinfo(np.int16).max  # Specification of dataset says, that only positive values of int16 are used.
+    if linear:
+        val = 15 / max_val
+        temp = med_image_slice.astype(np.float).copy()
+        temp *= val  # Legends say that division is longer operation.
+    else:
+        val = 15 / max_val
+        temp = med_image_slice.astype(np.float).copy()
+        temp *= val  # Legends say that division is longer operation.
+    return temp.astype(np.uint8)
+
+
 def med_image_binearize(med_image_slice, level=0):
     """
     Function binearizing numpy arrays
