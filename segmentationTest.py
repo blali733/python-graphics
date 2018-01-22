@@ -3,7 +3,13 @@ from pimutils.segmentation import segment
 from pimutils.mask import comparator
 
 flair = mhaIO.load_mha("./data/raw/flair.mha")
+t1 = mhaIO.load_mha("./data/raw/t1.mha")
+t1c = mhaIO.load_mha("./data/raw/t1c.mha")
+t2 = mhaIO.load_mha("./data/raw/t2.mha")
 flair_slices = mhaIO.get_all_slices(flair)
+t1_slices = mhaIO.get_all_slices(t1)
+t1c_slices = mhaIO.get_all_slices(t1c)
+t2_slices = mhaIO.get_all_slices(t2)
 
 def test():
     # region Image loading
