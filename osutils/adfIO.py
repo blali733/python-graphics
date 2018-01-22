@@ -42,7 +42,7 @@ def save(array, path):
     return 0
 
 
-def load(path):
+def load(path, ext=False):
     """
     Deserializes file into np array.
 
@@ -56,7 +56,7 @@ def load(path):
     int or nparray
         int as error code, or np array on success.
     """
-    with open(path+'.adf', "rb") as f:
+    with open((path if ext else (path+'.adf')), "rb") as f:
         head = f.read(3)
         if head == bytes([0x41, 0x44, 0x46]):
             val = f.read(1)
@@ -75,4 +75,4 @@ def load(path):
             array = np.reshape(array, [x, y])
             return array
         else:
-            return -1
+            raise FileExistsError

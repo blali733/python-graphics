@@ -31,8 +31,8 @@ class Analyze:
         fuse = 1
         while fuse == 1:
             self.menu()
-            t = timeit.Timer(self.prepare_data)
-            print(t.timeit(1))
+            # t = timeit.Timer(self.prepare_data)
+            # print(t.timeit(1))
             try:
                 mode = int(input('Your choice: '))
             except ValueError:
@@ -543,7 +543,7 @@ class Analyze:
         """
         Method responsible for teaching classifier basing on learning sets.
         """
-        name = int(input('Please provide model name:'))
+        name = input('Please provide model name:')
         test = input('Do you want to use advanced configuration? (y/N) ')
         if test.capitalize() == 'Y':
             # TODO implement asking for custom parameters

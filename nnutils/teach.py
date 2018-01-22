@@ -1,7 +1,7 @@
 import pathlib
 import matplotlib
 import shutil
-from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
@@ -10,11 +10,11 @@ import numpy as np
 import random
 import os
 from pimutils import resizer
+from pimutils.mha import mhaMath
 from osutils import inlineprogress as pbar, adfIO, pathtools
 import json
 
 # TESTME check if this code works
-# TODO Check if images shouldn't be converted into 0.0-1.0 floats
 
 
 def prepare_dirs(model_name):
@@ -57,12 +57,14 @@ class Teacher:
             done_count = 0
             random.shuffle(files)
             for file in files:
-                image = adfIO.load(os.path.join(root, file))
-                if image != -1:
-                    data_flair.append(resizer.resize(image, self.image_size))
+                try:
+                    image = adfIO.load(os.path.join(root, file), True)
+                    data_flair.append(img_to_array(resizer.resize(image, self.image_size)))
                     label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
                     label = 1 if label == "tumor" else 0
                     labels_flair.append(label)
+                except FileExistsError:
+                    print("Corrupted file")
                 done_count += 1
                 pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 1b: t1:")
@@ -71,12 +73,14 @@ class Teacher:
             done_count = 0
             random.shuffle(files)
             for file in files:
-                image = adfIO.load(os.path.join(root, file))
-                if image != -1:
-                    data_t1.append(resizer.resize(image, self.image_size))
+                try:
+                    image = adfIO.load(os.path.join(root, file), True)
+                    data_t1.append(img_to_array(resizer.resize(image, self.image_size)))
                     label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
                     label = 1 if label == "tumor" else 0
                     labels_t1.append(label)
+                except FileExistsError:
+                    print("Corrupted file")
                 done_count += 1
                 pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 1c: t1c:")
@@ -85,12 +89,14 @@ class Teacher:
             done_count = 0
             random.shuffle(files)
             for file in files:
-                image = adfIO.load(os.path.join(root, file))
-                if image != -1:
-                    data_t1c.append(resizer.resize(image, self.image_size))
+                try:
+                    image = adfIO.load(os.path.join(root, file), True)
+                    data_t1c.append(img_to_array(resizer.resize(image, self.image_size)))
                     label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
                     label = 1 if label == "tumor" else 0
                     labels_t1c.append(label)
+                except FileExistsError:
+                    print("Corrupted file")
                 done_count += 1
                 pbar.inline_out_of_progress(done_count, files_count, "t2")
         print("STEP 1d: t2:")
@@ -99,34 +105,45 @@ class Teacher:
             done_count = 0
             random.shuffle(files)
             for file in files:
-                image = adfIO.load(os.path.join(root, file))
-                if image != -1:
-                    data_t2.append(resizer.resize(image, self.image_size))
+                try:
+                    image = adfIO.load(os.path.join(root, file), True)
+                    data_t2.append(img_to_array(resizer.resize(image, self.image_size)))
                     label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
                     label = 1 if label == "tumor" else 0
                     labels_t2.append(label)
+                except FileExistsError:
+                    print("Corrupted file")
                 done_count += 1
                 pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 2: Splitting data:")
+        maximum = np.iinfo(np.int16).max
         print("STEP 2a: flair")
+        data_flair = np.array(data_flair, dtype=np.float) / maximum
+        labels_flair = np.array(labels_flair)
         (train_x_flair, test_x_flair, train_y_flair, test_y_flair) = train_test_split(data_flair, labels_flair,
                                                                                       test_size=test_size,
                                                                                       random_state=random_seed)
         train_y_flair = to_categorical(train_y_flair, num_classes=2)
         test_y_flair = to_categorical(test_y_flair, num_classes=2)
         print("STEP 2b: t1")
+        data_t1 = np.array(data_t1, dtype=np.float) / maximum
+        labels_t2 = np.array(labels_t1)
         (train_x_t1, test_x_t1, train_y_t1, test_y_t1) = train_test_split(data_t1, labels_t1,
                                                                           test_size=test_size,
                                                                           random_state=random_seed)
         train_y_t1 = to_categorical(train_y_t1, num_classes=2)
         test_y_t1 = to_categorical(test_y_t1, num_classes=2)
         print("STEP 2c: t1c")
+        data_t1c = np.array(data_t1c, dtype=np.float) / maximum
+        labels_t1c = np.array(labels_t1c)
         (train_x_t1c, test_x_t1c, train_y_t1c, test_y_t1c) = train_test_split(data_t1c, labels_t1c,
                                                                               test_size=test_size,
                                                                               random_state=random_seed)
         train_y_t1c = to_categorical(train_y_t1c, num_classes=2)
         test_y_t1c = to_categorical(test_y_t1c, num_classes=2)
         print("STEP 2d: t2")
+        data_t2 = np.array(data_t2, dtype=np.float) / maximum
+        labels_t2 = np.array(labels_t2)
         (train_x_t2, test_x_t2, train_y_t2, test_y_t2) = train_test_split(data_t2, labels_t2,
                                                                           test_size=test_size,
                                                                           random_state=random_seed)
