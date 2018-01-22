@@ -31,8 +31,10 @@ class Analyze:
         fuse = 1
         while fuse == 1:
             self.menu()
+            t = timeit.Timer(functools.partial(self.prepare_data()))
+            print(t.timeit(1))
             try:
-                mode = int(input('Your choice:'))
+                mode = int(input('Your choice: '))
             except ValueError:
                 print("Not a number!")
                 mode = -1
@@ -529,14 +531,14 @@ class Analyze:
                         flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=0)
                         slices_tuple = (flair, t1, t1c, t2)
                         yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
-                        # # Axis 1
-                        # flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=1)
-                        # slices_tuple = (flair, t1, t1c, t2)
-                        # yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
-                        # # Axis 2
-                        # flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=2)
-                        # slices_tuple = (flair, t1, t1c, t2)
-                        # yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
+                        # Axis 1
+                        flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=1)
+                        slices_tuple = (flair, t1, t1c, t2)
+                        yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
+                        # Axis 2
+                        flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=2)
+                        slices_tuple = (flair, t1, t1c, t2)
+                        yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
 
     def teach_classifier(self):
         """

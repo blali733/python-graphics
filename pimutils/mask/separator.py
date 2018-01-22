@@ -297,11 +297,11 @@ class Separator:
                                     temp_image_reduced = np.multiply(image[lowy:(hiy + 1), lowx:(hix + 1)],
                                                                      temp_mask_reduced)
                                     tumor.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
-                                    print("Tumor candidate accepted")
-                                else:
-                                    print("Tumor candidate dropped - low area")
-                            else:
-                                print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
+                                #     print("Tumor candidate accepted")
+                                # else:
+                                #     print("Tumor candidate dropped - low area")
+                            # else:
+                            #     print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
         return tumor, not_tumor

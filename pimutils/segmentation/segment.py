@@ -10,7 +10,7 @@ def flair(image_slice):
 
 def t1(image_slice):
     img = mhaMath.med_2_float(image_slice, False)
-    return (img < 0.017) * (img > 0.013) * 1
+    return (img < 0.0323) * (img > 0.0144) * 1
 
 
 def t1c(image_slice):
