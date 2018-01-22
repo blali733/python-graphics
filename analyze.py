@@ -216,9 +216,9 @@ class Analyze:
         # NOTES 2) use classification on slices
         # NOTES 3) multiply tumor slices by result of classification
         # NOTES 4) reconstruct mha brick from 3 axes of image type
-        # TODO 5) merge all 4 type of classification
-        # TODO 6) normalize mha brick
-        # TODO 7) return result
+        # NOTES 5) merge all 4 type of classification
+        # NOTES 6) normalize mha brick
+        # NOTES 7) return result
         flair0 = []
         flair1 = []
         flair2 = []
