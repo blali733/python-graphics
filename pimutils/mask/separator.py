@@ -153,7 +153,7 @@ class Separator:
         return stains
 
     def find_common_parts(self, manual_segmentation, manual_segmentation_stains, automatic_segmentation, image,
-                          common_percentage=0.9):
+                          common_percentage=0.85):
         """
 
         Parameters
@@ -291,16 +291,19 @@ class Separator:
                                 # endregion
                                 pixels.pop(0)  # Remove checked pixel from list
                             m1, com, m2 = comparator.raw_compare(manual_segmentation, temp_mask)
-                            if com / (com + m1) > common_percentage:
+                            if com / (com + m2) > common_percentage:
                                 if temp_mask.sum() > self.min_area:
                                     temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1], True)  # temp_mask[lowy:(hiy + 1), lowx:(hix + 1)]
                                     temp_image_reduced = np.multiply(image[lowy:(hiy + 1), lowx:(hix + 1)],
                                                                      temp_mask_reduced)
                                     tumor.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
+                                    print("Tumor candidate accepted")
                                 else:
                                     print("Tumor candidate dropped - low area")
                             else:
-                                print("Tumor candidate dropped - to big overshoot")
+                                print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
+        else:
+            print("empty")
         return tumor, not_tumor
