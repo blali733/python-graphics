@@ -10,9 +10,11 @@ import shutil
 from pimutils.segmentation import segment as seg
 from pimutils.mask import separator, mirrorMask
 from pimutils.mha import mhaslicer
+from pimutils import resizer
 from imageSorter import Sorter
 from osutils import adfIO, pathtools
 from nnutils import teach, test
+import numpy as np
 
 # Kept as reference for checking execution time:
 # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
@@ -211,8 +213,8 @@ class Analyze:
 
     def generate_tumor_map(self, indexed_slices_list):
         # NOTES 1) use auto segmentation on slices
-        # TODO 2) use classification on slices
-        # TODO 3) multiply tumor slices by result of classification
+        # NOTES 2) use classification on slices
+        # NOTES 3) multiply tumor slices by result of classification
         # TODO 4) reconstruct mha brick from 3 axes of image type
         # TODO 5) merge all 4 type of classification
         # TODO 6) normalize mha brick
@@ -235,16 +237,58 @@ class Analyze:
             for axis in image[0]:
                 for mslice in axis[0]:
                     accepted = []
-                    stains_mask = seg.flair(mslice[0])
+                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
                     if stains_mask.sum() != 0:
                         stains = sep.get_list_of_stains((mslice[0], stains_mask))
                         for stain in stains:
-                            pass
+                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                            if tumor > not_tumor:
+                                part = stain[1].astype(np.float)
+                                part *= tumor
+                                accepted.append((part, (stain[2], stain[3])))
+                        new_mask = np.zeros(stains_mask.shape)
+                        for elem in accepted:
+                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                            new_mask = np.add(new_mask, new_mask_part)
+                        stains_mask = new_mask
                     flair0.append(stains_mask)
                 for mslice in axis[1]:
-                    pass
+                    accepted = []
+                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
+                    if stains_mask.sum() != 0:
+                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                        for stain in stains:
+                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                            if tumor > not_tumor:
+                                part = stain[1].astype(np.float)
+                                part *= tumor
+                                accepted.append((part, (stain[2], stain[3])))
+                        new_mask = np.zeros(stains_mask.shape)
+                        for elem in accepted:
+                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                            new_mask = np.add(new_mask, new_mask_part)
+                        stains_mask = new_mask
+                    flair1.append(stains_mask)
                 for mslice in axis[2]:
-                    pass
+                    accepted = []
+                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
+                    if stains_mask.sum() != 0:
+                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                        for stain in stains:
+                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                            if tumor > not_tumor:
+                                part = stain[1].astype(np.float)
+                                part *= tumor
+                                accepted.append((part, (stain[2], stain[3])))
+                        new_mask = np.zeros(stains_mask.shape)
+                        for elem in accepted:
+                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                            new_mask = np.add(new_mask, new_mask_part)
+                        stains_mask = new_mask
+                    flair2.append(stains_mask)
             for axis in image[1]:
                 pass
             for axis in image[2]:
