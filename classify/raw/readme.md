@@ -1,12 +1,12 @@
 # Folder structure:
 -patient name  
---flair  
+--\*.mr_flair.\*  
 ---\<file\>.mha  
---t1  
+--\*.mr_t1.\*  
 ---\<file\>.mha  
---t1c  
+--\*.mr_t1c.\*  
 ---\<file\>.mha  
---t2  
+--\*.mr_t2.\*  
 ---\<file\>.mha  
 
 Please follow this convention or errors would happen.

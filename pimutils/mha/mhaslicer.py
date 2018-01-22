@@ -104,6 +104,5 @@ def prepare_testing_pairs(file_name, patient, axis=0):
     return slices
 
 
-def save_segmentaion(segmentation, patient):
-    # TODO implement me.
-    pass
+def save_segmentation(segmentation, patient):
+    mhaIO.save_mha(segmentation, "./classify/structured/"+patient+"/classification.mha")

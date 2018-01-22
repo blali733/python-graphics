@@ -11,7 +11,7 @@ from pimutils.segmentation import segment as seg
 from pimutils.mask import separator, mirrorMask
 from pimutils.mha import mhaslicer
 from imageSorter import Sorter
-from osutils import adfIO
+from osutils import adfIO, pathtools
 from nnutils import teach, test
 
 # Kept as reference for checking execution time:
@@ -143,12 +143,46 @@ class Analyze:
 
     # region Testing sub methods
     @staticmethod
-    def check_classify_input_dir():
-        # TODO implement me.
+    def create_patient_dir(patient):
+        try:
+            pathlib.Path("./classify/structured/"+patient).mkdir(parents=True)
+        except OSError as exc:
+            if exc.errno == 17:  # TODO check it
+                shutil.rmtree("./classify/structured/"+patient, ignore_errors=True)
+                pathlib.Path("./classify/structured/" + patient).mkdir(parents=True)
+            else:
+                raise
+
+    def get_patient_id_from_dir(self, path, patient_dict):
+        try:
+            id = patient_dict[pathtools.get_folder_name_from_path(path, -2)]
+        except TypeError:
+            id = 0
+        return id
+
+    def get_parent_dir_name(self, path):
+        return pathtools.get_folder_name_from_path(path, -1)
+
+    def check_classify_input_dir(self):
+        shutil.rmtree("./classify/structured/", ignore_errors=True)
+        pathlib.Path("./classify/structured/").mkdir(parents=True)
+        patient_dict = {}
+        patient_id = 0
+        for root, subFolders, files in os.walk('./classify/raw'):
+            for folder in subFolders:
+                if "brats" in folder:
+                    patient_id += 1
+                    self.create_patient_dir("pat_"+patient_id.__str__())
+                    patient_dict[folder] = patient_id
+            for file in files:
+                if ".txt" in file:
+                    os.remove(os.path.join(root, file))
+                elif ".mha" in file:
+                    shutil.copy2(os.path.join(root, file), "./classify/structured/" +
+                                 self.get_patient_id_from_dir(root, patient_dict).__str__() + "/" + file)
         pass
 
-    @staticmethod
-    def generate_list_of_patients():
+    def generate_list_of_patients(self):
         """
 
         Returns
@@ -157,7 +191,22 @@ class Analyze:
             patient directory and file names.
         """
         patients_list = []
-        # TODO implement me.
+        flair_list = {}
+        t1_list = {}
+        t1c_list = {}
+        t2_list = {}
+        for rootd, subFolders, files in os.walk("./classify/structured"):
+            for file in files:
+                if "Flair" in file:
+                    flair_list[self.get_parent_dir_name(rootd)] = file
+                elif "T1." in file:
+                    t1_list[self.get_parent_dir_name(rootd)] = file
+                elif "T1c" in file:
+                    t1c_list[self.get_parent_dir_name(rootd)] = file
+                elif "T2" in file:
+                    t2_list[self.get_parent_dir_name(rootd)] = file
+        for i in range(flair_list.__len__()):  # TODO check it
+            patients_list.append((i, flair_list[i], t1_list[i], t1c_list[i], t2_list[i]))
         return patients_list
 
     def generate_tumor_map(self, indexed_slices_list):
@@ -242,18 +291,18 @@ class Analyze:
             print("Load any classifier first.")
             return
         else:
-            print("This would classify ALL images in ./classify/raw directory.")
-            answer = input("Do you want to proceed? (y/N): ")
+            print("This would classify ALL images in ./classify/structured directory.")
+            answer = input("Do you want to repopulate from classify/raw, this would erase all data? (y/N): ")
             if 'Y' in answer.capitalize():
                 self.check_classify_input_dir()
-                patients_list = self.generate_list_of_patients()
-                for patient in patients_list:
-                    flair_slices = mhaslicer.prepare_testing_pairs(patient[1], patient[0])
-                    t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
-                    t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
-                    t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
-                    segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
-                    mhaslicer.save_segmentation(segmentation, patient[0])
+            patients_list = self.generate_list_of_patients()
+            for patient in patients_list:
+                flair_slices = mhaslicer.prepare_testing_pairs(patient[1], patient[0])
+                t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
+                t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
+                t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
+                segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
+                mhaslicer.save_segmentation(segmentation, patient[0])
     # endregion
 
     # region Static functions
