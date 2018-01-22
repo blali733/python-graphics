@@ -183,8 +183,6 @@ class Separator:
                 offset = stain[1].shape
                 x_limit = stain[2]
                 y_limit = stain[3]
-                # TESTME I wrote code below being sleepy and drinking whiskey, so better check it twice
-                # region TESTME
                 for x in range(offset[1], x_limit, 1):
                     for y in range(offset[0], y_limit, 1):
                         if automatic_segmentation[y, x] == 1:  # Got hit
@@ -208,6 +206,8 @@ class Separator:
                                         temp_mask[ty - 1, tx] = 1
                                         pixels.append((ty - 1, tx))
                                         automatic_segmentation[ty - 1, tx] = 0
+                                        if ty - 1 < lowy:
+                                            lowy = ty-1
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
                                 # top - right
@@ -217,6 +217,8 @@ class Separator:
                                         pixels.append((ty - 1, tx + 1))
                                         if tx + 1 > hix:
                                             hix = tx + 1
+                                        if ty - 1 < lowy:
+                                            lowy = ty - 1
                                         automatic_segmentation[ty - 1, tx + 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
@@ -281,6 +283,8 @@ class Separator:
                                         pixels.append((ty - 1, tx - 1))
                                         if tx - 1 < lowx:
                                             lowx = tx - 1
+                                        if ty - 1 < lowy:
+                                            lowy = ty-1
                                         automatic_segmentation[ty - 1, tx - 1] = 0
                                 except IndexError:  # In case of addressing pixel not in range
                                     pass
@@ -297,7 +301,6 @@ class Separator:
                                     print("Tumor candidate dropped - low area")
                             else:
                                 print("Tumor candidate dropped - to big overshoot")
-                # endregion
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
         return tumor, not_tumor

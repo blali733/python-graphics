@@ -24,7 +24,7 @@ def med_dual_slice(med_image, med_image2, mask_offset, axis, slice_id):
     if axis == 0:
         if slice_id <= med_image.shape[0]:
             mask = mhaMath.med_image_binearize(med_image2[slice_id, :, :], mask_offset)
-            med_image_uint = mhaMath.med_2_uint8(med_image[slice_id, :, :])
+            med_image_uint = mhaMath.med_2_float(med_image[slice_id, :, :])
             return np.stack([med_image_uint,
                              np.multiply(med_image_uint, mask),
                              np.multiply(med_image_uint, mask)], axis=2)
@@ -33,7 +33,7 @@ def med_dual_slice(med_image, med_image2, mask_offset, axis, slice_id):
     elif axis == 1:
         if slice_id <= med_image.shape[1]:
             mask = mhaMath.med_image_binearize(med_image2[:, slice_id, :], mask_offset)
-            med_image_uint = mhaMath.med_2_uint8(med_image[:, slice_id, :])
+            med_image_uint = mhaMath.med_2_float(med_image[:, slice_id, :])
             return np.stack([med_image_uint,
                              np.multiply(med_image_uint, mask),
                              np.multiply(med_image_uint, mask)], axis=2)
@@ -42,7 +42,7 @@ def med_dual_slice(med_image, med_image2, mask_offset, axis, slice_id):
     else:
         if slice_id <= med_image.shape[2]:
             mask = mhaMath.med_image_binearize(med_image2[:, :, slice_id], mask_offset)
-            med_image_uint = mhaMath.med_2_uint8(med_image[:, :, slice_id])
+            med_image_uint = mhaMath.med_2_float(med_image[:, :, slice_id])
             return np.stack([med_image_uint,
                              np.multiply(med_image_uint, mask),
                              np.multiply(med_image_uint, mask)], axis=2)

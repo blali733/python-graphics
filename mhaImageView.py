@@ -85,7 +85,7 @@ class Preview:
                         single_mode_fuse = 0
                         dual_mode_fuse = 1
                     elif key == "0":
-                        t_slice = mhaMath.med_2_uint8(msc.med_slice(image_data, axis, slice_id))
+                        t_slice = mhaMath.med_2_float(msc.med_slice(image_data, axis, slice_id))
                         msc.med_color_plot(np.stack((t_slice, t_slice, t_slice), axis=2))
                 while dual_mode_fuse == 1:
                     osutil.stop_key_listener(params)
