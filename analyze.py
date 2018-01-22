@@ -491,12 +491,14 @@ class Analyze:
                 t2_array = np.add(t2_array, t22_array)
                 # endregion
         # region Mask cuboids compression
-
+        # Variables below had to be initialized in loops above, if they wouldn't - sth went wrong.
+        # noinspection PyUnboundLocalVariable
+        final_mask_cube = np.add(np.add(np.add(flair_array, t1_array), t1c_array), t2_array)
         # endregion
         # region Final cuboid normalization
-
+        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 7.0)
         # endregion
-        return 0
+        return final_mask_cube
     # endregion
 
     # region Menu options

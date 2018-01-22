@@ -24,3 +24,7 @@ def create_3d_array(layers_list, axis):
             array_3d[:, :, layer_id] = layer
             layer_id += 1
     return array_3d
+
+
+def binearize_3d_array(array, offset):
+    return (array > offset)*1
