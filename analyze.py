@@ -171,9 +171,9 @@ class Analyze:
         for root, subFolders, files in os.walk('./classify/raw'):
             for folder in subFolders:
                 if "brats" in folder:
-                    patient_id += 1
                     self.create_patient_dir("pat_"+patient_id.__str__())
                     patient_dict[folder] = patient_id
+                    patient_id += 1
             for file in files:
                 if ".txt" in file:
                     os.remove(os.path.join(root, file))
@@ -206,7 +206,7 @@ class Analyze:
                 elif "T2" in file:
                     t2_list[self.get_parent_dir_name(rootd)] = file
         for i in range(flair_list.__len__()):  # TODO check it
-            patients_list.append((i, flair_list[i], t1_list[i], t1c_list[i], t2_list[i]))
+            patients_list.append((i, flair_list["pat_"+i.__str__()], t1_list["pat_"+i.__str__()], t1c_list["pat_"+i.__str__()], t2_list["pat_"+i.__str__()]))
         return patients_list
 
     def generate_tumor_map(self, indexed_slices_list):
@@ -231,263 +231,262 @@ class Analyze:
         t22 = []
         sep = separator.Separator(3)
         # I had to: You are not supposed to understand this.
-        for image in indexed_slices_list:
-            for axis in image[0]:
-                # region Mask slices classification
-                for mslice in axis[0]:
-                    accepted = []
-                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    flair0.append(stains_mask)
-                for mslice in axis[1]:
-                    accepted = []
-                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    flair1.append(stains_mask)
-                for mslice in axis[2]:
-                    accepted = []
-                    stains_mask = (seg.flair(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    flair2.append(stains_mask)
-                # endregion
-                # region Mask cuboid reconstruction
-                flair0_array = recreate.create_3d_array(flair0, 0)
-                flair1_array = recreate.create_3d_array(flair1, 1)
-                flair2_array = recreate.create_3d_array(flair2, 2)
-                flair_array = np.add(flair0_array, flair1_array)
-                flair_array = np.add(flair_array, flair2_array)
-                # endregion
-            for axis in image[1]:
-                # region Mask slices classification
-                for mslice in axis[0]:
-                    accepted = []
-                    stains_mask = (seg.t1(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t10.append(stains_mask)
-                for mslice in axis[1]:
-                    accepted = []
-                    stains_mask = (seg.t1(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t11.append(stains_mask)
-                for mslice in axis[2]:
-                    accepted = []
-                    stains_mask = (seg.t1(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t12.append(stains_mask)
-                # endregion
-                # region Mask cuboid reconstruction
-                t10_array = recreate.create_3d_array(t10, 0)
-                t11_array = recreate.create_3d_array(t11, 1)
-                t12_array = recreate.create_3d_array(t12, 2)
-                t1_array = np.add(t10_array, t11_array)
-                t1_array = np.add(t1_array, t12_array)
-                # endregion
-            for axis in image[2]:
-                # region Mask slices classification
-                for mslice in axis[0]:
-                    accepted = []
-                    stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t1c0.append(stains_mask)
-                for mslice in axis[1]:
-                    accepted = []
-                    stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t1c1.append(stains_mask)
-                for mslice in axis[2]:
-                    accepted = []
-                    stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t1c2.append(stains_mask)
-                # endregion
-                # region Mask cuboid reconstruction
-                t1c0_array = recreate.create_3d_array(t1c0, 0)
-                t1c1_array = recreate.create_3d_array(t1c1, 1)
-                t1c2_array = recreate.create_3d_array(t1c2, 2)
-                t1c_array = np.add(t1c0_array, t1c1_array)
-                t1c_array = np.add(t1c_array, t1c2_array)
-                # endregion
-            for axis in image[3]:
-                # region Mask slices classification
-                for mslice in axis[0]:
-                    accepted = []
-                    stains_mask = (seg.t2(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t20.append(stains_mask)
-                for mslice in axis[1]:
-                    accepted = []
-                    stains_mask = (seg.t2(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t21.append(stains_mask)
-                for mslice in axis[2]:
-                    accepted = []
-                    stains_mask = (seg.t2(mslice[0])).astype(np.float)
-                    if stains_mask.sum() != 0:
-                        stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                        for stain in stains:
-                            tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                            # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
-                            if tumor > not_tumor:
-                                part = stain[1].astype(np.float)
-                                part *= tumor
-                                accepted.append((part, (stain[2], stain[3])))
-                        new_mask = np.zeros(stains_mask.shape)
-                        for elem in accepted:
-                            new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                            new_mask = np.add(new_mask, new_mask_part)
-                        stains_mask = new_mask
-                    t22.append(stains_mask)
-                # endregion
-                # region Mask cuboid reconstruction
-                t20_array = recreate.create_3d_array(t20, 0)
-                t21_array = recreate.create_3d_array(t21, 1)
-                t22_array = recreate.create_3d_array(t22, 2)
-                t2_array = np.add(t20_array, t21_array)
-                t2_array = np.add(t2_array, t22_array)
-                # endregion
+        # Flairs
+        # region Mask slices classification
+        for mslice in indexed_slices_list[0][0]:
+            accepted = []
+            stains_mask = (seg.flair(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            flair0.append(stains_mask)
+        for mslice in indexed_slices_list[0][1]:
+            accepted = []
+            stains_mask = (seg.flair(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            flair1.append(stains_mask)
+        for mslice in indexed_slices_list[0][2]:
+            accepted = []
+            stains_mask = (seg.flair(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            flair2.append(stains_mask)
+        # endregion
+        # region Mask cuboid reconstruction
+        flair0_array = recreate.create_3d_array(flair0, 0)
+        flair1_array = recreate.create_3d_array(flair1, 1)
+        flair2_array = recreate.create_3d_array(flair2, 2)
+        flair_array = np.add(flair0_array, flair1_array)
+        flair_array = np.add(flair_array, flair2_array)
+        # endregion
+        # T1s
+        # region Mask slices classification
+        for mslice in indexed_slices_list[1][0]:
+            accepted = []
+            stains_mask = (seg.t1(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t10.append(stains_mask)
+        for mslice in indexed_slices_list[1][1]:
+            accepted = []
+            stains_mask = (seg.t1(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t11.append(stains_mask)
+        for mslice in indexed_slices_list[1][2]:
+            accepted = []
+            stains_mask = (seg.t1(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t12.append(stains_mask)
+        # endregion
+        # region Mask cuboid reconstruction
+        t10_array = recreate.create_3d_array(t10, 0)
+        t11_array = recreate.create_3d_array(t11, 1)
+        t12_array = recreate.create_3d_array(t12, 2)
+        t1_array = np.add(t10_array, t11_array)
+        t1_array = np.add(t1_array, t12_array)
+        # endregion
+        # T1cs
+        # region Mask slices classification
+        for mslice in indexed_slices_list[2][0]:
+            accepted = []
+            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t1c0.append(stains_mask)
+        for mslice in indexed_slices_list[2][1]:
+            accepted = []
+            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t1c1.append(stains_mask)
+        for mslice in indexed_slices_list[2][2]:
+            accepted = []
+            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t1c2.append(stains_mask)
+        # endregion
+        # region Mask cuboid reconstruction
+        t1c0_array = recreate.create_3d_array(t1c0, 0)
+        t1c1_array = recreate.create_3d_array(t1c1, 1)
+        t1c2_array = recreate.create_3d_array(t1c2, 2)
+        t1c_array = np.add(t1c0_array, t1c1_array)
+        t1c_array = np.add(t1c_array, t1c2_array)
+        # endregion
+        # T2s:
+        # region Mask slices classification
+        for mslice in indexed_slices_list[3][0]:
+            accepted = []
+            stains_mask = (seg.t2(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t20.append(stains_mask)
+        for mslice in indexed_slices_list[3][1]:
+            accepted = []
+            stains_mask = (seg.t2(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t21.append(stains_mask)
+        for mslice in indexed_slices_list[3][2]:
+            accepted = []
+            stains_mask = (seg.t2(mslice[0])).astype(np.float)
+            if stains_mask.sum() != 0:
+                stains = sep.get_list_of_stains((mslice[0], stains_mask))
+                for stain in stains:
+                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
+                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
+                    if tumor > not_tumor:
+                        part = stain[1].astype(np.float)
+                        part *= tumor
+                        accepted.append((part, (stain[2], stain[3])))
+                new_mask = np.zeros(stains_mask.shape)
+                for elem in accepted:
+                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
+                    new_mask = np.add(new_mask, new_mask_part)
+                stains_mask = new_mask
+            t22.append(stains_mask)
+        # endregion
+        # region Mask cuboid reconstruction
+        t20_array = recreate.create_3d_array(t20, 0)
+        t21_array = recreate.create_3d_array(t21, 1)
+        t22_array = recreate.create_3d_array(t22, 2)
+        t2_array = np.add(t20_array, t21_array)
+        t2_array = np.add(t2_array, t22_array)
+        # endregion
         # region Mask cuboids compression
         # Variables below had to be initialized in loops above, if they wouldn't - sth went wrong.
         # noinspection PyUnboundLocalVariable

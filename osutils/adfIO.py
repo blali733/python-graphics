@@ -75,4 +75,5 @@ def load(path, ext=False):
             array = np.reshape(array, [x, y])
             return array
         else:
-            raise FileExistsError
+            print(path)
+            raise FileExistsError()

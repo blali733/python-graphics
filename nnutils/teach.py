@@ -14,8 +14,6 @@ from pimutils.mha import mhaMath
 from osutils import inlineprogress as pbar, adfIO, pathtools
 import json
 
-# TESTME check if this code works
-
 
 def prepare_dirs(model_name):
     shutil.rmtree('./data/classifiers/' + model_name, ignore_errors=True)
@@ -127,7 +125,7 @@ class Teacher:
         test_y_flair = to_categorical(test_y_flair, num_classes=2)
         print("STEP 2b: t1")
         data_t1 = np.array(data_t1, dtype=np.float) / maximum
-        labels_t2 = np.array(labels_t1)
+        labels_t1 = np.array(labels_t1)
         (train_x_t1, test_x_t1, train_y_t1, test_y_t1) = train_test_split(data_t1, labels_t1,
                                                                           test_size=test_size,
                                                                           random_state=random_seed)

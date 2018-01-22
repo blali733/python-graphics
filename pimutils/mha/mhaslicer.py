@@ -100,7 +100,7 @@ def prepare_testing_pairs(file_name, patient):
     list of list of tuples
         Lists of tuples containing image slice and layer id
     """
-    path_string = "./classify/structured/"+patient+"/"+file_name+".mha"
+    path_string = "./classify/structured/pat_"+patient.__str__()+"/"+file_name
     mha_file = mhaIO.load_mha(path_string)
     slices = []
     slices0 = []

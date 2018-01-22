@@ -27,27 +27,36 @@ class TestClassification:
             self.settings = json.load(open("./data/classifiers/"+model_name+"/models/settings.json", "r"))
         except OSError:
             raise FileNotFoundError
+        self.maximum = np.iinfo(np.int16).max
 
     def analyze_flair(self, image_part):
         image = resizer.resize(image_part, self.settings.get("size"))
+        image = image.astype(np.float) / self.maximum
+        image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
         (tumor, not_tumor) = self.flair_model.predict(image)[0]
         return tumor, not_tumor
 
     def analyze_t1(self, image_part):
         image = resizer.resize(image_part, self.settings.get("size"))
+        image = image.astype(np.float) / self.maximum
+        image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
         (tumor, not_tumor) = self.t1_model.predict(image)[0]
         return tumor, not_tumor
 
     def analyze_t1c(self, image_part):
         image = resizer.resize(image_part, self.settings.get("size"))
+        image = image.astype(np.float) / self.maximum
+        image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
         (tumor, not_tumor) = self.t1c_model.predict(image)[0]
         return tumor, not_tumor
 
     def analyze_t2(self, image_part):
         image = resizer.resize(image_part, self.settings.get("size"))
+        image = image.astype(np.float) / self.maximum
+        image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
         (tumor, not_tumor) = self.t2_model.predict(image)[0]
         return tumor, not_tumor
