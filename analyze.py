@@ -534,7 +534,7 @@ class Analyze:
         test = input('Do you want to use advanced configuration? (y/N) ')
         if test.capitalize() == 'Y':
             # TODO implement asking for custom parameters
-            teacher = teach.Teacher()
+            teacher = teach.Teacher(epochs=10)
             teacher.teach(name)
         else:
             teacher = teach.Teacher()
