@@ -481,7 +481,8 @@ class Analyze:
         final_mask_cube = np.add(np.add(np.add(flair_array, t1_array), t1c_array), t2_array)
         # endregion
         # region Final cuboid normalization
-        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 4.0)
+        # TODO tweak parameter
+        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 3.0)
         # endregion
         return final_mask_cube
     # endregion
