@@ -7,9 +7,6 @@ import os
 from pimutils import resizer
 import json
 
-# TESTME check if this code works
-# TODO Check if images shouldn't be converted into 0.0-1.0 floats
-
 
 class TestClassification:
     def __init__(self, model_name):

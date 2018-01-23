@@ -2,8 +2,6 @@ import numpy as np
 from pimutils.mask import comparator
 from pimutils import resizer
 
-# TODO move pixel neighbourhood checking to another function, or at least analize feasibility of such solution
-
 
 class Separator:
     def __init__(self, min_area):
@@ -183,6 +181,7 @@ class Separator:
             for stain in manual_segmentation_stains:
                 m2full = stain[1].sum()
                 offset = stain[1].shape
+                offset = (offset[0] - 1, offset[1] - 1)
                 x_limit = stain[2]
                 y_limit = stain[3]
                 for y in range(x_limit, x_limit + offset[0], 1):

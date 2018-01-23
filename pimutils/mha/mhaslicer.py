@@ -107,7 +107,7 @@ def prepare_testing_pairs(file_name, patient):
     slices1 = []
     slices2 = []
     iterator = 0
-    print("Pairing FLAIR images, please wait...")
+    print("Pairing image slices, please wait...")
     for mslice in mhaIO.get_all_slices(mha_file, 0):
         slices0.append((mslice, iterator))
         iterator += 1

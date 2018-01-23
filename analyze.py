@@ -147,7 +147,7 @@ class Analyze:
         try:
             pathlib.Path("./classify/structured/"+patient).mkdir(parents=True)
         except OSError as exc:
-            if exc.errno == 17:  # TODO check it
+            if exc.errno == 17:
                 shutil.rmtree("./classify/structured/"+patient, ignore_errors=True)
                 pathlib.Path("./classify/structured/" + patient).mkdir(parents=True)
             else:
@@ -205,7 +205,7 @@ class Analyze:
                     t1c_list[self.get_parent_dir_name(rootd)] = file
                 elif "T2" in file:
                     t2_list[self.get_parent_dir_name(rootd)] = file
-        for i in range(flair_list.__len__()):  # TODO check it
+        for i in range(flair_list.__len__()):
             patients_list.append((i, flair_list["pat_"+i.__str__()], t1_list["pat_"+i.__str__()], t1c_list["pat_"+i.__str__()], t2_list["pat_"+i.__str__()]))
         return patients_list
 
@@ -240,7 +240,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -258,7 +257,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -276,7 +274,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -304,7 +301,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -322,7 +318,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -340,7 +335,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -368,7 +362,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -386,7 +379,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -404,7 +396,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -432,7 +423,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -450,7 +440,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -468,7 +457,6 @@ class Analyze:
                 stains = sep.get_list_of_stains((mslice[0], stains_mask))
                 for stain in stains:
                     tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    # TODO check format of tumor not tumor (should obtain value from <0.0, 1.0>)
                     if tumor > not_tumor:
                         part = stain[1].astype(np.float)
                         part *= tumor
@@ -493,7 +481,7 @@ class Analyze:
         final_mask_cube = np.add(np.add(np.add(flair_array, t1_array), t1c_array), t2_array)
         # endregion
         # region Final cuboid normalization
-        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 7.0)
+        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 4.0)
         # endregion
         return final_mask_cube
     # endregion
@@ -542,7 +530,7 @@ class Analyze:
         """
         Method responsible for teaching classifier basing on learning sets.
         """
-        name = input('Please provide model name:')
+        name = input('Please provide model name: ')
         test = input('Do you want to use advanced configuration? (y/N) ')
         if test.capitalize() == 'Y':
             # TODO implement asking for custom parameters
@@ -584,7 +572,6 @@ class Analyze:
                 t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
                 t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
                 t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
-                # TESTME OutOfMemory risk !!!
                 segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
                 mhaslicer.save_segmentation(segmentation, patient[0])
     # endregion
