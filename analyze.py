@@ -1,20 +1,11 @@
 import matplotlib
 # set the matplotlib backend so figures can be saved in the background
-from tools.preparation.slices import parse_slices
-
 matplotlib.use("Agg")
-import pathlib
-import os
-import shutil
-from tools.segmentation import segment as seg
-from tools.mask import separator
 from tools.mha import mhaSlicer
-from tools.matrix import recreate
-from tools.matrix import resizer
-from tools.imageSorter import Sorter
-from osutils import pathtools
 from nnutils import teach, test
-import numpy as np
+from osutils.fileIO.directories import check_classify_input_dir
+from tools.preparation.file2mem import generate_list_of_patients, prepare_data
+from tools.preparation.slices import generate_tumor_map
 
 
 # Kept as reference for checking execution time:
@@ -42,7 +33,7 @@ class Analyze:
             if mode == 0:
                 exit(0)
             elif mode == 1:  # Prepare input
-                self.prepare_data()
+                prepare_data()
             elif mode == 2:  # Teaching
                 self.teach_classifier()
             elif mode == 3:  # Load classifier
@@ -50,392 +41,7 @@ class Analyze:
             elif mode == 4:  # Classify images
                 self.classify_images()
 
-    # region Testing sub methods
-    @staticmethod
-    def create_patient_dir(patient):
-        try:
-            pathlib.Path("./classify/structured/"+patient).mkdir(parents=True)
-        except OSError as exc:
-            if exc.errno == 17:
-                shutil.rmtree("./classify/structured/"+patient, ignore_errors=True)
-                pathlib.Path("./classify/structured/" + patient).mkdir(parents=True)
-            else:
-                raise
-
-    def get_patient_id_from_dir(self, path, patient_dict):
-        try:
-            id = patient_dict[pathtools.get_folder_name_from_path(path, -2)]
-        except TypeError:
-            id = 0
-        return id
-
-    def get_parent_dir_name(self, path):
-        return pathtools.get_folder_name_from_path(path, -1)
-
-    def check_classify_input_dir(self):
-        shutil.rmtree("./classify/structured/", ignore_errors=True)
-        pathlib.Path("./classify/structured/").mkdir(parents=True)
-        patient_dict = {}
-        patient_id = 0
-        for root, subFolders, files in os.walk('./classify/raw'):
-            for folder in subFolders:
-                if "brats" in folder:
-                    self.create_patient_dir("pat_"+patient_id.__str__())
-                    patient_dict[folder] = patient_id
-                    patient_id += 1
-            for file in files:
-                if ".txt" in file:
-                    os.remove(os.path.join(root, file))
-                elif ".mha" in file:
-                    shutil.copy2(os.path.join(root, file), "./classify/structured/" +
-                                 self.get_patient_id_from_dir(root, patient_dict).__str__() + "/" + file)
-        pass
-
-    def generate_list_of_patients(self):
-        """
-
-        Returns
-        -------
-        list of tuples : (string, string, string, string, string)
-            patient directory and file names.
-        """
-        patients_list = []
-        flair_list = {}
-        t1_list = {}
-        t1c_list = {}
-        t2_list = {}
-        for rootd, subFolders, files in os.walk("./classify/structured"):
-            for file in files:
-                if "Flair" in file:
-                    flair_list[self.get_parent_dir_name(rootd)] = file
-                elif "T1." in file:
-                    t1_list[self.get_parent_dir_name(rootd)] = file
-                elif "T1c" in file:
-                    t1c_list[self.get_parent_dir_name(rootd)] = file
-                elif "T2" in file:
-                    t2_list[self.get_parent_dir_name(rootd)] = file
-        for i in range(flair_list.__len__()):
-            patients_list.append((i, flair_list["pat_"+i.__str__()], t1_list["pat_"+i.__str__()], t1c_list["pat_"+i.__str__()], t2_list["pat_"+i.__str__()]))
-        return patients_list
-
-    def generate_tumor_map(self, indexed_slices_list):
-        # NOTES 1) use auto segmentation on slices
-        # NOTES 2) use classification on slices
-        # NOTES 3) multiply tumor slices by result of classification
-        # NOTES 4) reconstruct mha brick from 3 axes of image type
-        # NOTES 5) merge all 4 type of classification
-        # NOTES 6) normalize mha brick
-        # NOTES 7) return result
-        flair0 = []
-        flair1 = []
-        flair2 = []
-        t10 = []
-        t11 = []
-        t12 = []
-        t1c0 = []
-        t1c1 = []
-        t1c2 = []
-        t20 = []
-        t21 = []
-        t22 = []
-        sep = separator.Separator(3)
-        # I had to: You are not supposed to understand this.
-        # Flairs
-        # region Mask slices classification
-        for mslice in indexed_slices_list[0][0]:
-            accepted = []
-            stains_mask = (seg.flair(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            flair0.append(stains_mask)
-        for mslice in indexed_slices_list[0][1]:
-            accepted = []
-            stains_mask = (seg.flair(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            flair1.append(stains_mask)
-        for mslice in indexed_slices_list[0][2]:
-            accepted = []
-            stains_mask = (seg.flair(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_flair(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            flair2.append(stains_mask)
-        # endregion
-        # region Mask cuboid reconstruction
-        flair0_array = recreate.create_3d_array(flair0, 0)
-        flair1_array = recreate.create_3d_array(flair1, 1)
-        flair2_array = recreate.create_3d_array(flair2, 2)
-        flair_array = np.add(flair0_array, flair1_array)
-        flair_array = np.add(flair_array, flair2_array)
-        # endregion
-        # T1s
-        # region Mask slices classification
-        for mslice in indexed_slices_list[1][0]:
-            accepted = []
-            stains_mask = (seg.t1(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t10.append(stains_mask)
-        for mslice in indexed_slices_list[1][1]:
-            accepted = []
-            stains_mask = (seg.t1(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t11.append(stains_mask)
-        for mslice in indexed_slices_list[1][2]:
-            accepted = []
-            stains_mask = (seg.t1(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t12.append(stains_mask)
-        # endregion
-        # region Mask cuboid reconstruction
-        t10_array = recreate.create_3d_array(t10, 0)
-        t11_array = recreate.create_3d_array(t11, 1)
-        t12_array = recreate.create_3d_array(t12, 2)
-        t1_array = np.add(t10_array, t11_array)
-        t1_array = np.add(t1_array, t12_array)
-        # endregion
-        # T1cs
-        # region Mask slices classification
-        for mslice in indexed_slices_list[2][0]:
-            accepted = []
-            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t1c0.append(stains_mask)
-        for mslice in indexed_slices_list[2][1]:
-            accepted = []
-            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t1c1.append(stains_mask)
-        for mslice in indexed_slices_list[2][2]:
-            accepted = []
-            stains_mask = (seg.t1c(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t1c(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t1c2.append(stains_mask)
-        # endregion
-        # region Mask cuboid reconstruction
-        t1c0_array = recreate.create_3d_array(t1c0, 0)
-        t1c1_array = recreate.create_3d_array(t1c1, 1)
-        t1c2_array = recreate.create_3d_array(t1c2, 2)
-        t1c_array = np.add(t1c0_array, t1c1_array)
-        t1c_array = np.add(t1c_array, t1c2_array)
-        # endregion
-        # T2s:
-        # region Mask slices classification
-        for mslice in indexed_slices_list[3][0]:
-            accepted = []
-            stains_mask = (seg.t2(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t20.append(stains_mask)
-        for mslice in indexed_slices_list[3][1]:
-            accepted = []
-            stains_mask = (seg.t2(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t21.append(stains_mask)
-        for mslice in indexed_slices_list[3][2]:
-            accepted = []
-            stains_mask = (seg.t2(mslice[0])).astype(np.float)
-            if stains_mask.sum() != 0:
-                stains = sep.get_list_of_stains((mslice[0], stains_mask))
-                for stain in stains:
-                    tumor, not_tumor = self.classifier_class.analyze_t2(stain[0])
-                    if tumor > not_tumor:
-                        part = stain[1].astype(np.float)
-                        part *= tumor
-                        accepted.append((part, (stain[2], stain[3])))
-                new_mask = np.zeros(stains_mask.shape)
-                for elem in accepted:
-                    new_mask_part = resizer.expand(elem[0], elem[1], elem[0].shape, new_mask.shape)
-                    new_mask = np.add(new_mask, new_mask_part)
-                stains_mask = new_mask
-            t22.append(stains_mask)
-        # endregion
-        # region Mask cuboid reconstruction
-        t20_array = recreate.create_3d_array(t20, 0)
-        t21_array = recreate.create_3d_array(t21, 1)
-        t22_array = recreate.create_3d_array(t22, 2)
-        t2_array = np.add(t20_array, t21_array)
-        t2_array = np.add(t2_array, t22_array)
-        # endregion
-        # region Mask cuboids compression
-        # Variables below had to be initialized in loops above, if they wouldn't - sth went wrong.
-        # noinspection PyUnboundLocalVariable
-        final_mask_cube = np.add(np.add(np.add(flair_array, t1_array), t1c_array), t2_array)
-        # endregion
-        # region Final cuboid normalization
-        # TODO tweak parameter
-        final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 3.0)
-        # endregion
-        return final_mask_cube
-    # endregion
-
     # region Menu options
-    def prepare_data(self):
-        """
-        Method responsible for converting input data from mha files to learning sets.
-        """
-        answer = input("Do you want to prepare training images (y/N): ")
-        if 'Y' in answer.capitalize():
-            subapp = Sorter()
-            subapp.main()
-        answer = input("Do you want to prepare training image pairs (y/N): ")
-        sep = separator.Separator(10)
-        if 'Y' in answer.capitalize():
-            flair_yes = 0
-            t1_yes = 0
-            t1c_yes = 0
-            t2_yes = 0
-            flair_no = 0
-            t1_no = 0
-            t1c_no = 0
-            t2_no = 0
-            yes_counters = (flair_yes, t1_yes, t1c_yes, t2_yes)
-            no_counters = (flair_no, t1_no, t1c_no, t2_no)
-            self.check_parsed_dirs()
-            for root, subFolders, files in os.walk("./data/raw/flair"):
-                for file in files:
-                    file_name_parts = file.split(".")
-                    print("Slicing file " + file_name_parts[0])
-                    # Axis 0
-                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=0)
-                    slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
-                    # Axis 1
-                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=1)
-                    slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
-                    # Axis 2
-                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
-                    slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
-
     def teach_classifier(self):
         """
         Method responsible for teaching classifier basing on learning sets.
@@ -475,40 +81,17 @@ class Analyze:
             print("This would classify ALL images in ./classify/structured directory.")
             answer = input("Do you want to repopulate from classify/raw, this would erase all data? (y/N): ")
             if 'Y' in answer.capitalize():
-                self.check_classify_input_dir()
-            patients_list = self.generate_list_of_patients()
+                check_classify_input_dir()
+            patients_list = generate_list_of_patients()
             for patient in patients_list:
                 flair_slices = mhaSlicer.prepare_testing_pairs(patient[1], patient[0])
                 t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
                 t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
                 t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
-                segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
+                segmentation = generate_tumor_map(self.classifier_class,
+                                                  (flair_slices, t1_slices, t1c_slices, t2_slices))
                 mhaSlicer.save_segmentation(segmentation, patient[0])
     # endregion
-
-    # region Static functions
-    @staticmethod
-    def check_parsed_dirs():
-        pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
-        shutil.rmtree('./data/parsed/flair/tumor', ignore_errors=True)
-        shutil.rmtree('./data/parsed/flair/not', ignore_errors=True)
-        pathlib.Path('./data/parsed/flair/tumor').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/flair/not').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t1').mkdir(parents=True, exist_ok=True)
-        shutil.rmtree('./data/parsed/t1/tumor', ignore_errors=True)
-        shutil.rmtree('./data/parsed/t1/not', ignore_errors=True)
-        pathlib.Path('./data/parsed/t1/tumor').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t1/not').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t1c').mkdir(parents=True, exist_ok=True)
-        shutil.rmtree('./data/parsed/t1c/tumor', ignore_errors=True)
-        shutil.rmtree('./data/parsed/t1c/not', ignore_errors=True)
-        pathlib.Path('./data/parsed/t1c/tumor').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t1c/not').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t2').mkdir(parents=True, exist_ok=True)
-        shutil.rmtree('./data/parsed/t2/tumor', ignore_errors=True)
-        shutil.rmtree('./data/parsed/t2/not', ignore_errors=True)
-        pathlib.Path('./data/parsed/t2/tumor').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/parsed/t2/not').mkdir(parents=True, exist_ok=True)
 
     def menu(self):
         if self.classifier_load_status:
@@ -523,7 +106,6 @@ class Analyze:
         print("4 - prepare and classify image")
         print("0 - exit")
         print()
-    # endregion
 
 
 if __name__ == "__main__":
