@@ -47,9 +47,8 @@ class Analyze:
         Method responsible for teaching classifier basing on learning sets.
         """
         name = input('Please provide model name: ')
-        test = input('Do you want to use advanced configuration? (y/N) ')
+        test = input('Do you want to use only 10 epochs instead of 25? (y/N) ')
         if test.capitalize() == 'Y':
-            # TODO implement asking for custom parameters
             teacher = teach.Teacher(epochs=10)
             teacher.teach(name)
         else:
