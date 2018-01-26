@@ -1,0 +1,1 @@
+Directory responsible for storage of data required to teach classifier, and classifiers itself.
