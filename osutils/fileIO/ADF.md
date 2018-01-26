@@ -18,3 +18,4 @@ Simply series of values according to data type specification
 ### 1.3. Data formats:
 * `0x0` - int16
 * `0x1` - int32
+* `0x2` - int64

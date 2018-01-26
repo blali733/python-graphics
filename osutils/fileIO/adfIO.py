@@ -29,6 +29,9 @@ def save(array, path):
     elif array.dtype == np.int32:
         code += 1
         type = np.int32
+    elif array.dtype == np.int64:
+        code += 2
+        type = np.int64
     else:
         print("Unsupported data type! "+array.dtype.__str__())
         return -1
@@ -66,6 +69,8 @@ def load(path, ext=False):
                 data_type = np.int16
             elif data_type == 1:
                 data_type = np.int32
+            elif data_type == 2:
+                data_type = np.int64
             else:
                 return -1
             x = int.from_bytes(f.read(2), byteorder='big')
