@@ -49,7 +49,7 @@ class Analyze:
                 self.classify_images()
 
     # region Prepare data
-    def save_stains(self, list_of_stains, mode, classified_type, name, numerator):
+    def save_stains(self, list_of_stains, mode, classified_type, name, enumerator):
         """
         
         Parameters
@@ -58,7 +58,7 @@ class Analyze:
         mode : string
         classified_type : string
         name : string
-        numerator : int
+        enumerator : int
 
         Returns
         -------
@@ -67,9 +67,9 @@ class Analyze:
         """
         for ret_tuple in list_of_stains:
             adfIO.save(ret_tuple[0], './data/parsed/' + mode + '/' + classified_type + '/'
-                       + name + '_' + numerator.__str__())
-            numerator += 1
-        return numerator
+                       + name + '_' + enumerator.__str__())
+            enumerator += 1
+        return enumerator
     
     def parse_slices(self, slices_tuple, yes_counters, no_counters, sep, axis):
         """
