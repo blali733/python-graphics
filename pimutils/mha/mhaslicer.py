@@ -1,4 +1,4 @@
-from pimutils.mha import mhaIO
+from osutils.fileIO import mhaIO
 from pimutils.mha import mhaMath
 import numpy as np
 
@@ -39,15 +39,15 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
         exit(-1)
     if mha_desc.shape != mha_t2.shape:
         exit(-1)
-    desc_slices = mhaIO.get_all_slices(mha_desc, axis)
+    desc_slices = get_all_slices(mha_desc, axis)
     print("Binearizing masks, please wait...")
     for i in range(desc_slices.__len__()):
         if desc_slices[i].max() > 0:
             desc_slices[i] = mhaMath.med_image_binearize(desc_slices[i])
-    flair_slices = mhaIO.get_all_slices(mha_flair, axis)
-    t1_slices = mhaIO.get_all_slices(mha_t1, axis)
-    t1c_slices = mhaIO.get_all_slices(mha_t1c, axis)
-    t2_slices = mhaIO.get_all_slices(mha_t2, axis)
+    flair_slices = get_all_slices(mha_flair, axis)
+    t1_slices = get_all_slices(mha_t1, axis)
+    t1c_slices = get_all_slices(mha_t1c, axis)
+    t2_slices = get_all_slices(mha_t2, axis)
     flair_pairs = []
     t1_pairs = []
     t1c_pairs = []
@@ -57,30 +57,6 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
         t1_pairs.append((t1_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
         t1c_pairs.append((t1c_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
         t2_pairs.append((t2_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
-    # iterator = 0
-    # print("Pairing FLAIR images, please wait...")
-    # for mslice in mhaIO.get_all_slices(mha_flair, axis):
-    #     if mslice.max() >= discard_bg:
-    #         flair_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-    #     iterator += 1
-    # iterator = 0
-    # print("Pairing T1 images, please wait...")
-    # for mslice in mhaIO.get_all_slices(mha_t1, axis):
-    #     if mslice.max() >= discard_bg:
-    #         t1_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-    #     iterator += 1
-    # iterator = 0
-    # print("Pairing T1C images, please wait...")
-    # for mslice in mhaIO.get_all_slices(mha_t1c, axis):
-    #     if mslice.max() >= discard_bg:
-    #         t1c_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-    #     iterator += 1
-    # iterator = 0
-    # print("Pairing T2 images, please wait...")
-    # for mslice in mhaIO.get_all_slices(mha_t2, axis):
-    #     if mslice.max() >= discard_bg:
-    #         t2_pairs.append((mslice, np.copy(desc_slices[iterator]).astype(desc_slices[iterator].dtype)))
-    #     iterator += 1
     return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
 
 
@@ -108,17 +84,17 @@ def prepare_testing_pairs(file_name, patient):
     slices2 = []
     iterator = 0
     print("Pairing image slices, please wait...")
-    for mslice in mhaIO.get_all_slices(mha_file, 0):
+    for mslice in get_all_slices(mha_file, 0):
         slices0.append((mslice, iterator))
         iterator += 1
     slices.append(slices0)
     iterator = 0
-    for mslice in mhaIO.get_all_slices(mha_file, 1):
+    for mslice in get_all_slices(mha_file, 1):
         slices1.append((mslice, iterator))
         iterator += 1
     slices.append(slices1)
     iterator = 0
-    for mslice in mhaIO.get_all_slices(mha_file, 2):
+    for mslice in get_all_slices(mha_file, 2):
         slices2.append((mslice, iterator))
         iterator += 1
     slices.append(slices2)
@@ -126,4 +102,36 @@ def prepare_testing_pairs(file_name, patient):
 
 
 def save_segmentation(segmentation, patient):
-    mhaIO.save_mha(segmentation, "./classify/structured/pat_"+patient.__str__()+"/classification.mha")
+    mhaIO.save_mha(segmentation, "./classify/structured/pat_" + patient.__str__() + "/classification.mha")
+
+
+def get_all_slices(image, axis=0):
+    slices = []
+    if axis == 0:
+        for i in range(image.shape[0]):
+            slices.append(image[i, :, :])
+    elif axis == 1:
+        for i in range(image.shape[1]):
+            slices.append(image[:, i, :])
+    elif axis == 2:
+        for i in range(image.shape[2]):
+            slices.append(image[:, :, i])
+    return slices
+
+
+def get_nth_slice(med_image, axis, slice_id):
+    if axis == 0:
+        if slice_id <= med_image.shape[0]:
+            return med_image[slice_id, :, :]
+        else:
+            return 0
+    elif axis == 1:
+        if slice_id <= med_image.shape[1]:
+            return med_image[:, slice_id, :]
+        else:
+            return 0
+    else:
+        if slice_id <= med_image.shape[2]:
+            return med_image[:, :, slice_id]
+        else:
+            return 0

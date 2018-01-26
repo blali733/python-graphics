@@ -1,4 +1,6 @@
-from pimutils.mha import mhaIO, mhaMath
+import pimutils.mha.mhaslicer
+from pimutils.mha import mhaMath
+from osutils.fileIO import mhaIO
 import numpy as np
 import SimpleITK as sitk
 import matplotlib.pyplot as plt
@@ -12,7 +14,7 @@ def med_load(path):
 
 
 def med_slice(med_image, axis, slice_id):
-    return mhaIO.get_nth_slice(med_image, axis, slice_id)
+    return pimutils.mha.mhaslicer.get_nth_slice(med_image, axis, slice_id)
 
 
 def med_plot(med_image_slice):

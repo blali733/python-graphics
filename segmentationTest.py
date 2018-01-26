@@ -1,4 +1,5 @@
-from pimutils.mha import mhaIO
+import pimutils.mha.mhaslicer
+from osutils.fileIO import mhaIO
 from pimutils.segmentation import segment
 from pimutils.mask import comparator
 
@@ -10,11 +11,11 @@ def test():
     t1c = mhaIO.load_mha("./data/raw/t1c.mha")
     t2 = mhaIO.load_mha("./data/raw/t2.mha")
     more = mhaIO.load_mha("./data/raw/more.mha")
-    flair_slices = mhaIO.get_all_slices(flair)
-    t1_slices = mhaIO.get_all_slices(t1)
-    t1c_slices = mhaIO.get_all_slices(t1c)
-    t2_slices = mhaIO.get_all_slices(t2)
-    more_slices = mhaIO.get_all_slices(more)
+    flair_slices = pimutils.mha.mhaslicer.get_all_slices(flair)
+    t1_slices = pimutils.mha.mhaslicer.get_all_slices(t1)
+    t1c_slices = pimutils.mha.mhaslicer.get_all_slices(t1c)
+    t2_slices = pimutils.mha.mhaslicer.get_all_slices(t2)
+    more_slices = pimutils.mha.mhaslicer.get_all_slices(more)
     # endregion
     # TODO using flair_slices, t1_slices, t1c_slices, t2_slices check segmentation
     # region Statistics

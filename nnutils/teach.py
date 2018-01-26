@@ -1,5 +1,4 @@
 import pathlib
-import matplotlib
 import shutil
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.optimizers import Adam
@@ -10,8 +9,8 @@ import numpy as np
 import random
 import os
 from pimutils import resizer
-from pimutils.mha import mhaMath
-from osutils import inlineprogress as pbar, adfIO, pathtools
+from osutils import inlineprogress as pbar, pathtools
+from osutils.fileIO import adfIO
 import json
 
 

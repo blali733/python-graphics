@@ -1,18 +1,16 @@
 import matplotlib
 # set the matplotlib backend so figures can be saved in the background
 matplotlib.use("Agg")
-import functools
 import pathlib
-import sys  # for command line arguments
 import os
-import timeit
 import shutil
 from pimutils.segmentation import segment as seg
 from pimutils.mask import separator, mirrorMask, recreate
 from pimutils.mha import mhaslicer
 from pimutils import resizer
 from imageSorter import Sorter
-from osutils import adfIO, pathtools
+from osutils import pathtools
+from osutils.fileIO import adfIO
 from nnutils import teach, test
 import numpy as np
 
