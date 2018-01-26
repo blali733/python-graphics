@@ -1,6 +1,6 @@
 import numpy as np
-from pimutils.mask import comparator
-from pimutils import resizer
+from tools.mask import comparator
+from tools.matrix import resizer
 
 
 class Separator:

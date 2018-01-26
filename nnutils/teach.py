@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import os
-from pimutils import resizer
+from tools.matrix import resizer
 from osutils import inlineprogress as pbar, pathtools
 from osutils.fileIO import adfIO
 import json

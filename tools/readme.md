@@ -1,1 +1,1 @@
-Package created to store utilities working on files rather than their content.
+Package created to store utilities working on files and their content.

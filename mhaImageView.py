@@ -1,7 +1,7 @@
 # Windows only version, sorry
 from mhaDisplay import medImageServicing as msc
 import matplotlib.pyplot as plt
-from pimutils.mha import mhaMath
+from tools.mha import mhaMath
 import numpy as np
 try:
     from osutils import windows as osutil

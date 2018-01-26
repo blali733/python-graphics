@@ -4,10 +4,11 @@ matplotlib.use("Agg")
 import pathlib
 import os
 import shutil
-from pimutils.segmentation import segment as seg
-from pimutils.mask import separator, mirrorMask, recreate
-from pimutils.mha import mhaslicer
-from pimutils import resizer
+from tools.segmentation import segment as seg
+from tools.mask import separator, mirrorMask
+from tools.mha import mhaSlicer
+from tools.matrix import recreate
+from tools.matrix import resizer
 from tools.imageSorter import Sorter
 from osutils import pathtools
 from osutils.fileIO import adfIO
@@ -513,15 +514,15 @@ class Analyze:
                     file_name_parts = file.split(".")
                     print("Slicing file " + file_name_parts[0])
                     # Axis 0
-                    flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=0)
+                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=0)
                     slices_tuple = (flair, t1, t1c, t2)
                     yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
                     # Axis 1
-                    flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=1)
+                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=1)
                     slices_tuple = (flair, t1, t1c, t2)
                     yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
                     # Axis 2
-                    flair, t1, t1c, t2 = mhaslicer.prepare_training_pairs(file_name_parts[0], axis=2)
+                    flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
                     slices_tuple = (flair, t1, t1c, t2)
                     yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
 
@@ -567,12 +568,12 @@ class Analyze:
                 self.check_classify_input_dir()
             patients_list = self.generate_list_of_patients()
             for patient in patients_list:
-                flair_slices = mhaslicer.prepare_testing_pairs(patient[1], patient[0])
-                t1_slices = mhaslicer.prepare_testing_pairs(patient[2], patient[0])
-                t1c_slices = mhaslicer.prepare_testing_pairs(patient[3], patient[0])
-                t2_slices = mhaslicer.prepare_testing_pairs(patient[4], patient[0])
+                flair_slices = mhaSlicer.prepare_testing_pairs(patient[1], patient[0])
+                t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
+                t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
+                t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
                 segmentation = self.generate_tumor_map((flair_slices, t1_slices, t1c_slices, t2_slices))
-                mhaslicer.save_segmentation(segmentation, patient[0])
+                mhaSlicer.save_segmentation(segmentation, patient[0])
     # endregion
 
     # region Static functions
