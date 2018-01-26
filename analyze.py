@@ -8,7 +8,7 @@ from pimutils.segmentation import segment as seg
 from pimutils.mask import separator, mirrorMask, recreate
 from pimutils.mha import mhaslicer
 from pimutils import resizer
-from imageSorter import Sorter
+from tools.imageSorter import Sorter
 from osutils import pathtools
 from osutils.fileIO import adfIO
 from nnutils import teach, test
