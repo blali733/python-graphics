@@ -1,5 +1,5 @@
 # Windows only version, sorry
-from mhaDisplay import medimageservicing as msc
+from mhaDisplay import medImageServicing as msc
 import matplotlib.pyplot as plt
 from pimutils.mha import mhaMath
 import numpy as np
