@@ -50,8 +50,3 @@ class Sorter:
         except TypeError:
             id = 0
         return id
-
-
-if __name__ == "__main__":
-    app = Sorter()
-    app.main()

@@ -197,7 +197,3 @@ class Teacher:
             plt.legend(loc="lower left")
             plt.savefig("./data/classifiers/"+model_name+"/plots/"+name+".png")
         json.dump(self.settings, open("./data/classifiers/"+model_name+"/models/settings.json", "w"))
-
-
-if __name__ == "__main__":
-    pass
