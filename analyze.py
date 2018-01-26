@@ -1,19 +1,21 @@
 import matplotlib
 # set the matplotlib backend so figures can be saved in the background
+from tools.preparation.slices import parse_slices
+
 matplotlib.use("Agg")
 import pathlib
 import os
 import shutil
 from tools.segmentation import segment as seg
-from tools.mask import separator, mirrorMask
+from tools.mask import separator
 from tools.mha import mhaSlicer
 from tools.matrix import recreate
 from tools.matrix import resizer
 from tools.imageSorter import Sorter
 from osutils import pathtools
-from osutils.fileIO import adfIO
 from nnutils import teach, test
 import numpy as np
+
 
 # Kept as reference for checking execution time:
 # t = timeit.Timer(functools.partial(sep.get_list_of_stains, flair[100]))
@@ -47,98 +49,6 @@ class Analyze:
                 self.load_classifier()
             elif mode == 4:  # Classify images
                 self.classify_images()
-
-    # region Prepare data
-    def save_stains(self, list_of_stains, mode, classified_type, name, enumerator):
-        """
-        
-        Parameters
-        ----------
-        list_of_stains : list
-        mode : string
-        classified_type : string
-        name : string
-        enumerator : int
-
-        Returns
-        -------
-        int
-            updated numerator value
-        """
-        for ret_tuple in list_of_stains:
-            adfIO.save(ret_tuple[0], './data/parsed/' + mode + '/' + classified_type + '/'
-                       + name + '_' + enumerator.__str__())
-            enumerator += 1
-        return enumerator
-    
-    def parse_slices(self, slices_tuple, yes_counters, no_counters, sep, axis):
-        """
-        Method responsible for turning sets of slices into training .adf files.
-
-        Parameters
-        ----------
-        slices_tuple : tuple of lists
-        yes_counters : tuple of ints
-        no_counters : tuple of ints
-        sep : Separator class instance
-        axis : int
-
-        Returns
-        -------
-        tuple, tuple
-            Updated values of yes and no counters.
-        """
-        flair_yes = yes_counters[0]
-        t1_yes = yes_counters[1]
-        t1c_yes = yes_counters[2]
-        t2_yes = yes_counters[3]
-        flair_no = no_counters[0]
-        t1_no = no_counters[1]
-        t1c_no = no_counters[2]
-        t2_no = no_counters[3]
-        print("Dismantling FLAIR, axis "+axis.__str__())
-        for imTuple in slices_tuple[0]:
-            ret_list = sep.get_list_of_stains(imTuple)
-            flair_yes = self.save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
-            nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            flair_no = self.save_stains(nret_list, "flair", "not", "flip", flair_no)
-            auto_segmentation = seg.flair(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
-            flair_yes = self.save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
-            flair_no = self.save_stains(ret_negative, "flair", "not", "auto", flair_no)
-        print("Dismantling T1, axis "+axis.__str__())
-        for imTuple in slices_tuple[1]:
-            ret_list = sep.get_list_of_stains(imTuple)
-            t1_yes = self.save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
-            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            t1_no = self.save_stains(ret_list, "t1", "not", "flip", t1_no)
-            auto_segmentation = seg.t1(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
-            t1_yes = self.save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
-            t1_no = self.save_stains(ret_negative, "t1", "not", "auto", t1_no)
-        print("Dismantling T1C, axis "+axis.__str__())
-        for imTuple in slices_tuple[2]:
-            ret_list = sep.get_list_of_stains(imTuple)
-            t1c_yes = self.save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
-            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            t1c_no = self.save_stains(ret_list, "t1c", "not", "flip", t1c_no)
-            auto_segmentation = seg.t1c(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
-            t1c_yes = self.save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
-            t1c_no = self.save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
-        print("Dismantling T2, axis "+axis.__str__())
-        for imTuple in slices_tuple[3]:
-            ret_list = sep.get_list_of_stains(imTuple)
-            t2_yes = self.save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
-            ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-            t2_no = self.save_stains(ret_list, "t2", "not", "flip", t2_no)
-            auto_segmentation = seg.t2(imTuple[0])
-            ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
-            t2_yes = self.save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
-            t2_no = self.save_stains(ret_negative, "t2", "not", "auto", t2_no)
-        print("done")
-        return (flair_yes, t1_yes, t1c_yes, t2_yes), (flair_no, t1_no, t1c_no, t2_no)
-    # endregion
 
     # region Testing sub methods
     @staticmethod
@@ -516,15 +426,15 @@ class Analyze:
                     # Axis 0
                     flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=0)
                     slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
+                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
                     # Axis 1
                     flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=1)
                     slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
+                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
                     # Axis 2
                     flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
                     slices_tuple = (flair, t1, t1c, t2)
-                    yes_counters, no_counters = self.parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
+                    yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
 
     def teach_classifier(self):
         """
