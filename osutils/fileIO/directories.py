@@ -6,6 +6,14 @@ from osutils import pathtools
 
 
 def create_patient_dir(patient):
+    """
+    Method responsible for creation of directories for patient data.
+
+    Parameters
+    ----------
+    patient : string
+        Name of patient for which directory should be created.
+    """
     try:
         pathlib.Path("./classify/structured/"+patient).mkdir(parents=True)
     except OSError as exc:
@@ -17,6 +25,9 @@ def create_patient_dir(patient):
 
 
 def check_classify_input_dir():
+    """
+    Method responsible for segregation of patients from brats15 testing data.
+    """
     shutil.rmtree("./classify/structured/", ignore_errors=True)
     pathlib.Path("./classify/structured/").mkdir(parents=True)
     patient_dict = {}
@@ -40,6 +51,9 @@ def check_classify_input_dir():
 
 
 def check_parsed_dirs():
+    """
+    Method responsible for generating directories for parsed data.
+    """
     pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
     shutil.rmtree('./data/parsed/flair/tumor', ignore_errors=True)
     shutil.rmtree('./data/parsed/flair/not', ignore_errors=True)
