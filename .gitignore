@@ -6,3 +6,4 @@ pimutils/segmentation/__pycache__/*
 osutils/__pycache__/*
 nnutils/__pycache__/*
 .idea/*
+settings.json
