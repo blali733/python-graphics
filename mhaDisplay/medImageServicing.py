@@ -11,6 +11,9 @@ class Plotter:
     Hermetic class containing logic required to represent mha images as layers in image viewer.
     """
     def __init__(self):
+        """
+        Initializer, sets default values to class variables.
+        """
         mpl.rcParams['toolbar'] = 'None'
         self.image_abs = None
         self.image_rel = None
@@ -25,6 +28,14 @@ class Plotter:
         self.image_max = 0
 
     def set_image(self, image_path):
+        """
+        Method responsible for loading image to memory.
+
+        Parameters
+        ----------
+        image_path : string
+            Full or relative path to MHA file to be displayed.
+        """
         image = sitk.GetArrayFromImage(sitk.ReadImage(image_path))
         if os.name == "nt":
             self.name = image_path.split('\\')[-1]
@@ -45,6 +56,14 @@ class Plotter:
         self.redraw()
 
     def set_mask(self, image_path):
+        """
+        Method responsible for loading mask data to memory.
+
+        Parameters
+        ----------
+        image_path : string
+            Full or relative path to MHA file to be used as mask.
+        """
         image = sitk.GetArrayFromImage(sitk.ReadImage(image_path))
         if self.image_shape != image.shape:
             raise TypeError("Mask and image size mismatch!")
@@ -57,11 +76,17 @@ class Plotter:
         self.redraw()
 
     def unset_mask(self):
+        """
+        Method responsible for unloading current mask data.
+        """
         self.mask = None
         self.overlay = 0
         self.redraw()
         
     def redraw(self):
+        """
+        Method responsible for displaying current frame of image to user.
+        """
         if self.overlay == 0:
             if self.relative == 1:
                 image = self.image_rel[self.axis][self.layer]
@@ -83,6 +108,25 @@ class Plotter:
         plt.pause(0.0001)
 
     def get_all_slices(self, image, axis, absolute_conversion=True, convert=True):
+        """
+        Method responsible for generating list of slices in image.
+
+        Parameters
+        ----------
+        image : np.array
+            Image data container.
+        axis : int
+            Axis of division.
+        absolute_conversion : bool (True)
+            Convert image according to global or local maximum?
+        convert : bool (True)
+            Convert image data to float?
+
+        Returns
+        -------
+        list of np.arrays
+            List of slices according to axis in image.
+        """
         slices = []
         if convert:
             if absolute_conversion:
@@ -111,27 +155,47 @@ class Plotter:
         return slices
 
     def toggle_overlay(self):
+        """
+        Switches overlay state if mask is loaded.
+        """
         if self.mask is not None:
             self.overlay ^= 1
             self.redraw()
 
     def toggle_relativity(self):
+        """
+        Toggles which images should be used - scaled to local or global maximum.
+        """
         self.relative ^= 1
         self.redraw()
 
     def next_axis(self):
+        """
+        Switches to next axis.
+        """
         self.axis += 1
         self.axis %= 3
         self.layer = 0
         self.redraw()
         
     def previous_axis(self):
+        """
+        Switches to previous axis.
+        """
         self.axis -= 1
         self.axis %= 3
         self.layer = 0
         self.redraw()
 
     def next_layer(self, offset=1):
+        """
+        Moves to further layers.
+
+        Parameters
+        ----------
+        offset : int (1)
+            Defines step of value change.
+        """
         if self.layer + offset < self.image_shape[self.axis]-1:
             self.layer += offset
         else:
@@ -139,6 +203,14 @@ class Plotter:
         self.redraw()
 
     def prev_layer(self, offset=1):
+        """
+        Moves to earlier layers.
+
+        Parameters
+        ----------
+        offset : int (1)
+            Defines step of value change.
+        """
         if self.layer - offset > 0:
             self.layer -= offset
         else:
@@ -190,10 +262,10 @@ class Plotter:
         level = level + 0.5
         return (med_image_slice > level) * 1
 
-    def get_size(self, axis):
-        return self.image_shape[axis]
-
     def med_2_csv(self):
+        """
+        Method saving current image slice as csv file.
+        """
         pathlib.Path('./data/raw/csv').mkdir(parents=True, exist_ok=True)
         name = self.name + '_' + self.axis.__str__() + '_' + self.layer.__str__()
         file = open("./data/raw/csv/" + name + ".csv", "w")
@@ -208,4 +280,7 @@ class Plotter:
         file.close()
 
     def get_info(self):
+        """
+        Method which prints data about loaded image.
+        """
         print("Dimensions of file:", self.image_shape)
