@@ -14,12 +14,21 @@ from tools.preparation.slices import generate_tumor_map
 
 
 class Analyze:
+    """
+    Analyzer class - control unit of application.
+    """
     def __init__(self):
+        """
+        Initializer of Analyze class, creates variables used to store classifier parameters.
+        """
         self.classifier_class = None
         self.classifier_load_status = False
         self.classifier_name = ""
 
     def run(self):
+        """
+        Main loop of tumor analyzer script.
+        """
         fuse = 1
         while fuse == 1:
             self.menu()
@@ -93,6 +102,9 @@ class Analyze:
     # endregion
 
     def menu(self):
+        """
+        Method responsible for displaying main menu.
+        """
         if self.classifier_load_status:
             print("Classifier " + self.classifier_name + " is LOADED")
         else:
