@@ -1,12 +1,17 @@
 import numpy as np
 import SimpleITK as sitk
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pathlib
 import os
 
 
 class Plotter:
+    """
+    Hermetic class containing logic required to represent mha images as layers in image viewer.
+    """
     def __init__(self):
+        mpl.rcParams['toolbar'] = 'None'
         self.image_abs = None
         self.image_rel = None
         self.image_shape = None
@@ -73,6 +78,8 @@ class Plotter:
             masked_image = np.multiply(image, mask)
             result = np.stack([image, masked_image, masked_image], axis=2)
             plt.imshow(result)
+        text = self.name + " axis: " + self.axis.__str__() + " layer: " + self.layer.__str__()
+        plt.title(text)
         plt.pause(0.0001)
 
     def get_all_slices(self, image, axis, absolute_conversion=True, convert=True):
