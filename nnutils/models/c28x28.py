@@ -11,6 +11,20 @@ from keras import backend
 class Net28px:
     @staticmethod
     def build(width, height, depth, classes):
+        """
+        Method which builds convolutional neural network which would serve as classifier model.
+
+        Parameters
+        ----------
+        width : int
+        height : int
+        depth : int
+        classes : int
+
+        Returns
+        -------
+        Constructed sequential model of neural network
+        """
         # initialize the model
         model = Sequential()
         input_shape = (height, width, depth)

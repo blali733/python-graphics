@@ -1,5 +1,3 @@
-import pathlib
-import shutil
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
@@ -8,21 +6,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import os
+from osutils.fileIO.directories import prepare_dirs
 from tools.matrix import resizer
 from osutils import inlineprogress as pbar, pathtools
 from osutils.fileIO import adfIO
 import json
 
 
-def prepare_dirs(model_name):
-    shutil.rmtree('./data/classifiers/' + model_name, ignore_errors=True)
-    pathlib.Path('./data/classifiers/' + model_name).mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./data/classifiers/' + model_name + '/models').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('./data/classifiers/' + model_name + '/plots').mkdir(parents=True, exist_ok=True)
-
-
 class Teacher:
+    """
+    Class containing lofic connected to training classifier.
+    """
     def __init__(self, epochs=25, initial_learning_rate=1e-3, batch_size=25, model_frame_size=28):
+        """
+        Initializer of classifier teaching class.
+
+        Parameters
+        ----------
+        epochs : int
+            Number of epochs.
+        initial_learning_rate : float
+            Starting learning rate of neural network.
+        batch_size : int
+            Number of single images processed at once.
+        model_frame_size : int
+            Defines dimensions of single input image (autoscaled).
+        """
         self.settings = {"version": 1, "size": model_frame_size}
         self.epochs = epochs
         self.initial_learning_rate = initial_learning_rate
@@ -37,6 +46,18 @@ class Teacher:
             self.image_size = 28
 
     def teach(self, model_name, random_seed=666, test_size=0.25):
+        """
+        Method containing full procedure train to teach new classifier.
+
+        Parameters
+        ----------
+        model_name : string
+            Name of created model.
+        random_seed : int
+            Seed for pseudo random number generator to ensure repeatability.
+        test_size : float
+            Percent (0.0 - 1.0) of data used as testing set.
+        """
         random.seed(random_seed)
         prepare_dirs(model_name)
         print("STEP 1: Loading images:")

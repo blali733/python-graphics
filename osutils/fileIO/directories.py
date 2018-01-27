@@ -74,3 +74,18 @@ def check_parsed_dirs():
     shutil.rmtree('./data/parsed/t2/not', ignore_errors=True)
     pathlib.Path('./data/parsed/t2/tumor').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./data/parsed/t2/not').mkdir(parents=True, exist_ok=True)
+
+
+def prepare_dirs(model_name):
+    """
+    Method responsible for creation of directories structure for classifier model.
+
+    Parameters
+    ----------
+    model_name : string
+        Name of model for which directories would be created.
+    """
+    shutil.rmtree('./data/classifiers/' + model_name, ignore_errors=True)
+    pathlib.Path('./data/classifiers/' + model_name).mkdir(parents=True, exist_ok=True)
+    pathlib.Path('./data/classifiers/' + model_name + '/models').mkdir(parents=True, exist_ok=True)
+    pathlib.Path('./data/classifiers/' + model_name + '/plots').mkdir(parents=True, exist_ok=True)
