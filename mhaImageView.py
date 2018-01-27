@@ -9,7 +9,13 @@ except ImportError:
 
 
 class Preview:
+    """
+    Class containing controller of mha file display.
+    """
     def __init__(self):
+        """
+        Initializer of class.
+        """
         self.imageService = msc.Plotter()
         self.mode = 0
         self.params = None
@@ -17,6 +23,9 @@ class Preview:
         self.main_loop_fuse = 1
 
     def main(self):
+        """
+        Main loop of application.
+        """
         plt.ion()
         while self.main_loop_fuse == 1:
             image_path = input("MHA image path: ")
@@ -29,6 +38,14 @@ class Preview:
                 self.service_key(key)
 
     def service_key(self, key):
+        """
+        Method responsible for servicing keyboard commands.
+
+        Parameters
+        ----------
+        key : char
+            Key read from keyboard.
+        """
         if key == "9":
             self.imageService.next_layer(5)
         elif key == "6":
@@ -71,6 +88,9 @@ class Preview:
 
                         
     def my_help(self):
+        """
+        Method responsible for displaying main menu.
+        """
         print("4, 7 - navigate left")
         print("6, 9 - navigate right")
         print("2, 8 - change axis")
