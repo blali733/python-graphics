@@ -26,4 +26,4 @@ Output files should be balanced between `tumor` and `not tumor` directories manu
     ----------
     max(int16)
     ```
-    * Empirically defined ranges of pixel values are used to binearize image.
+    * Empirically defined ranges of pixel values, different for each image type are used to binearize image.

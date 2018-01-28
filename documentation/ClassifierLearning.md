@@ -10,10 +10,12 @@
 1. Data are subdivided into two sets:
     * 75% to learning
     * 25% to testing
-1. We enhance data sets by (...)
+1. We enhance data sets by including rotated, shifted, sheared and zoomed copies of samples
 1. Classifier models are compiled, trained, and serialized to disk
 1. Classifier parameters are saved as `json` file into classifier directory.
 
 \-\-\-\-\-\-\-\-\-\-\-  
-* (2) Stain scaling:
-    
+* (2) Stain scaling:  
+    Array containing stain has its dimension checked and if:
+    * it is lower than desired size image is filled with zeroes, keeping fragment in center (with one pixel top-lef tolerance)
+    * it is greater than desired - image is scaled down using `scipy.misc.imresize()` function

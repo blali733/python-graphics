@@ -1,5 +1,5 @@
 # Folder structure:
--patient name  
+-patient directory  
 --\*.mr_flair.\*  
 ---\<file\>.mha  
 --\*.mr_t1.\*  
