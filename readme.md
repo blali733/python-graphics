@@ -15,4 +15,4 @@ environment to maintain common standards could be found in [settings](Settings.m
 ### Remarks:
 Classifier model is based on 
 [this post](https://www.pyimagesearch.com/2017/12/11/image-classification-with-keras-and-deep-learning/)
-. Training and testing procedures for classifiers were also inspired by mentioned source.
+by Adrian Rosebrock. Training and testing procedures for classifiers were also inspired by mentioned source.
