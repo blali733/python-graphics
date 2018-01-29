@@ -74,6 +74,12 @@ class Preview:
                     self.mode = 1
                 except TypeError as e:
                     print(e.args[0])
+        elif key == "+":
+            if self.mode == 1:
+                self.imageService.increase_offset()
+        elif key == "-":
+            if self.mode == 1:
+                self.imageService.decrease_offset()
         elif key == "Q":
             if self.mode == 1:
                 self.imageService.unset_mask()
@@ -98,8 +104,7 @@ class Preview:
         print("3 - save current slice to csv file")
         print("c - toggle relativity mode")
         print("1 - enable mask overlay:")
-        print("    1 - hide overlay")
-        print("    0 - show overlay")
+        print("    1 - toggle overlay visibility")
         print("    +/- - tweak overlay mask cutoff")
         print("Q - close image")
         print("X - exit")

@@ -103,7 +103,11 @@ class Plotter:
             masked_image = np.multiply(image, mask)
             result = np.stack([image, masked_image, masked_image], axis=2)
             plt.imshow(result)
-        text = self.name + " axis: " + self.axis.__str__() + " layer: " + self.layer.__str__()
+        if self.overlay == 0:
+            text = self.name + " axis: " + self.axis.__str__() + " layer: " + self.layer.__str__()
+        else:
+            text = self.name + " axis: " + self.axis.__str__() + " layer: " + self.layer.__str__() + " mask cutoff: "\
+                   + self.mask_cutoff.__str__()
         plt.title(text)
         plt.pause(0.0001)
 
@@ -201,6 +205,21 @@ class Plotter:
         else:
             self.layer = self.image_shape[self.axis]-1
         self.redraw()
+
+    def increase_offset(self):
+        """
+        Method increasing mask cutoff.
+        """
+        self.mask_cutoff += 1
+        self.redraw()
+
+    def decrease_offset(self):
+        """
+        Method decreasing mask cutoff.
+        """
+        if self.mask_cutoff > 0:
+            self.mask_cutoff -= 1
+            self.redraw()
 
     def prev_layer(self, offset=1):
         """
