@@ -16,8 +16,122 @@ class Separator:
         """
         self.min_area = min_area
 
+    def check_neighbourhood(self, data_mask, stain_mask, pixels: list, boundaries):
+        """
+        Method checks all pixels in neighbourhood and determines if they are part of mask (1's)
+
+        Parameters
+        ----------
+        data_mask : np.array
+            Mask obtained from image slice.
+        stain_mask : np.array
+            Mask of current stain.
+        pixels : list of tuples
+            List of pixels to be checked.
+        boundaries : tuple of 4 ints
+            Contains 4 ints: lowx, hix, lowy, hiy.
+
+        Returns
+        -------
+        Modified set of parameters, maintaining order.
+        """
+        tx = pixels[0][0]
+        ty = pixels[0][1]
+        lowx = boundaries[0]
+        hix = boundaries[1]
+        lowy = boundaries[2]
+        hiy = boundaries[3]
+        # left
+        try:
+            if data_mask[tx - 1, ty] == 1:
+                stain_mask[tx - 1, ty] = 1
+                pixels.append((tx - 1, ty))
+                data_mask[tx - 1, ty] = 0
+                if tx - 1 < lowx:
+                    lowx = tx - 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # top - left
+        try:
+            if data_mask[tx - 1, ty - 1] == 1:
+                stain_mask[tx - 1, ty - 1] = 1
+                pixels.append((tx - 1, ty - 1))
+                data_mask[tx - 1, ty - 1] = 0
+                if tx - 1 < lowx:
+                    lowx = tx - 1
+                if ty - 1 < lowy:
+                    lowy = ty - 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # top
+        try:
+            if data_mask[tx, ty - 1] == 1:
+                stain_mask[tx, ty - 1] = 1
+                pixels.append((tx, ty - 1))
+                data_mask[tx, ty - 1] = 0
+                if ty - 1 < lowy:
+                    lowy = ty - 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # top - right
+        try:
+            if data_mask[tx + 1, ty - 1] == 1:
+                stain_mask[tx + 1, ty - 1] = 1
+                pixels.append((tx + 1, ty - 1))
+                data_mask[tx + 1, ty - 1] = 0
+                if tx + 1 > hix:
+                    hix = tx + 1
+                if ty - 1 < lowy:
+                    lowy = ty - 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # right
+        try:
+            if data_mask[tx + 1, ty] == 1:
+                stain_mask[tx + 1, ty] = 1
+                pixels.append((tx + 1, ty))
+                data_mask[tx + 1, ty] = 0
+                if tx + 1 > hix:
+                    hix = tx + 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # bottom - right
+        try:
+            if data_mask[tx + 1, ty + 1] == 1:
+                stain_mask[tx + 1, ty + 1] = 1
+                pixels.append((tx + 1, ty + 1))
+                data_mask[tx + 1, ty + 1] = 0
+                if tx + 1 > hix:
+                    hix = tx + 1
+                if ty + 1 > hiy:
+                    hiy = ty + 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # bottom
+        try:
+            if data_mask[tx, ty + 1] == 1:
+                stain_mask[tx, ty + 1] = 1
+                pixels.append((tx, ty + 1))
+                data_mask[tx, ty + 1] = 0
+                if ty + 1 > hiy:
+                    hiy = ty + 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        # bottom - left
+        try:
+            if data_mask[tx - 1, ty + 1] == 1:
+                stain_mask[tx - 1, ty + 1] = 1
+                pixels.append((tx - 1, ty + 1))
+                data_mask[tx - 1, ty + 1] = 0
+                if tx - 1 < lowx:
+                    lowx = tx - 1
+                if ty + 1 > hiy:
+                    hiy = ty + 1
+        except IndexError:  # In case of addressing pixel not in range
+            pass
+        return data_mask, stain_mask, pixels, (lowx, hix, lowy, hiy)
+
     def get_list_of_stains(self, two_layer_image):
-        # TODO clean mess in varible naming
         """
         Separates stains from cumulative image.
 
@@ -40,121 +154,44 @@ class Separator:
         mask = np.copy(two_layer_image[1]).astype(two_layer_image[1].dtype)
         temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         if mask.max() == 1:
-            for y in range(mask.shape[0]-1):
-                if mask[y, :].max() == 1:
-                    for x in range(mask.shape[1] - 1):
-                        if mask[y, x] == 1:  # Got hit
+            for x in range(mask.shape[0]-1):
+                if mask[x, :].max() == 1:
+                    for y in range(mask.shape[1] - 1):
+                        if mask[x, y] == 1:  # Got hit
                             # Copy address values
                             lowx = x  # Would be set to left border of image
-                            lowy = y  # Doubles as upper bound of image - scanning method makes it impossible to go higher
+                            lowy = y  # Would be set to top border of image
                             hix = x   # Would be set to right border of image
                             hiy = y   # Would be set to bottom border of image
+                            borders = (lowx, hix, lowy, hiy)
                             # Activate in new mask
-                            mask[y, x] = 0
-                            temp_mask[lowy, lowx] = 1
+                            mask[x, y] = 0
+                            temp_mask[lowx, lowy] = 1
                             # Add to list of pixels waiting for neighbourhood check
-                            pixels.append((lowy, lowx))
+                            pixels.append((lowx, lowy))
                             while len(pixels) > 0:  # Check neighbours
-                                ty = pixels[0][0]
-                                tx = pixels[0][1]
-                                # region Checking neighbours
-                                # top
-                                try:
-                                    if mask[ty - 1, tx] == 1:
-                                        temp_mask[ty - 1, tx] = 1
-                                        pixels.append((ty - 1, tx))
-                                        mask[ty - 1, tx] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # top - right
-                                try:
-                                    if mask[ty - 1, tx + 1] == 1:
-                                        temp_mask[ty - 1, tx + 1] = 1
-                                        pixels.append((ty - 1, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        mask[ty - 1, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # right
-                                try:
-                                    if mask[ty, tx + 1] == 1:
-                                        temp_mask[ty, tx + 1] = 1
-                                        pixels.append((ty, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        mask[ty, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom - right
-                                try:
-                                    if mask[ty + 1, tx + 1] == 1:
-                                        temp_mask[ty + 1, tx + 1] = 1
-                                        pixels.append((ty + 1, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        mask[ty + 1, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom
-                                try:
-                                    if mask[ty + 1, tx] == 1:
-                                        temp_mask[ty + 1, tx] = 1
-                                        pixels.append((ty + 1, tx))
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        mask[ty + 1, tx] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom - left
-                                try:
-                                    if mask[ty + 1, tx - 1] == 1:
-                                        temp_mask[ty + 1, tx - 1] = 1
-                                        pixels.append((ty + 1, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        mask[ty + 1, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # left
-                                try:
-                                    if mask[ty, tx - 1] == 1:
-                                        temp_mask[ty, tx - 1] = 1
-                                        pixels.append((ty, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        mask[ty, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # top - left
-                                try:
-                                    if mask[ty - 1, tx - 1] == 1:
-                                        temp_mask[ty - 1, tx - 1] = 1
-                                        pixels.append((ty - 1, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        mask[ty - 1, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # endregion
+                                tx = pixels[0][0]
+                                ty = pixels[0][1]
+                                mask, temp_mask, pixels, borders = self.check_neighbourhood(mask, temp_mask, pixels,
+                                                                                            borders)
                                 pixels.pop(0)  # Remove checked pixel from list
                             if temp_mask.sum() > self.min_area:
+                                lowx = borders[0]
+                                hix = borders[1]
+                                lowy = borders[2]
+                                hiy = borders[3]
                                 # Addition caused by rules of a:b which expands to a<=x<b,
                                 # so to include upper bound we have to add 1
-                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1], True)  # temp_mask[lowy:(hiy+1), lowx:(hix+1)]
-                                temp_image_reduced = np.multiply(image[lowy:(hiy+1), lowx:(hix+1)], temp_mask_reduced)
-                                stains.append((temp_image_reduced, temp_mask_reduced, lowy, lowx))
+                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix+1, hiy+1], True)
+                                temp_image_reduced = np.multiply(image[lowx:hix+1, lowy:hiy+1], temp_mask_reduced)
+                                stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
                             temp_mask = np.zeros(mask.shape, dtype=mask.dtype)
         return stains
 
     def find_common_parts(self, manual_segmentation, manual_segmentation_stains, automatic_segmentation, image,
                           common_percentage=0.80):
-        # TODO Cleanup variable names
         """
+        Method segregating automatic segmentation results according to manual one.
 
         Parameters
         ----------
@@ -179,130 +216,40 @@ class Separator:
         pixels = []  # List of neighbouring unchecked pixels as address tuples
         if automatic_segmentation.sum() != 0:
             for stain in manual_segmentation_stains:
-                m2full = stain[1].sum()
                 offset = stain[1].shape
                 offset = (offset[0] - 1, offset[1] - 1)
                 x_limit = stain[2]
                 y_limit = stain[3]
-                for y in range(x_limit, x_limit + offset[0], 1):
-                    for x in range(y_limit, y_limit + offset[1], 1):
-                        if automatic_segmentation[y, x] == 1:  # Got hit
+                for x in range(x_limit, x_limit + offset[0], 1):
+                    for y in range(y_limit, y_limit + offset[1], 1):
+                        if automatic_segmentation[x, y] == 1:  # Got hit
                             # Copy address values
                             lowx = x  # Would be set to left border of image
-                            lowy = y  # Doubles as upper bound of image - scanning method makes it impossible to go higher
+                            lowy = y  # Would be set to top border of image
                             hix = x  # Would be set to right border of image
                             hiy = y  # Would be set to bottom border of image
+                            borders = (lowx, hix, lowy, hiy)
                             # Activate in new automatic_segmentation
-                            automatic_segmentation[y, x] = 0
-                            temp_mask[lowy, lowx] = 1
+                            automatic_segmentation[x, y] = 0
+                            temp_mask[lowx, lowy] = 1
                             # Add to list of pixels waiting for neighbourhood check
-                            pixels.append((lowy, lowx))
+                            pixels.append((lowx, lowy))
                             while len(pixels) > 0:  # Check neighbours
-                                # region Checking neighbours
-                                ty = pixels[0][0]
-                                tx = pixels[0][1]
-                                # top
-                                try:
-                                    if automatic_segmentation[ty - 1, tx] == 1:
-                                        temp_mask[ty - 1, tx] = 1
-                                        pixels.append((ty - 1, tx))
-                                        automatic_segmentation[ty - 1, tx] = 0
-                                        if ty - 1 < lowy:
-                                            lowy = ty-1
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # top - right
-                                try:
-                                    if automatic_segmentation[ty - 1, tx + 1] == 1:
-                                        temp_mask[ty - 1, tx + 1] = 1
-                                        pixels.append((ty - 1, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        if ty - 1 < lowy:
-                                            lowy = ty - 1
-                                        automatic_segmentation[ty - 1, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # right
-                                try:
-                                    if automatic_segmentation[ty, tx + 1] == 1:
-                                        temp_mask[ty, tx + 1] = 1
-                                        pixels.append((ty, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        automatic_segmentation[ty, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom - right
-                                try:
-                                    if automatic_segmentation[ty + 1, tx + 1] == 1:
-                                        temp_mask[ty + 1, tx + 1] = 1
-                                        pixels.append((ty + 1, tx + 1))
-                                        if tx + 1 > hix:
-                                            hix = tx + 1
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        automatic_segmentation[ty + 1, tx + 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom
-                                try:
-                                    if automatic_segmentation[ty + 1, tx] == 1:
-                                        temp_mask[ty + 1, tx] = 1
-                                        pixels.append((ty + 1, tx))
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        automatic_segmentation[ty + 1, tx] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # bottom - left
-                                try:
-                                    if automatic_segmentation[ty + 1, tx - 1] == 1:
-                                        temp_mask[ty + 1, tx - 1] = 1
-                                        pixels.append((ty + 1, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        if ty + 1 > hiy:
-                                            hiy = ty + 1
-                                        automatic_segmentation[ty + 1, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # left
-                                try:
-                                    if automatic_segmentation[ty, tx - 1] == 1:
-                                        temp_mask[ty, tx - 1] = 1
-                                        pixels.append((ty, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        automatic_segmentation[ty, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # top - left
-                                try:
-                                    if automatic_segmentation[ty - 1, tx - 1] == 1:
-                                        temp_mask[ty - 1, tx - 1] = 1
-                                        pixels.append((ty - 1, tx - 1))
-                                        if tx - 1 < lowx:
-                                            lowx = tx - 1
-                                        if ty - 1 < lowy:
-                                            lowy = ty-1
-                                        automatic_segmentation[ty - 1, tx - 1] = 0
-                                except IndexError:  # In case of addressing pixel not in range
-                                    pass
-                                # endregion
+                                automatic_segmentation, temp_mask, pixels, borders = self.check_neighbourhood(
+                                    automatic_segmentation, temp_mask, pixels, borders)
                                 pixels.pop(0)  # Remove checked pixel from list
                             m1, com, m2 = comparator.raw_compare(manual_segmentation, temp_mask)
                             if com / (com + m2) > common_percentage:
                                 if temp_mask.sum() > self.min_area:
-                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1], True)  # temp_mask[lowy:(hiy + 1), lowx:(hix + 1)]
-                                    temp_image_reduced = np.multiply(image[lowy:(hiy + 1), lowx:(hix + 1)],
+                                    lowx = borders[0]
+                                    hix = borders[1]
+                                    lowy = borders[2]
+                                    hiy = borders[3]
+                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1],
+                                                                       True)
+                                    temp_image_reduced = np.multiply(image[lowx:(hix + 1), lowy:(hiy + 1)],
                                                                      temp_mask_reduced)
                                     tumor.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
-                                #     print("Tumor candidate accepted")
-                                # else:
-                                #     print("Tumor candidate dropped - low area")
-                            # else:
-                            #     print("Tumor candidate dropped - to big overshoot: " + (com / (com + m2)).__str__(), com, m2)
             if automatic_segmentation.sum() != 0:
                 not_tumor = self.get_list_of_stains((image, automatic_segmentation))
         return tumor, not_tumor

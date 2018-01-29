@@ -62,7 +62,7 @@ def shrink(mask, origin, size, absolute=False):
     else:
         mx = x + size[0]
         my = y + size[1]
-    return mask[y:my, x:mx]
+    return mask[x:mx, y:my]
 
 
 def expand(mask, origin, size, desired_size):
