@@ -10,6 +10,7 @@ from tools.preparation.slices import parse_slices
 
 def generate_list_of_patients():
     """
+    Method responsible for generating list of patients to be analyzed.
 
     Returns
     -------

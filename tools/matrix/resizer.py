@@ -12,7 +12,7 @@ def resize(image, x, y=0, upscale=False):
 
     Parameters
     ----------
-    image : nparray
+    image : np.array
         Input image data
     x : int
         X size of output image
@@ -23,7 +23,7 @@ def resize(image, x, y=0, upscale=False):
 
     Returns
     -------
-    nparray
+    np.array
         Rescaled image.
     """
     if y != 0:
@@ -54,6 +54,25 @@ def resize(image, x, y=0, upscale=False):
 
 
 def shrink(mask, origin, size, absolute=False):
+    """
+    Method provides cutout of mask with defined size.
+
+    Parameters
+    ----------
+    mask : np.array
+        Original image to be cropped.
+    origin : tuple of ints
+        Top left pixel of fragment.
+    size : tuple of ints
+        Offset or bottom right pixel.
+    absolute : bool
+        Defines if size is passed as pixel coordinates or offset
+
+    Returns
+    -------
+    np.array
+        Cropped image.
+    """
     x = origin[0]
     y = origin[1]
     if absolute:
@@ -73,14 +92,19 @@ def expand(mask, origin, size, desired_size):
 
     Parameters
     ----------
-    mask
-    origin
-    size
-    desired_size
+    mask : np.array
+        Original image to be cropped.
+    origin : tuple of ints
+        Top left pixel of fragment in output image.
+    size : tuple of ints
+        Offset to the bottom right end of fragment.
+    desired_size : tuple of ints
+        Shape of output array.
 
     Returns
     -------
-
+    np.array
+        Fragment in bigger array expanded by 0's.
     """
     x = origin[0]
     y = origin[1]

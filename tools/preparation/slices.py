@@ -12,10 +12,15 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     Parameters
     ----------
     slices_tuple : tuple of lists
+        Tuple of lists of slices.
     yes_counters : tuple of ints
+        Counters of tumor files per type.
     no_counters : tuple of ints
-    sep : Separator class instance
+        Counters of not tumor files per type.
+    sep : class
+        Instance of separator class.
     axis : int
+        Id of current axis.
 
     Returns
     -------
@@ -76,6 +81,21 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
 
 
 def generate_tumor_map(classifier_class, indexed_slices_list):
+    """
+    Method responsible for classification train.
+
+    Parameters
+    ----------
+    classifier_class : class
+        Instance of classifier class
+    indexed_slices_list : tuple
+        Container of dismantled data for all images.
+
+    Returns
+    -------
+    np.array
+        Final cuboid with results of analysis.
+    """
     # NOTES 1) use auto segmentation on slices
     # NOTES 2) use classification on slices
     # NOTES 3) multiply tumor slices by result of classification

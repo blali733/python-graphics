@@ -102,10 +102,35 @@ def prepare_testing_pairs(file_name, patient):
 
 
 def save_segmentation(segmentation, patient):
+    """
+    Method responsible for saving results of analysis to mha file.
+
+    Parameters
+    ----------
+    segmentation : np.array
+        Result of analysis as 3d np.array.
+    patient : int
+        Patient ID.
+    """
     mhaIO.save_mha(segmentation, "./classify/structured/pat_" + patient.__str__() + "/classification.mha")
 
 
 def get_all_slices(image, axis=0):
+    """
+    Method produces list of stains according to axis.
+
+    Parameters
+    ----------
+    image : np.array
+        3d np.array from mha file to be sliced.
+    axis : int
+        Id of desired axis
+
+    Returns
+    -------
+    list
+        List of slices according to chosen axis.
+    """
     slices = []
     if axis == 0:
         for i in range(image.shape[0]):
@@ -117,21 +142,3 @@ def get_all_slices(image, axis=0):
         for i in range(image.shape[2]):
             slices.append(image[:, :, i])
     return slices
-
-
-def get_nth_slice(med_image, axis, slice_id):
-    if axis == 0:
-        if slice_id <= med_image.shape[0]:
-            return med_image[slice_id, :, :]
-        else:
-            return 0
-    elif axis == 1:
-        if slice_id <= med_image.shape[1]:
-            return med_image[:, slice_id, :]
-        else:
-            return 0
-    else:
-        if slice_id <= med_image.shape[2]:
-            return med_image[:, :, slice_id]
-        else:
-            return 0
