@@ -5,10 +5,19 @@ from osutils import pathtools
 
 
 class Sorter:
+    """
+    Class containing logic of training data sorting.
+    """
     def __init__(self):
+        """
+        Initializer of Sorter class, reserves class variable for patient dictionary.
+        """
         self.patient_dict = {}
 
     def main(self):
+        """
+        Method responsible for dividing content of brats2015 training set into proper directories.
+        """
         pathlib.Path('./data/raw/flair').mkdir(parents=True, exist_ok=True)
         pathlib.Path('./data/raw/t1').mkdir(parents=True, exist_ok=True)
         pathlib.Path('./data/raw/t1c').mkdir(parents=True, exist_ok=True)

@@ -3,6 +3,25 @@ from tools.matrix import resizer
 
 
 def flip_and_check(image, mask, mask_stains):
+    """
+    SUFFERS HEAVY DAMAGE IN LOGIC, DO NOT USE.
+
+    Method responsible for generating mirrored masks of manual segmentation. Returns only stains which are fully
+    separated from original one.
+
+    Parameters
+    ----------
+    image : np.array
+        Slice of mha image.
+    mask : np.array
+        Mask corresponding to slice.
+    mask_stains : list
+        List of stains in mask.
+
+    Returns
+    -------
+        List of stains.
+    """
     stains = []
     if mask.sum() != 0:
         flipped = np.flip(mask, axis=1)
