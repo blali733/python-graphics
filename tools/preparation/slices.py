@@ -1,5 +1,4 @@
-import numpy
-
+import numpy as np
 from tools.mask import mirrorMask, separator
 from tools.matrix import resizer, recreate
 from tools.preparation.stains import save_stains
@@ -23,6 +22,7 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     tuple, tuple
         Updated values of yes and no counters.
     """
+    # TODO Investigate bugs in mask mirroring
     flair_yes = yes_counters[0]
     t1_yes = yes_counters[1]
     t1c_yes = yes_counters[2]
@@ -35,9 +35,9 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     for imTuple in slices_tuple[0]:
         ret_list = sep.get_list_of_stains(imTuple)
         flair_yes = save_stains(ret_list, "flair", "tumor", "manual", flair_yes)
-        nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-        flair_no = save_stains(nret_list, "flair", "not", "flip", flair_no)
-        auto_segmentation = seg.flair(imTuple[0])
+        # nret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+        # flair_no = save_stains(nret_list, "flair", "not", "flip", flair_no)
+        auto_segmentation = segment.flair(imTuple[0])
         ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
         flair_yes = save_stains(ret_positive, "flair", "tumor", "auto", flair_yes)
         flair_no = save_stains(ret_negative, "flair", "not", "auto", flair_no)
@@ -45,9 +45,9 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     for imTuple in slices_tuple[1]:
         ret_list = sep.get_list_of_stains(imTuple)
         t1_yes = save_stains(ret_list, "t1", "tumor", "manual", t1_yes)
-        ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-        t1_no = save_stains(ret_list, "t1", "not", "flip", t1_no)
-        auto_segmentation = seg.t1(imTuple[0])
+        # ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+        # t1_no = save_stains(ret_list, "t1", "not", "flip", t1_no)
+        auto_segmentation = segment.t1(imTuple[0])
         ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
         t1_yes = save_stains(ret_positive, "t1", "tumor", "auto", t1_yes)
         t1_no = save_stains(ret_negative, "t1", "not", "auto", t1_no)
@@ -55,9 +55,9 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     for imTuple in slices_tuple[2]:
         ret_list = sep.get_list_of_stains(imTuple)
         t1c_yes = save_stains(ret_list, "t1c", "tumor", "manual", t1c_yes)
-        ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-        t1c_no = save_stains(ret_list, "t1c", "not", "flip", t1c_no)
-        auto_segmentation = seg.t1c(imTuple[0])
+        # ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+        # t1c_no = save_stains(ret_list, "t1c", "not", "flip", t1c_no)
+        auto_segmentation = segment.t1c(imTuple[0])
         ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
         t1c_yes = save_stains(ret_positive, "t1c", "tumor", "auto", t1c_yes)
         t1c_no = save_stains(ret_negative, "t1c", "not", "auto", t1c_no)
@@ -65,9 +65,9 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     for imTuple in slices_tuple[3]:
         ret_list = sep.get_list_of_stains(imTuple)
         t2_yes = save_stains(ret_list, "t2", "tumor", "manual", t2_yes)
-        ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
-        t2_no = save_stains(ret_list, "t2", "not", "flip", t2_no)
-        auto_segmentation = seg.t2(imTuple[0])
+        # ret_list = mirrorMask.flip_and_check(imTuple[0], imTuple[1], ret_list)
+        # t2_no = save_stains(ret_list, "t2", "not", "flip", t2_no)
+        auto_segmentation = segment.t2(imTuple[0])
         ret_positive, ret_negative = sep.find_common_parts(imTuple[1], ret_list, auto_segmentation, imTuple[0])
         t2_yes = save_stains(ret_positive, "t2", "tumor", "auto", t2_yes)
         t2_no = save_stains(ret_negative, "t2", "not", "auto", t2_no)
@@ -101,7 +101,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # region Mask slices classification
     for mslice in indexed_slices_list[0][0]:
         accepted = []
-        stains_mask = (seg.flair(mslice[0])).astype(np.float)
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -118,7 +118,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         flair0.append(stains_mask)
     for mslice in indexed_slices_list[0][1]:
         accepted = []
-        stains_mask = (seg.flair(mslice[0])).astype(np.float)
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -135,7 +135,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         flair1.append(stains_mask)
     for mslice in indexed_slices_list[0][2]:
         accepted = []
-        stains_mask = (seg.flair(mslice[0])).astype(np.float)
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -162,7 +162,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # region Mask slices classification
     for mslice in indexed_slices_list[1][0]:
         accepted = []
-        stains_mask = (seg.t1(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -179,7 +179,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t10.append(stains_mask)
     for mslice in indexed_slices_list[1][1]:
         accepted = []
-        stains_mask = (seg.t1(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -196,7 +196,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t11.append(stains_mask)
     for mslice in indexed_slices_list[1][2]:
         accepted = []
-        stains_mask = (seg.t1(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -223,7 +223,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # region Mask slices classification
     for mslice in indexed_slices_list[2][0]:
         accepted = []
-        stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1c(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -240,7 +240,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t1c0.append(stains_mask)
     for mslice in indexed_slices_list[2][1]:
         accepted = []
-        stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1c(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -257,7 +257,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t1c1.append(stains_mask)
     for mslice in indexed_slices_list[2][2]:
         accepted = []
-        stains_mask = (seg.t1c(mslice[0])).astype(np.float)
+        stains_mask = (segment.t1c(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -284,7 +284,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # region Mask slices classification
     for mslice in indexed_slices_list[3][0]:
         accepted = []
-        stains_mask = (seg.t2(mslice[0])).astype(np.float)
+        stains_mask = (segment.t2(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -301,7 +301,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t20.append(stains_mask)
     for mslice in indexed_slices_list[3][1]:
         accepted = []
-        stains_mask = (seg.t2(mslice[0])).astype(np.float)
+        stains_mask = (segment.t2(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
@@ -318,7 +318,7 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
         t21.append(stains_mask)
     for mslice in indexed_slices_list[3][2]:
         accepted = []
-        stains_mask = (seg.t2(mslice[0])).astype(np.float)
+        stains_mask = (segment.t2(mslice[0])).astype(np.float)
         if stains_mask.sum() != 0:
             stains = sep.get_list_of_stains((mslice[0], stains_mask))
             for stain in stains:
