@@ -54,6 +54,7 @@ def check_parsed_dirs():
     """
     Method responsible for generating directories for parsed data.
     """
+    print("Preparing folder structure for parsed data.")
     pathlib.Path('./data/parsed/flair').mkdir(parents=True, exist_ok=True)
     shutil.rmtree('./data/parsed/flair/tumor', ignore_errors=True)
     shutil.rmtree('./data/parsed/flair/not', ignore_errors=True)
@@ -74,6 +75,7 @@ def check_parsed_dirs():
     shutil.rmtree('./data/parsed/t2/not', ignore_errors=True)
     pathlib.Path('./data/parsed/t2/tumor').mkdir(parents=True, exist_ok=True)
     pathlib.Path('./data/parsed/t2/not').mkdir(parents=True, exist_ok=True)
+    print("done")
 
 
 def prepare_dirs(model_name):
