@@ -74,3 +74,7 @@ def prepare_data():
                 flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
                 slices_tuple = (flair, t1, t1c, t2)
                 yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
+        print("Flair: tumor - " + yes_counters[0].__str__() + "; not - " + no_counters[0].__str__())
+        print("T1: tumor - " + yes_counters[1].__str__() + "; not - " + no_counters[1].__str__())
+        print("T1c: tumor - " + yes_counters[2].__str__() + "; not - " + no_counters[2].__str__())
+        print("T2: tumor - " + yes_counters[3].__str__() + "; not - " + no_counters[3].__str__())
