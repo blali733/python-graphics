@@ -44,7 +44,7 @@ def check_classify_input_dir():
             elif ".mha" in file:
                 try:
                     id = patient_dict[pathtools.get_folder_name_from_path(root, -2)]
-                    shutil.copy2(os.path.join(root, file), "./classify/structured/" + id.__str__() + "/" + file)
+                    shutil.copy2(os.path.join(root, file), "./classify/structured/pat_" + id.__str__() + "/" + file)
                 except TypeError:
                     print("Unknown patient file!")
     pass
