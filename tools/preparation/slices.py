@@ -368,6 +368,6 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # endregion
     # region Final cuboid normalization
     # TODO tweak parameter
-    final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 3.0)
+    # final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 3.0)
     # endregion
     return final_mask_cube

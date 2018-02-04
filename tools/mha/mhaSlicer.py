@@ -101,7 +101,7 @@ def prepare_testing_pairs(file_name, patient):
     return slices
 
 
-def save_segmentation(segmentation, patient):
+def save_segmentation(segmentation, patient, offset):
     """
     Method responsible for saving results of analysis to mha file.
 
@@ -112,7 +112,7 @@ def save_segmentation(segmentation, patient):
     patient : int
         Patient ID.
     """
-    mhaIO.save_mha(segmentation, "./classify/structured/pat_" + patient.__str__() + "/classification.mha")
+    mhaIO.save_mha(segmentation, "./classify/structured/pat_" + patient.__str__() + "/classification_" + offset.__str__() + ".mha")
 
 
 def get_all_slices(image, axis=0):

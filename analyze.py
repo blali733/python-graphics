@@ -6,6 +6,7 @@ from nnutils import teach, test
 from osutils.fileIO.directories import check_classify_input_dir
 from tools.preparation.file2mem import generate_list_of_patients, prepare_data
 from tools.preparation.slices import generate_tumor_map
+import numpy as np
 
 
 # Kept as reference for checking execution time:
@@ -98,7 +99,12 @@ class Analyze:
                 t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
                 segmentation = generate_tumor_map(self.classifier_class,
                                                   (flair_slices, t1_slices, t1c_slices, t2_slices))
-                mhaSlicer.save_segmentation(segmentation, patient[0])
+                # mhaSlicer.save_segmentation(segmentation, patient[0])
+                # binearize and save different segmentations:
+                for i in range(0, 17, 1):
+                    val = 3.0 + i * 0.5
+                    result = ((np.copy(segmentation).astype(np.float) > val)*1).astype(np.int16)
+                    mhaSlicer.save_segmentation(result, patient[0], val)
     # endregion
 
     def menu(self):

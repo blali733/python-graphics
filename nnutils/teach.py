@@ -61,46 +61,46 @@ class Teacher:
         random.seed(random_seed)
         prepare_dirs(model_name)
         print("STEP 1: Loading images:")
-        data_flair = []
-        labels_flair = []
-        data_t1 = []
-        labels_t1 = []
+        # data_flair = []
+        # labels_flair = []
+        # data_t1 = []
+        # labels_t1 = []
         data_t1c = []
         labels_t1c = []
         data_t2 = []
         labels_t2 = []
-        print("STEP 1a: flair:")
-        for root, subFolders, files in os.walk("./data/parsed/flair"):
-            files_count = len(files)
-            done_count = 0
-            random.shuffle(files)
-            for file in files:
-                try:
-                    image = adfIO.load(os.path.join(root, file), True)
-                    data_flair.append(img_to_array(resizer.resize(image, self.image_size)))
-                    label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
-                    label = 1 if label == "tumor" else 0
-                    labels_flair.append(label)
-                except FileExistsError:
-                    print("Corrupted file")
-                done_count += 1
-                pbar.inline_out_of_progress(done_count, files_count, "files")
-        print("STEP 1b: t1:")
-        for root, subFolders, files in os.walk("./data/parsed/t1"):
-            files_count = len(files)
-            done_count = 0
-            random.shuffle(files)
-            for file in files:
-                try:
-                    image = adfIO.load(os.path.join(root, file), True)
-                    data_t1.append(img_to_array(resizer.resize(image, self.image_size)))
-                    label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
-                    label = 1 if label == "tumor" else 0
-                    labels_t1.append(label)
-                except FileExistsError:
-                    print("Corrupted file")
-                done_count += 1
-                pbar.inline_out_of_progress(done_count, files_count, "files")
+        # print("STEP 1a: flair:")
+        # for root, subFolders, files in os.walk("./data/parsed/flair"):
+        #     files_count = len(files)
+        #     done_count = 0
+        #     random.shuffle(files)
+        #     for file in files:
+        #         try:
+        #             image = adfIO.load(os.path.join(root, file), True)
+        #             data_flair.append(img_to_array(resizer.resize(image, self.image_size)))
+        #             label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
+        #             label = 1 if label == "tumor" else 0
+        #             labels_flair.append(label)
+        #         except FileExistsError:
+        #             print("Corrupted file")
+        #         done_count += 1
+        #         pbar.inline_out_of_progress(done_count, files_count, "files")
+        # print("STEP 1b: t1:")
+        # for root, subFolders, files in os.walk("./data/parsed/t1"):
+        #     files_count = len(files)
+        #     done_count = 0
+        #     random.shuffle(files)
+        #     for file in files:
+        #         try:
+        #             image = adfIO.load(os.path.join(root, file), True)
+        #             data_t1.append(img_to_array(resizer.resize(image, self.image_size)))
+        #             label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
+        #             label = 1 if label == "tumor" else 0
+        #             labels_t1.append(label)
+        #         except FileExistsError:
+        #             print("Corrupted file")
+        #         done_count += 1
+        #         pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 1c: t1c:")
         for root, subFolders, files in os.walk("./data/parsed/t1c"):
             files_count = len(files)
@@ -116,9 +116,9 @@ class Teacher:
                 except FileExistsError:
                     print("Corrupted file")
                 done_count += 1
-                pbar.inline_out_of_progress(done_count, files_count, "t2")
+                pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 1d: t2:")
-        for root, subFolders, files in os.walk("./data/parsed/flair"):
+        for root, subFolders, files in os.walk("./data/parsed/t2"):
             files_count = len(files)
             done_count = 0
             random.shuffle(files)
@@ -135,22 +135,22 @@ class Teacher:
                 pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 2: Splitting data:")
         maximum = np.iinfo(np.int16).max
-        print("STEP 2a: flair")
-        data_flair = np.array(data_flair, dtype=np.float) / maximum
-        labels_flair = np.array(labels_flair)
-        (train_x_flair, test_x_flair, train_y_flair, test_y_flair) = train_test_split(data_flair, labels_flair,
-                                                                                      test_size=test_size,
-                                                                                      random_state=random_seed)
-        train_y_flair = to_categorical(train_y_flair, num_classes=2)
-        test_y_flair = to_categorical(test_y_flair, num_classes=2)
-        print("STEP 2b: t1")
-        data_t1 = np.array(data_t1, dtype=np.float) / maximum
-        labels_t1 = np.array(labels_t1)
-        (train_x_t1, test_x_t1, train_y_t1, test_y_t1) = train_test_split(data_t1, labels_t1,
-                                                                          test_size=test_size,
-                                                                          random_state=random_seed)
-        train_y_t1 = to_categorical(train_y_t1, num_classes=2)
-        test_y_t1 = to_categorical(test_y_t1, num_classes=2)
+        # print("STEP 2a: flair")
+        # data_flair = np.array(data_flair, dtype=np.float) / maximum
+        # labels_flair = np.array(labels_flair)
+        # (train_x_flair, test_x_flair, train_y_flair, test_y_flair) = train_test_split(data_flair, labels_flair,
+        #                                                                               test_size=test_size,
+        #                                                                               random_state=random_seed)
+        # train_y_flair = to_categorical(train_y_flair, num_classes=2)
+        # test_y_flair = to_categorical(test_y_flair, num_classes=2)
+        # print("STEP 2b: t1")
+        # data_t1 = np.array(data_t1, dtype=np.float) / maximum
+        # labels_t1 = np.array(labels_t1)
+        # (train_x_t1, test_x_t1, train_y_t1, test_y_t1) = train_test_split(data_t1, labels_t1,
+        #                                                                   test_size=test_size,
+        #                                                                   random_state=random_seed)
+        # train_y_t1 = to_categorical(train_y_t1, num_classes=2)
+        # test_y_t1 = to_categorical(test_y_t1, num_classes=2)
         print("STEP 2c: t1c")
         data_t1c = np.array(data_t1c, dtype=np.float) / maximum
         labels_t1c = np.array(labels_t1c)
@@ -171,22 +171,24 @@ class Teacher:
         aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
                                  height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
                                  horizontal_flip=True, fill_mode="nearest")
-        values = [(train_x_flair, test_x_flair, train_y_flair, test_y_flair),
-                  (train_x_t1, test_x_t1, train_y_t1, test_y_t1),
+        values = [
+                  # (train_x_flair, test_x_flair, train_y_flair, test_y_flair),
+                  # (train_x_t1, test_x_t1, train_y_t1, test_y_t1),
                   (train_x_t1c, test_x_t1c, train_y_t1c, test_y_t1c),
                   (train_x_t2, test_x_t2, train_y_t2, test_y_t2)]
-        for i in range(4):
+        for i in range(2):
             trainX = values[i][0]
             testX = values[i][1]
             trainY = values[i][2]
             testY = values[i][3]
+#            if i == 0:
+#                print("Flair model:")
+#                name = "flair"
+#            elif i == 1:
+#                print("T1 model:")
+#                name ="t1"
+            #el
             if i == 0:
-                print("Flair model:")
-                name = "flair"
-            elif i == 1:
-                print("T1 model:")
-                name ="t1"
-            elif i == 2:
                 print("T1c model:")
                 name = "t1c"
             else:
