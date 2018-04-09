@@ -1,8 +1,8 @@
 import numpy as np
-from tools.mask import mirrorMask, separator
-from tools.matrix import resizer, recreate
-from tools.preparation.stains import save_stains
-from tools.segmentation import segment
+from src.tools.mask import separator
+from src.tools.matrix import resizer, recreate
+from src.tools.preparation.stains import save_stains
+from src.tools.segmentation import segment
 
 
 def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):

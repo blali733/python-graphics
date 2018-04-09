@@ -6,10 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import os
-from osutils.fileIO.directories import prepare_dirs
-from tools.matrix import resizer
-from osutils import inlineprogress as pbar, pathtools
-from osutils.fileIO import adfIO
+from src.osutils import pathtools
+from src.osutils.fileIO.directories import prepare_dirs
+from src.tools.matrix import resizer
+from src.osutils import inlineprogress as pbar
+from src.osutils.fileIO import adfIO
 import json
 
 
@@ -37,11 +38,11 @@ class Teacher:
         self.initial_learning_rate = initial_learning_rate
         self.batch_size = batch_size
         if model_frame_size == 28:
-            from nnutils.models import c28x28
+            from src.nnutils.models import c28x28
             self.model_cooker = c28x28.Net28px()
             self.image_size = 28
         else:
-            from nnutils.models import c28x28
+            from src.nnutils.models import c28x28
             self.model_cooker = c28x28.Net28px()
             self.image_size = 28
 

@@ -1,9 +1,8 @@
-from mhaDisplay import medImageServicing as msc
 import matplotlib.pyplot as plt
 try:
-    from mhaDisplay import windows as osutil
+    from src.mhaDisplay import windows as osutil, posix as osutil, medImageServicing as msc
 except ImportError:
-    from mhaDisplay import posix as osutil
+    pass
 
 # TODO catch and service exception on wrong files.
 

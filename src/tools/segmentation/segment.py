@@ -1,4 +1,4 @@
-from tools.mha import mhaMath
+from src.tools.mha import mhaMath
 
 
 def flair(image_slice):

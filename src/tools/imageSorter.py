@@ -1,7 +1,7 @@
 import os
 import shutil
 import pathlib
-from osutils import pathtools
+from src.osutils import pathtools
 
 
 class Sorter:
@@ -36,23 +36,23 @@ class Sorter:
                     os.remove(os.path.join(rootd, file))
                 elif "Flair" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/flair/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__()+".mha")
+                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
                     print("copied "+file+" to FLAIR")
                 elif "T1." in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/t1/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__()+".mha")
+                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
                     print("copied " + file + " to T1")
                 elif "T1c" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/t1c/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__()+".mha")
+                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
                     print("copied " + file + " to T1C")
                 elif "T2" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/t2/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__()+".mha")
+                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
                     print("copied " + file + " to T2")
                 elif ".mha" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/more/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__()+".mha")
+                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
                     print("copied " + file + " to MORE")
                 else:
                     excludes.append(file)

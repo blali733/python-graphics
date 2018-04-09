@@ -1,5 +1,5 @@
 import numpy as np
-from tools.matrix import resizer
+from src.tools.matrix import resizer
 
 
 def flip_and_check(image, mask, mask_stains):

@@ -1,11 +1,12 @@
 import matplotlib
 # set the matplotlib backend so figures can be saved in the background
 matplotlib.use("Agg")
-from tools.mha import mhaSlicer
-from nnutils import teach, test
-from osutils.fileIO.directories import check_classify_input_dir
-from tools.preparation.file2mem import generate_list_of_patients, prepare_data
-from tools.preparation.slices import generate_tumor_map
+from src.tools.mha import mhaSlicer
+from src.nnutils import test
+from src.nnutils import teach
+from src.osutils.fileIO.directories import check_classify_input_dir
+from src.tools.preparation.file2mem import generate_list_of_patients, prepare_data
+from src.tools.preparation.slices import generate_tumor_map
 
 
 # Kept as reference for checking execution time:

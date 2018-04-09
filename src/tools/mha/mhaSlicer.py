@@ -1,5 +1,5 @@
-from osutils.fileIO import mhaIO
-from tools.mha import mhaMath
+from src.osutils.fileIO import mhaIO
+from src.tools.mha import mhaMath
 import numpy as np
 
 

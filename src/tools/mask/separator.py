@@ -1,6 +1,6 @@
 import numpy as np
-from tools.mask import comparator
-from tools.matrix import resizer
+from src.tools.mask import comparator
+from src.tools.matrix import resizer
 
 
 class Separator:

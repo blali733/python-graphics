@@ -2,7 +2,7 @@ import os
 import pathlib
 import shutil
 
-from osutils import pathtools
+from src.osutils import pathtools
 
 
 def create_patient_dir(patient):

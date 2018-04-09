@@ -1,4 +1,4 @@
-from osutils.fileIO import adfIO
+from src.osutils.fileIO import adfIO
 
 
 def save_stains(list_of_stains, mode, classified_type, name, enumerator):

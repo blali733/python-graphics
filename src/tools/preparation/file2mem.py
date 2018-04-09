@@ -1,11 +1,11 @@
 import os
 
-from osutils import pathtools
-from osutils.fileIO.directories import check_parsed_dirs
-from tools.imageSorter import Sorter
-from tools.mask import separator
-from tools.mha import mhaSlicer
-from tools.preparation.slices import parse_slices
+from src.osutils import pathtools
+from src.osutils.fileIO.directories import check_parsed_dirs
+from src.tools.imageSorter import Sorter
+from src.tools.mask import separator
+from src.tools.mha import mhaSlicer
+from src.tools.preparation.slices import parse_slices
 
 
 def generate_list_of_patients():
