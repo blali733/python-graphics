@@ -117,9 +117,9 @@ class Teacher:
                 except FileExistsError:
                     print("Corrupted file")
                 done_count += 1
-                pbar.inline_out_of_progress(done_count, files_count, "t2")
+                pbar.inline_out_of_progress(done_count, files_count, "files")
         print("STEP 1d: t2:")
-        for root, subFolders, files in os.walk("./data/parsed/flair"):
+        for root, subFolders, files in os.walk("./data/parsed/t2"):
             files_count = len(files)
             done_count = 0
             random.shuffle(files)
