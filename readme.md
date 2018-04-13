@@ -1,3 +1,5 @@
+<img src="https://img.shields.io/badge/status-Active-brightgreen.svg">
+
 # Medical image classifier:
 ### System requirements:
 Project is written in Python 3. Tested under Python 3.6 on Windows 10 x64 and Ubuntu 17.10 x64.  
