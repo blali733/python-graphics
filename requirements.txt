@@ -6,3 +6,4 @@ keras
 sklearn
 tensorflow
 h5py
+pillow
