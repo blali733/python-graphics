@@ -1,6 +1,26 @@
 import numpy as np
-import scipy.misc as spm
 import math
+import PIL.Image as pim
+
+
+def imresize(image, size):
+    """
+    Function resizing array as image preserving data type.
+
+    Parameters
+    ----------
+    image : np.array
+        Input image.
+    size : tuple of ints
+        desired shape of image.
+
+    Returns
+    -------
+    np.array
+        Resized image.
+    """
+    pil_image = pim.fromarray(image)
+    return np.array(pil_image.resize(size))
 
 
 def resize(image, x, y=0, upscale=False):
@@ -16,9 +36,9 @@ def resize(image, x, y=0, upscale=False):
         Input image data
     x : int
         X size of output image
-    y : int optional
+    y : int, optional
         Y size of output image
-    upscale : bool optional
+    upscale : bool, optional
         Defines if image should be upscaled, or surrounded by zeros if it is too small
 
     Returns
@@ -31,19 +51,19 @@ def resize(image, x, y=0, upscale=False):
     else:
         size = [x, x]
     if upscale:
-        return spm.imresize(image, size)
+        return imresize(image, size)
     else:
         isize = image.shape
         if isize[0] >= size[0]:
             if isize[1] >= size[1]:
-                return spm.imresize(image, size)
+                return imresize(image, size)
             else:
-                image = spm.imresize(image, [size[0], isize[1]])
+                image = imresize(image, [size[0], isize[1]])
                 diff_x = (size[1]-isize[1])/2
                 return np.pad(image, ((0, 0), (math.floor(diff_x), math.ceil(diff_x))), mode="constant")
         else:
             if isize[1] >= size[1]:
-                image = spm.imresize(image, [isize[0], size[1]])
+                image = imresize(image, [isize[0], size[1]])
                 diff_y = (size[0] - isize[0]) / 2
                 return np.pad(image, ((math.floor(diff_y), math.ceil(diff_y)), (0, 0)), mode="constant")
             else:
