@@ -2,4 +2,4 @@
   python:
     - "3.6"
   script:
-    - pytest
+    - pytest ... ; err=$? ; if (( $err != 5 )) ; then exit $err ; fi
