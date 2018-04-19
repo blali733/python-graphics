@@ -46,6 +46,9 @@ def resize(image, x, y=0, upscale=False):
     np.array
         Rescaled image.
     """
+    # Just in case:
+    if x < 0 or y < 0:
+        raise IndexError("Parameters can not be negative!")
     if y != 0:
         size = [x, y]
     else:
@@ -93,6 +96,9 @@ def shrink(mask, origin, size, absolute=False):
     np.array
         Cropped image.
     """
+    # Just in case:
+    if origin[0] < 0 or origin[1] < 0 or size[0] < 0 or size[1] < 0:
+        raise IndexError("Parameters can not be negative!")
     x = origin[0]
     y = origin[1]
     if absolute:
@@ -107,8 +113,6 @@ def shrink(mask, origin, size, absolute=False):
 def expand(mask, origin, size, desired_size):
     """
     Expands np.array by zeroes.
-
-    DOES NOT check if desired size is big enough, think before use.
 
     Parameters
     ----------
@@ -126,10 +130,13 @@ def expand(mask, origin, size, desired_size):
     np.array
         Fragment in bigger array expanded by 0's.
     """
+    # Just in case:
+    if origin[0] < 0 or origin[1] < 0 or size[0] < 0 or size[1] < 0 or desired_size[0] < 0 or desired_size[1] < 0:
+        raise IndexError("Parameters can not be negative!")
     x = origin[0]
     y = origin[1]
     mx = x + size[0]
     my = y + size[1]
     if desired_size[0]-mx < 0:
-        print("Error")
+        raise IndexError("Cannot expand to smaller container!")
     return np.pad(mask, ([x, desired_size[0]-mx], [y, desired_size[1]-my]), mode="constant")
