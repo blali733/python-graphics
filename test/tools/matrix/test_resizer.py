@@ -1,9 +1,11 @@
 import test.data_generators as dg
 import numpy as np
 from src.tools.matrix import resizer
+import pytest
 
 
 class TestResizer:
+    # region imresize
     def test_imresize_downscale(self):
         base = dg.gen_scalable_matrix()
         expected = dg.gen_scaled_down_2xy_matrix()
@@ -13,7 +15,9 @@ class TestResizer:
         base = dg.gen_scalable_matrix()
         expected = dg.gen_scaled_up_2xy_matrix()
         assert np.array_equal(expected, resizer.imresize(base, (12, 12)))
+    # endregion
 
+    # region resize
     def test_resize_1_to_1(self):
         base = dg.gen_matrix(dtype=np.uint16)
         assert np.array_equal(base, resizer.resize(base, 7, 7))
@@ -63,8 +67,55 @@ class TestResizer:
         expected = dg.gen_scaled_down_2y_matrix()
         assert np.array_equal(expected, resizer.resize(base, 6, 3))
 
-    # def test_shrink(self):
-    #     assert False
-    #
-    # def test_expand(self):
-    #     assert False
+    def test_resize_exception_negative_x(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.resize(base, -5)
+        assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_resize_exception_negative_y(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.resize(base, 7, -5)
+        assert "Parameters can not be negative!" in str(e_info.value)
+    # endregion
+
+    # region shrink
+    def test_shrink_exception_negative_origin(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.shrink(base, (-5, 4), (3, 5))
+        assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_shrink_exception_negative_size(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.shrink(base, (5, 4), (-3, 5))
+        assert "Parameters can not be negative!" in str(e_info.value)
+    # endregion
+
+    # region expand
+    def test_expand_exception_negative_origin(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.expand(base, (5, -4), (3, 5), (20, 20))
+        assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_expand_exception_negative_size(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.expand(base, (5, 4), (-3, 5), (20, 20))
+        assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_expand_exception_negative_desired_size(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.expand(base, (5, 4), (3, 5), (20, -20))
+        assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_expand_exception_too_small_desired_size(self):
+        base = dg.gen_scalable_matrix()
+        with pytest.raises(IndexError) as e_info:
+            resizer.expand(base, (5, 4), (3, 5), (1, 1))
+        assert "Cannot expand to smaller container!" in str(e_info.value)
+    # endregion
