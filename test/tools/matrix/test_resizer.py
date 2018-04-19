@@ -4,6 +4,16 @@ from src.tools.matrix import resizer
 
 
 class TestResizer:
+    def test_imresize_downscale(self):
+        base = dg.gen_scalable_matrix()
+        expected = dg.gen_scaled_down_2_matrix()
+        assert np.array_equal(expected, resizer.imresize(base, (3, 3)))
+
+    def test_imresize_upscale(self):
+        base = dg.gen_scalable_matrix()
+        expected = dg.gen_scaled_up_2_matrix()
+        assert np.array_equal(expected, resizer.imresize(base, (12, 12)))
+
     def test_resize_1_to_1(self):
         base = dg.gen_matrix(dtype=np.uint16)
         assert np.array_equal(base, resizer.resize(base, 7, 7))
