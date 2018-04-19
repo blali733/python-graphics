@@ -99,15 +99,15 @@ def shrink(mask, origin, size, absolute=False):
     # Just in case:
     if origin[0] < 0 or origin[1] < 0 or size[0] < 0 or size[1] < 0:
         raise IndexError("Parameters can not be negative!")
-    x = origin[0]
-    y = origin[1]
+    d1 = origin[0]
+    d2 = origin[1]
     if absolute:
-        mx = size[0]
-        my = size[1]
+        md1 = size[0] + 1
+        md2 = size[1] + 1
     else:
-        mx = x + size[0]
-        my = y + size[1]
-    return mask[x:mx, y:my]
+        md1 = d1 + size[0]
+        md2 = d2 + size[1]
+    return mask[d1:md1, d2:md2]
 
 
 def expand(mask, origin, size, desired_size):
@@ -133,10 +133,10 @@ def expand(mask, origin, size, desired_size):
     # Just in case:
     if origin[0] < 0 or origin[1] < 0 or size[0] < 0 or size[1] < 0 or desired_size[0] < 0 or desired_size[1] < 0:
         raise IndexError("Parameters can not be negative!")
-    x = origin[0]
-    y = origin[1]
-    mx = x + size[0]
-    my = y + size[1]
-    if desired_size[0]-mx < 0 or desired_size[1]-my < 0:
+    d1 = origin[0]
+    d2 = origin[1]
+    md1 = d1 + size[0]
+    md2 = d2 + size[1]
+    if desired_size[0]-md1 < 0 or desired_size[1]-md2 < 0:
         raise IndexError("Cannot expand to smaller container!")
-    return np.pad(mask, ([x, desired_size[0]-mx], [y, desired_size[1]-my]), mode="constant")
+    return np.pad(mask, ([d1, desired_size[0]-md1], [d2, desired_size[1]-md2]), mode="constant")

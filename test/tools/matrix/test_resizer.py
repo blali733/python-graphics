@@ -92,6 +92,16 @@ class TestResizer:
         with pytest.raises(IndexError) as e_info:
             resizer.shrink(base, (5, 4), (-3, 5))
         assert "Parameters can not be negative!" in str(e_info.value)
+
+    def test_shrink_offset(self):
+        base = dg.gen_scalable_matrix()
+        expected = np.array([(3, 4), (6, 7), (6, 7)])
+        assert np.array_equal(expected, resizer.shrink(base, (3, 1), (3, 2)))
+
+    def test_shrink_absolute(self):
+        base = dg.gen_scalable_matrix()
+        expected = np.array([(3, 4, 4), (3, 4, 4), (6, 7, 7)])
+        assert np.array_equal(expected, resizer.shrink(base, (2, 1), (4, 3), absolute=True))
     # endregion
 
     # region expand
@@ -118,4 +128,9 @@ class TestResizer:
         with pytest.raises(IndexError) as e_info:
             resizer.expand(base, (5, 4), (3, 5), (1, 1))
         assert "Cannot expand to smaller container!" in str(e_info.value)
+
+    def test_expand_xy(self):
+        base = dg.gen_matrix(dtype=np.uint16)
+        result = np.pad(base, ((4, 4), (4, 4)), mode="constant")
+        assert np.array_equal(result, resizer.expand(base, (4, 4), base.shape, (15, 15)))
     # endregion
