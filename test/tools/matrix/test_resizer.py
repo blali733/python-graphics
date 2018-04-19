@@ -4,6 +4,10 @@ from src.tools.matrix import resizer
 
 
 class TestResizer:
+    def test_resize_1_to_1(self):
+        base = dg.gen_matrix(dtype=np.uint16)
+        assert np.array_equal(base, resizer.resize(base, 7, 7))
+
     def test_resize_no_upscale_xy_fill(self):
         base = dg.gen_matrix(dtype=np.uint16)
         result = np.pad(base, ((4, 4), (4, 4)), mode="constant")
