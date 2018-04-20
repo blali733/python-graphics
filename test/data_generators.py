@@ -109,3 +109,15 @@ def gen_scaled_up_2y_matrix():
     mat[8:12, 2:4] = 7
     mat[8:12, 4:6] = 8
     return mat
+
+
+def gen_bin_matrix_1():
+    mat = np.zeros([8, 8], dtype=np.uint16)
+    mat[0:5, 0:5] = 1
+    return mat
+
+
+def gen_bin_matrix_2():
+    mat = np.zeros([8, 8], dtype=np.uint16)
+    mat[2:8, 2:8] = 1
+    return mat
