@@ -1,4 +1,4 @@
-import os
+from os import name as os_name
 
 
 def get_folder_name_from_path(path, dir_position):
@@ -17,12 +17,11 @@ def get_folder_name_from_path(path, dir_position):
     string
         Part of path with desired index or empty string on error.
     """
-    if os.name == "nt":
+    if os_name == "nt":
         folders = path.split('\\')
     else:
         folders = path.split('/')
     try:
         return folders[dir_position]
     except IndexError:
-        print("Invalid array index in path slicing!")
-        return ""
+        raise IndexError("Index not in range!")
