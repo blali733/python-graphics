@@ -23,11 +23,6 @@ def med_2_float(med_image_slice, relative=True):
         max_val = max(max_val, 1)
     else:
         max_val = np.iinfo(np.int16).max  # Specification of dataset says, that only positive values of int16 are used.
-    # temp = np.zeros(med_image_slice.shape, dtype=np.float)
-    # for x in range(med_image_slice.shape[0] - 1):
-    #     for y in range(med_image_slice.shape[1] - 1):
-    #         temp[x, y] = med_image_slice[x, y]/max_val
-    # return temp
     val = 1/max_val
     temp = med_image_slice.astype(np.float).copy()
     temp *= val  # Legends say that division is longer operation.
@@ -56,11 +51,6 @@ def med_2_uint8(med_image_slice, relative=True):
         max_val = max(max_val, 1)
     else:
         max_val = np.iinfo(np.int16).max  # Specification of dataset says, that only positive values of int16 are used.
-    # temp = np.zeros(med_image_slice.shape, dtype=np.float)
-    # for x in range(med_image_slice.shape[0] - 1):
-    #     for y in range(med_image_slice.shape[1] - 1):
-    #         temp[x, y] = med_image_slice[x, y]/max_val
-    # return temp
     val = 255/max_val
     temp = med_image_slice.astype(np.float).copy()
     temp *= val  # Legends say that division is longer operation.
