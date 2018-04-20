@@ -72,6 +72,63 @@ def gen_scaled_down_2xy_matrix():
     return mat
 
 
+def gen_scaled_down_2xy_matrix_binearized_at_5():
+    mat = np.zeros([3, 3], dtype=np.uint16)
+    mat[2, 0] = 1
+    mat[2, 1] = 1
+    mat[2, 2] = 1
+    return mat
+
+def gen_scaled_down_2xy_matrix_binearized_at_0():
+    mat = np.ones([3, 3], dtype=np.uint16)
+    mat[0, 0] = 0
+    return mat
+
+
+def gen_scaled_down_2xy_matrix_float():
+    mat = np.zeros([3, 3], dtype=np.float)
+    mat[0, 1] = 0.125
+    mat[0, 2] = 0.25
+    mat[1, 0] = 0.375
+    mat[1, 1] = 0.5
+    mat[1, 2] = 0.625
+    mat[2, 0] = 0.75
+    mat[2, 1] = 0.875
+    mat[2, 2] = 1.0
+    return mat
+
+
+def gen_scaled_down_2xy_matrix_float_absolute():
+    mat = np.zeros([3, 3], dtype=np.float)
+    mat[0, 1] = 3.051850947599719e-05
+    mat[0, 2] = 6.103701895199438e-05
+    mat[1, 0] = 9.155552842799158e-05
+    mat[1, 1] = 0.00012207403790398877
+    mat[1, 2] = 0.00015259254737998596
+    mat[2, 0] = 0.00018311105685598315
+    mat[2, 1] = 0.00021362956633198035
+    mat[2, 2] = 0.00024414807580797754
+    return mat
+
+
+def gen_scaled_down_2xy_matrix_uint8_stretch():
+    mat = np.zeros([3, 3], dtype=np.uint8)
+    mat[0, 1] = 31
+    mat[0, 2] = 63
+    mat[1, 0] = 95
+    mat[1, 1] = 127
+    mat[1, 2] = 159
+    mat[2, 0] = 191
+    mat[2, 1] = 223
+    mat[2, 2] = 255
+    return mat
+
+
+def gen_scaled_down_2xy_matrix_uint8_stretch_absolute():
+    mat = np.zeros([3, 3], dtype=np.uint8)
+    return mat
+
+
 def gen_scaled_up_2xy_matrix():
     mat = np.zeros([12, 12], dtype=np.uint16)
     mat[0:4, 4:8] = 1
