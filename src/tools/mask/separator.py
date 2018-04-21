@@ -145,8 +145,8 @@ class Separator:
         Returns
         -------
         list
-            List of tuples in form: nparray, nparray, int, int containing masked image fragment, mask fragment, x and y
-            of left upper corner of fragment in whole image
+            List of tuples in form: nparray, nparray, int, int containing masked image fragment, mask fragment, y and x
+            (numpy compatible addressing) of left upper corner of fragment in whole image
         """
         stains = []  # List of results
         pixels = []  # List of neighbouring unchecked pixels as address tuples
@@ -182,7 +182,7 @@ class Separator:
                                 hiy = borders[3]
                                 # Addition caused by rules of a:b which expands to a<=x<b,
                                 # so to include upper bound we have to add 1
-                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix+1, hiy+1], True)
+                                temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy], True)
                                 temp_image_reduced = np.multiply(image[lowx:hix+1, lowy:hiy+1], temp_mask_reduced)
                                 stains.append((temp_image_reduced, temp_mask_reduced, lowx, lowy))
                             temp_mask = np.zeros(mask.shape, dtype=mask.dtype)

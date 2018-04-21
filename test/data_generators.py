@@ -1,6 +1,29 @@
 import numpy as np
 
 
+def gen_data_layer_mask_result():
+    data = np.arange(2500).reshape(50, 50).astype(np.int16)
+    # region mask
+    mask = np.zeros([50, 50], dtype=np.int16)
+    mask[10, 7:15] = 1
+    mask[11, 5:20] = 1
+    mask[12, 7:15] = 1
+
+    mask[2, 22] = 1
+    mask[3, 20:25] = 1
+    mask[3, 26] = 1
+    mask[4, 22:27] = 1
+    mask[5, 25:28] = 1
+
+    mask[40:44, 40] = 1
+    # endregion
+    # region expected_stains
+    stains = data * mask
+    expected_stains = [(stains[2:6, 20:28], mask[2:6, 20:28], 2, 20), (stains[10:13, 5:20], mask[10:13, 5:20], 10, 5)]
+    # endregion
+    return data, mask, expected_stains
+
+
 def gen_matrix(dtype):
     mat = np.zeros([7, 7], dtype=dtype)
     mat[1, 2] = 1
