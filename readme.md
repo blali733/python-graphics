@@ -15,6 +15,17 @@ Links to most important parts:
 This solution was prepared using PyCharm community edition. Recommended modification to settings of
 environment to maintain common standards could be found in [settings](Settings.md) file.
 ### Remarks:
-Classifier model is based on 
+All algorithms which implementation is based on work performed by another authors have source denoted in first line 
+comment. For ease we have also stated those sources below:
+
+- LeNet classifier model implementation is based on 
 [this post](https://www.pyimagesearch.com/2017/12/11/image-classification-with-keras-and-deep-learning/)
 by Adrian Rosebrock. Training and testing procedures for classifiers were also inspired by mentioned source.
+
+- SmallerVGGNet classifier model implementation is based on 
+[this post](https://www.pyimagesearch.com/2018/04/16/keras-and-convolutional-neural-networks-cnns/)
+by Adrian Rosebrock.
+
+- VGGNet classifier model implementation is based on 
+[this repository](http://dandxy89.github.io/ImageModels/vgg19/)
+by dandxy89.

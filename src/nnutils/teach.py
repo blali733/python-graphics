@@ -16,9 +16,9 @@ import json
 
 class Teacher:
     """
-    Class containing lofic connected to training classifier.
+    Class containing logic connected to training classifier.
     """
-    def __init__(self, epochs=25, initial_learning_rate=1e-3, batch_size=25, model_frame_size=28):
+    def __init__(self, epochs=25, initial_learning_rate=1e-3, batch_size=25, model_frame_size=28, model_name="LeNet"):
         """
         Initializer of classifier teaching class.
 
@@ -31,20 +31,26 @@ class Teacher:
         batch_size : int
             Number of single images processed at once.
         model_frame_size : int
-            Defines dimensions of single input image (autoscaled).
+            Defines dimensions of single input image (automatically rescaled).
+        model_name: string
+            Defines model used as classifier.
         """
-        self.settings = {"version": 1, "size": model_frame_size}
+        self.settings = {"version": 1, "size": model_frame_size, "classifier_name": model_name}
         self.epochs = epochs
         self.initial_learning_rate = initial_learning_rate
         self.batch_size = batch_size
-        if model_frame_size == 28:
-            from src.nnutils.models import c28x28
-            self.model_cooker = c28x28.Net28px()
-            self.image_size = 28
-        else:
-            from src.nnutils.models import c28x28
-            self.model_cooker = c28x28.Net28px()
-            self.image_size = 28
+        if model_name == "VGG":
+            from src.nnutils.models import VGGNet
+            self.model_cooker = VGGNet.VGGNet()
+            self.image_size = model_frame_size
+        if model_name == "SimpleVGG":
+            from src.nnutils.models import SmallerVGGNet
+            self.model_cooker = SmallerVGGNet.SmallerVGGNet()
+            self.image_size = model_frame_size
+        else:   # Defaults to LeNet:
+            from src.nnutils.models import LeNet
+            self.model_cooker = LeNet.LeNet()
+            self.image_size = model_frame_size
 
     def teach(self, model_name, random_seed=666, test_size=0.25):
         """

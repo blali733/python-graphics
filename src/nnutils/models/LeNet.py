@@ -8,7 +8,15 @@ from keras.layers.core import Dense
 from keras import backend
 
 
-class Net28px:
+class LeNet:
+    """
+    Model Name:
+        LeNet
+        A model based on LeNet network, implemented by Adrian Rosebrock.
+
+    Recommended image size:
+        28x28 px
+    """
     @staticmethod
     def build(width, height, depth, classes):
         """
