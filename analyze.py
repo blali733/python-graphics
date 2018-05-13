@@ -57,12 +57,13 @@ class Analyze:
         Method responsible for teaching classifier basing on learning sets.
         """
         name = input('Please provide model name: ')
+        classifier_name = input('Please provide base model name (LeNet, VGG, SimpleVGG): ')
         test = input('Do you want to use only 10 epochs instead of 25? (y/N) ')
         if test.capitalize() == 'Y':
-            teacher = teach.Teacher(epochs=10)
+            teacher = teach.Teacher(epochs=10, model_name=classifier_name.capitalize())
             teacher.teach(name)
         else:
-            teacher = teach.Teacher()
+            teacher = teach.Teacher(model_name=classifier_name.capitalize())
             teacher.teach(name)
 
     def load_classifier(self):
