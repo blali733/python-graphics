@@ -148,27 +148,4 @@ def maximum_entropy_thresholding(image):
         if max_entropy_internal > max_entropy:
             max_entropy = max_entropy_internal
             max_entropy_index = i
-    return cv2.threshold(image, max_entropy_index, 255, cv2.THRESH_BINARY)
-
-    # def startSegmentation(self):
-    #     image = cv2.imread('flair_segment1.png', 0)
-    #     median_kernel_size = 11
-    #     gamma_correction = 5
-    #     image_blured = cv2.medianBlur(image, median_kernel_size)
-    #     image_equalized = self.squared_histogram_equalization(image_blured)
-    #     image_gamma_corrected = self.gamma_correction(image_equalized, gamma_correction)
-    #     ret, image_entropy_thresholded = self.maximumEntropyThresholding(image_gamma_corrected)
-    #     cv2.imshow('original', image)
-    #     cv2.imshow('blured', image_blured)
-    #     cv2.imshow('equalized', image_equalized)
-    #     cv2.imshow('gamma_corrected', image_gamma_corrected)
-    #     cv2.imshow('thresholded', image_entropy_thresholded)
-    #
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
-
-
-# if __name__ == "__main__":
-#     app = Segmentation()
-#     app.startSegmentation()
-
+    return cv2.threshold(image, max_entropy_index, 1, cv2.THRESH_BINARY)
