@@ -73,8 +73,9 @@ def t2(image_slice):
     img = mhaMath.med_2_float(image_slice, False)
     return (img < 0.05) * (img > 0.022) * 1
 
+
 class Segmentation:
-    def squaredHistogramEqualization(self, image):
+    def squared_histogram_equalization(self, image):
         hist, bins = np.histogram(image.flatten(), 256, [0, 256])
         hist = np.sqrt(hist)
         cdf = hist.cumsum()
@@ -85,77 +86,79 @@ class Segmentation:
         image_equalized = cdf[image]
         return image_equalized
 
-    def gammaCorrection(self, image, gamma=1.0):
+    def gamma_correction(self, image, gamma=1.0):
         table = np.array([((i / 255.0) ** gamma) * 255
                           for i in np.arange(0, 256)]).astype("uint8")
 
         # apply gamma correction using the lookup table
         return cv2.LUT(image, table)
 
-    def maximumEntropyThresholding(self, image):
+    def maximum_entropy_thresholding(self, image):
         hist, bins = np.histogram(image.flatten(), 256, normed=True, range=[0, 256])
         epsilon = np.finfo(dtype=np.double).min
-        groupProbability = np.zeros(hist.shape, dtype=np.double)
-        groupProbability[0] = hist[0]
-        entropyBlack = np.zeros(hist.shape, dtype=np.double)
-        entropyWhite = np.zeros(hist.shape, dtype=np.double)
+        group_probability = np.zeros(hist.shape, dtype=np.double)
+        group_probability[0] = hist[0]
+        entropy_black = np.zeros(hist.shape, dtype=np.double)
+        entropy_white = np.zeros(hist.shape, dtype=np.double)
 
         # prawdopodobienstwo wystapienia danych wartosci grupowo
-        for i in range(1, len(groupProbability)):
-            groupProbability[i] = groupProbability[i-1] + hist[i]
+        for i in range(1, len(group_probability)):
+            group_probability[i] = group_probability[i-1] + hist[i]
 
-        for i in range(0, len(groupProbability)):
-            if np.greater(groupProbability[i], epsilon):
-                entropyInternalBlack = 0.0
+        for i in range(0, len(group_probability)):
+            if np.greater(group_probability[i], epsilon):
+                entropy_internal_black = 0.0
                 # prawdopodobienstwo pojedynczego elementu w stosunku do prawdopodobienstwa grupy
                 for j in range(0, i + 1):
                     if np.greater(hist[j], epsilon):
-                        groupMultiplier = 1.0 / groupProbability[i]
-                        elementProbability = hist[j] * groupMultiplier
-                        if np.greater(elementProbability, 0):
-                            entropyInternalBlack = entropyInternalBlack - elementProbability * np.log2(elementProbability)
-                entropyBlack[i] = entropyInternalBlack
+                        group_multiplier = 1.0 / group_probability[i]
+                        element_probability = hist[j] * group_multiplier
+                        if np.greater(element_probability, 0):
+                            entropy_internal_black = entropy_internal_black - element_probability * np.log2(
+                                element_probability)
+                entropy_black[i] = entropy_internal_black
 
-            probabilityWhite = 1 - groupProbability[i]
-            if np.greater(probabilityWhite, epsilon):
-                entropyInternalWhite = 0.0
-                for j in range(i + 1, len(groupProbability)):
+            probability_white = 1 - group_probability[i]
+            if np.greater(probability_white, epsilon):
+                entropy_internal_white = 0.0
+                for j in range(i + 1, len(group_probability)):
                     if np.greater(hist[j], epsilon):
-                        groupMultiplier = 1.0 / probabilityWhite
-                        elementProbability = hist[j] * groupMultiplier
-                        if np.greater(elementProbability, 0):
-                            entropyInternalWhite = entropyInternalWhite - elementProbability * np.log2(elementProbability)
-                entropyWhite[i] = entropyInternalWhite
+                        group_multiplier = 1.0 / probability_white
+                        element_probability = hist[j] * group_multiplier
+                        if np.greater(element_probability, 0):
+                            entropy_internal_white = entropy_internal_white - element_probability * np.log2(
+                                element_probability)
+                entropy_white[i] = entropy_internal_white
 
-        maxEntropy = entropyBlack[0] + entropyWhite[0]
-        maxEntropyIndex = 0
+        max_entropy = entropy_black[0] + entropy_white[0]
+        max_entropy_index = 0
 
-        for i in range(1, len(groupProbability)):
-            maxEntropyInternal = entropyBlack[i] + entropyWhite[i]
-            if maxEntropyInternal > maxEntropy:
-                maxEntropy = maxEntropyInternal
-                maxEntropyIndex = i
-        return cv2.threshold(image, maxEntropyIndex, 255, cv2.THRESH_BINARY)
+        for i in range(1, len(group_probability)):
+            max_entropy_internal = entropy_black[i] + entropy_white[i]
+            if max_entropy_internal > max_entropy:
+                max_entropy = max_entropy_internal
+                max_entropy_index = i
+        return cv2.threshold(image, max_entropy_index, 255, cv2.THRESH_BINARY)
 
-    def startSegmentation(self):
-        image = cv2.imread('flair_segment1.png', 0)
-        median_kernel_size = 11
-        gamma_correction = 5
-        image_blured = cv2.medianBlur(image, median_kernel_size)
-        image_equalized = self.squaredHistogramEqualization(image_blured)
-        image_gamma_corrected = self.gammaCorrection(image_equalized, gamma_correction)
-        ret, image_entropy_thresholded = self.maximumEntropyThresholding(image_gamma_corrected)
-        cv2.imshow('original', image)
-        cv2.imshow('blured', image_blured)
-        cv2.imshow('equalized', image_equalized)
-        cv2.imshow('gamma_corrected', image_gamma_corrected)
-        cv2.imshow('thresholded', image_entropy_thresholded)
+    # def startSegmentation(self):
+    #     image = cv2.imread('flair_segment1.png', 0)
+    #     median_kernel_size = 11
+    #     gamma_correction = 5
+    #     image_blured = cv2.medianBlur(image, median_kernel_size)
+    #     image_equalized = self.squared_histogram_equalization(image_blured)
+    #     image_gamma_corrected = self.gamma_correction(image_equalized, gamma_correction)
+    #     ret, image_entropy_thresholded = self.maximumEntropyThresholding(image_gamma_corrected)
+    #     cv2.imshow('original', image)
+    #     cv2.imshow('blured', image_blured)
+    #     cv2.imshow('equalized', image_equalized)
+    #     cv2.imshow('gamma_corrected', image_gamma_corrected)
+    #     cv2.imshow('thresholded', image_entropy_thresholded)
+    #
+    #     cv2.waitKey(0)
+    #     cv2.destroyAllWindows()
 
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
-
-if __name__ == "__main__":
-    app = Segmentation()
-    app.startSegmentation();
+# if __name__ == "__main__":
+#     app = Segmentation()
+#     app.startSegmentation()
 
