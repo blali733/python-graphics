@@ -35,6 +35,7 @@ class Teacher:
         model_name: string
             Defines model used as classifier.
         """
+        print(model_name)
         self.epochs = epochs
         self.initial_learning_rate = initial_learning_rate
         self.batch_size = batch_size
@@ -42,7 +43,7 @@ class Teacher:
             from src.nnutils.models import VGGNet
             self.model_cooker = VGGNet.VGGNet()
             self.image_size = 224
-        if model_name == "SIMPLEVGG":
+        elif model_name == "SIMPLEVGG":
             from src.nnutils.models import SmallerVGGNet
             self.model_cooker = SmallerVGGNet.SmallerVGGNet()
             self.image_size = 96
@@ -85,7 +86,11 @@ class Teacher:
             for file in files:
                 try:
                     image = adfIO.load(os.path.join(root, file), True)
-                    data_flair.append(img_to_array(resizer.resize(image, self.image_size)))
+                    img_res = resizer.resize(image, self.image_size)
+                    img = img_to_array(img_res)
+                    if img.shape[0] != img.shape[1]:
+                        print("err")
+                    data_flair.append(img)
                     label = pathtools.get_folder_name_from_path(os.path.join(root, file), -2)
                     label = 1 if label == "tumor" else 0
                     labels_flair.append(label)

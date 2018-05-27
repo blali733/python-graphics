@@ -60,10 +60,10 @@ class Analyze:
         classifier_name = input('Please provide base model name (LeNet, VGG, SimpleVGG): ')
         test = input('Do you want to use only 10 epochs instead of 25? (y/N) ')
         if test.capitalize() == 'Y':
-            teacher = teach.Teacher(epochs=10, model_name=classifier_name.capitalize())
+            teacher = teach.Teacher(epochs=10, model_name=classifier_name.upper())
             teacher.teach(name)
         else:
-            teacher = teach.Teacher(model_name=classifier_name.capitalize())
+            teacher = teach.Teacher(model_name=classifier_name.upper())
             teacher.teach(name)
 
     def load_classifier(self):

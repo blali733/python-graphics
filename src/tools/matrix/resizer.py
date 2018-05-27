@@ -61,12 +61,12 @@ def resize(image, x, y=0, upscale=False):
             if isize[1] >= size[1]:
                 return imresize(image, size)
             else:
-                image = imresize(image, [size[0], isize[1]])
+                image = imresize(image, [isize[1],size[0]])
                 diff_x = (size[1]-isize[1])/2
                 return np.pad(image, ((0, 0), (math.floor(diff_x), math.ceil(diff_x))), mode="constant")
         else:
             if isize[1] >= size[1]:
-                image = imresize(image, [isize[0], size[1]])
+                image = imresize(image, [size[1], isize[0]])
                 diff_y = (size[0] - isize[0]) / 2
                 return np.pad(image, ((math.floor(diff_y), math.ceil(diff_y)), (0, 0)), mode="constant")
             else:
