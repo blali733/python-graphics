@@ -23,6 +23,13 @@ class VGGNet:
     Recommended image size:
         224x224 px
     """
+
+    def name(self):
+        """
+        Method printing name of used model.
+        """
+        print("VGG")
+
     @staticmethod
     def build(width, height, depth, classes):
         """

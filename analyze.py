@@ -95,11 +95,11 @@ class Analyze:
             patients_list = generate_list_of_patients()
             for patient in patients_list:
                 flair_slices = mhaSlicer.prepare_testing_pairs(patient[1], patient[0])
-                t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
-                t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
-                t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
+                # t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
+                # t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
+                # t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
                 segmentation = generate_tumor_map(self.classifier_class,
-                                                  (flair_slices, t1_slices, t1c_slices, t2_slices))
+                                                  (flair_slices))  # , t1_slices, t1c_slices, t2_slices))
                 mhaSlicer.save_segmentation(segmentation, patient[0])
     # endregion
 

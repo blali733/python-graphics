@@ -245,7 +245,7 @@ class Separator:
                                     hix = borders[1]
                                     lowy = borders[2]
                                     hiy = borders[3]
-                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix + 1, hiy + 1],
+                                    temp_mask_reduced = resizer.shrink(temp_mask, [lowx, lowy], [hix, hiy],
                                                                        True)
                                     temp_image_reduced = np.multiply(image[lowx:(hix + 1), lowy:(hiy + 1)],
                                                                      temp_mask_reduced)

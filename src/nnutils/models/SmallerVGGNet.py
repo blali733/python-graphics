@@ -19,6 +19,13 @@ class SmallerVGGNet:
     Recommended image size:
         96x96 px
     """
+
+    def name(self):
+        """
+        Method printing name of used model.
+        """
+        print("SmallerVGG")
+
     @staticmethod
     def build(width, height, depth, classes):
         """

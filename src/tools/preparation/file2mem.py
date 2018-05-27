@@ -49,33 +49,33 @@ def prepare_data():
     sep = separator.Separator(10)
     if 'Y' in answer.capitalize():
         flair_yes = 0
-        t1_yes = 0
-        t1c_yes = 0
-        t2_yes = 0
+        # t1_yes = 0
+        # t1c_yes = 0
+        # t2_yes = 0
         flair_no = 0
-        t1_no = 0
-        t1c_no = 0
-        t2_no = 0
-        yes_counters = (flair_yes, t1_yes, t1c_yes, t2_yes)
-        no_counters = (flair_no, t1_no, t1c_no, t2_no)
+        # t1_no = 0
+        # t1c_no = 0
+        # t2_no = 0
+        yes_counters = (flair_yes)  #, t1_yes, t1c_yes, t2_yes)
+        no_counters = (flair_no)  #, t1_no, t1c_no, t2_no)
         check_parsed_dirs()
         for root, subFolders, files in os.walk("./data/raw/flair"):
             for file in files:
                 file_name_parts = file.split(".")
                 print("Slicing file " + file_name_parts[0])
                 # Axis 0
-                flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=0)
-                slices_tuple = (flair, t1, t1c, t2)
+                flair = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=0)
+                slices_tuple = (flair)
                 yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 0)
                 # Axis 1
-                flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=1)
-                slices_tuple = (flair, t1, t1c, t2)
+                flair = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=1)
+                slices_tuple = (flair)
                 yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 1)
                 # Axis 2
-                flair, t1, t1c, t2 = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
-                slices_tuple = (flair, t1, t1c, t2)
+                flair = mhaSlicer.prepare_training_pairs(file_name_parts[0], axis=2)
+                slices_tuple = (flair)
                 yes_counters, no_counters = parse_slices(slices_tuple, yes_counters, no_counters, sep, 2)
-        print("Flair: tumor - " + yes_counters[0].__str__() + "; not - " + no_counters[0].__str__())
-        print("T1: tumor - " + yes_counters[1].__str__() + "; not - " + no_counters[1].__str__())
-        print("T1c: tumor - " + yes_counters[2].__str__() + "; not - " + no_counters[2].__str__())
-        print("T2: tumor - " + yes_counters[3].__str__() + "; not - " + no_counters[3].__str__())
+        print("Flair: tumor - " + yes_counters.__str__() + "; not - " + no_counters.__str__())
+        # print("T1: tumor - " + yes_counters[1].__str__() + "; not - " + no_counters[1].__str__())
+        # print("T1c: tumor - " + yes_counters[2].__str__() + "; not - " + no_counters[2].__str__())
+        # print("T2: tumor - " + yes_counters[3].__str__() + "; not - " + no_counters[3].__str__())

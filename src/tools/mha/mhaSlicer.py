@@ -22,42 +22,42 @@ def prepare_training_pairs(file_name, discard_bg=10, axis=0):
         Lists of tuples containing image slice and corresponding mask
     """
     path_flair = "./data/raw/flair/"+file_name+".mha"
-    path_t1 = "./data/raw/t1/" + file_name + ".mha"
-    path_t1c = "./data/raw/t1c/" + file_name + ".mha"
-    path_t2 = "./data/raw/t2/" + file_name + ".mha"
+    # path_t1 = "./data/raw/t1/" + file_name + ".mha"
+    # path_t1c = "./data/raw/t1c/" + file_name + ".mha"
+    # path_t2 = "./data/raw/t2/" + file_name + ".mha"
     path_desc = "./data/raw/more/" + file_name + ".mha"
     mha_flair = mhaIO.load_mha(path_flair)
-    mha_t1 = mhaIO.load_mha(path_t1)
-    mha_t1c = mhaIO.load_mha(path_t1c)
-    mha_t2 = mhaIO.load_mha(path_t2)
+    # mha_t1 = mhaIO.load_mha(path_t1)
+    # mha_t1c = mhaIO.load_mha(path_t1c)
+    # mha_t2 = mhaIO.load_mha(path_t2)
     mha_desc = mhaIO.load_mha(path_desc)
     if mha_desc.shape != mha_flair.shape:
         exit(-1)
-    if mha_desc.shape != mha_t1.shape:
-        exit(-1)
-    if mha_desc.shape != mha_t1c.shape:
-        exit(-1)
-    if mha_desc.shape != mha_t2.shape:
-        exit(-1)
+    # if mha_desc.shape != mha_t1.shape:
+    #     exit(-1)
+    # if mha_desc.shape != mha_t1c.shape:
+    #     exit(-1)
+    # if mha_desc.shape != mha_t2.shape:
+    #     exit(-1)
     desc_slices = get_all_slices(mha_desc, axis)
     print("Binearizing masks, please wait...")
     for i in range(desc_slices.__len__()):
         if desc_slices[i].max() > 0:
             desc_slices[i] = mhaMath.med_image_binearize(desc_slices[i])
     flair_slices = get_all_slices(mha_flair, axis)
-    t1_slices = get_all_slices(mha_t1, axis)
-    t1c_slices = get_all_slices(mha_t1c, axis)
-    t2_slices = get_all_slices(mha_t2, axis)
+    # t1_slices = get_all_slices(mha_t1, axis)
+    # t1c_slices = get_all_slices(mha_t1c, axis)
+    # t2_slices = get_all_slices(mha_t2, axis)
     flair_pairs = []
-    t1_pairs = []
-    t1c_pairs = []
-    t2_pairs = []
+    # t1_pairs = []
+    # t1c_pairs = []
+    # t2_pairs = []
     for iterat in range(desc_slices.__len__()):
         flair_pairs.append((flair_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
-        t1_pairs.append((t1_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
-        t1c_pairs.append((t1c_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
-        t2_pairs.append((t2_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
-    return flair_pairs, t1_pairs, t1c_pairs, t2_pairs
+        # t1_pairs.append((t1_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+        # t1c_pairs.append((t1c_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+        # t2_pairs.append((t2_slices[iterat], np.copy(desc_slices[iterat]).astype(desc_slices[iterat].dtype)))
+    return flair_pairs  # , t1_pairs, t1c_pairs, t2_pairs
 
 
 def prepare_testing_pairs(file_name, patient):

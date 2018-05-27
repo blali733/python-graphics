@@ -17,6 +17,13 @@ class LeNet:
     Recommended image size:
         28x28 px
     """
+
+    def name(self):
+        """
+        Method printing name of used model.
+        """
+        print("LeNet")
+
     @staticmethod
     def build(width, height, depth, classes):
         """

@@ -19,9 +19,9 @@ class Sorter:
         Method responsible for dividing content of brats2015 training set into proper directories.
         """
         pathlib.Path('./data/raw/flair').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/raw/t1').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/raw/t1c').mkdir(parents=True, exist_ok=True)
-        pathlib.Path('./data/raw/t2').mkdir(parents=True, exist_ok=True)
+        # pathlib.Path('./data/raw/t1').mkdir(parents=True, exist_ok=True)
+        # pathlib.Path('./data/raw/t1c').mkdir(parents=True, exist_ok=True)
+        # pathlib.Path('./data/raw/t2').mkdir(parents=True, exist_ok=True)
         pathlib.Path('./data/raw/more').mkdir(parents=True, exist_ok=True)
         root = input("Please provide path to BRATS2015 training data directory: ")
         patient_id = 0
@@ -36,23 +36,26 @@ class Sorter:
                     os.remove(os.path.join(rootd, file))
                 elif "Flair" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/flair/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
+                                 self.patient_dict[pathtools.get_folder_name_from_path(rootd, -2)].__str__() + ".mha")
                     print("copied "+file+" to FLAIR")
                 elif "T1." in file:
-                    shutil.copy2(os.path.join(rootd, file), "./data/raw/t1/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
-                    print("copied " + file + " to T1")
+                    pass
+                    # shutil.copy2(os.path.join(rootd, file), "./data/raw/t1/pat" +
+                    #              pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
+                    # print("copied " + file + " to T1")
                 elif "T1c" in file:
-                    shutil.copy2(os.path.join(rootd, file), "./data/raw/t1c/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
-                    print("copied " + file + " to T1C")
+                    pass
+                    # shutil.copy2(os.path.join(rootd, file), "./data/raw/t1c/pat" +
+                    #              pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
+                    # print("copied " + file + " to T1C")
                 elif "T2" in file:
-                    shutil.copy2(os.path.join(rootd, file), "./data/raw/t2/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
-                    print("copied " + file + " to T2")
+                    pass
+                    # shutil.copy2(os.path.join(rootd, file), "./data/raw/t2/pat" +
+                    #              pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
+                    # print("copied " + file + " to T2")
                 elif ".mha" in file:
                     shutil.copy2(os.path.join(rootd, file), "./data/raw/more/pat" +
-                                 pathtools.get_folder_name_from_path(rootd, -2).__str__() + ".mha")
+                                 self.patient_dict[pathtools.get_folder_name_from_path(rootd, -2)].__str__() + ".mha")
                     print("copied " + file + " to MORE")
                 else:
                     excludes.append(file)

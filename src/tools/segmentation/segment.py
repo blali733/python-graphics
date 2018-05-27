@@ -17,16 +17,19 @@ def flair(image_slice):
     np.array
         Binearized array.
     """
-    image = mhaMath.med_2_float(image_slice, False)
+    image = mhaMath.med_2_uint8(image_slice, False)
     # return (img < 0.047)*(img > 0.016)*1
     # image = cv2.imread('flair_segment1.png', 0)
-    median_kernel_size = 11
-    gamma_correction_value = 5
-    image_blured = cv2.medianBlur(image, median_kernel_size)
-    image_equalized = squared_histogram_equalization(image_blured)
-    image_gamma_corrected = gamma_correction(image_equalized, gamma_correction_value)
-    ret, image_entropy_thresholded = maximum_entropy_thresholding(image_gamma_corrected)
-    return image_entropy_thresholded
+    if np.sum(image) > 0:
+        median_kernel_size = 11
+        gamma_correction_value = 5
+        image_blured = cv2.medianBlur(image, median_kernel_size)
+        image_equalized = squared_histogram_equalization(image_blured)
+        image_gamma_corrected = gamma_correction(image_equalized, gamma_correction_value)
+        ret, image_entropy_thresholded = maximum_entropy_thresholding(image_gamma_corrected)
+        return image_entropy_thresholded
+    else:
+        return image
 
 
 def t1(image_slice):
@@ -129,6 +132,9 @@ def maximum_entropy_thresholding(image):
             entropy_black[i] = entropy_internal_black
 
         probability_white = 1 - group_probability[i]
+        # workaround of zero probability:
+        if probability_white == 0.0:
+            return 0, np.zeros(image.shape)
         if np.greater(probability_white, epsilon):
             entropy_internal_white = 0.0
             for j in range(i + 1, len(group_probability)):
