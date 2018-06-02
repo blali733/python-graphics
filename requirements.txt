@@ -7,3 +7,4 @@ sklearn
 tensorflow
 h5py
 pillow
+cv2
