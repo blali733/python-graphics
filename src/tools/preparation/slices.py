@@ -81,7 +81,23 @@ def parse_slices(slices_tuple, yes_counters, no_counters, sep, axis):
     return (flair_yes, flair_no)
 
 
-def generate_tumor_map(classifier_class, indexed_slices_list):
+def gen_stains(indexed_slices_list):
+    x = []
+    y = []
+    z = []
+    for mslice in indexed_slices_list[0]:  # [0]:
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        x.append((mslice[0], stains_mask))
+    for mslice in indexed_slices_list[1]:  # [0][1]:
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        y.append((mslice[0], stains_mask))
+    for mslice in indexed_slices_list[2]:  # [0][2]:
+        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        z.append((mslice[0], stains_mask))
+    return [x, y, z]
+
+
+def generate_tumor_map(classifier_class, indexed_slices_list, offset):
     """
     Method responsible for classification train.
 
@@ -120,11 +136,11 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # I had to: You are not supposed to understand this.
     # Flairs
     # region Mask slices classification
-    for mslice in indexed_slices_list[0][0]:
+    for stain_pair in indexed_slices_list[0]:  # [0]:
         accepted = []
-        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        stains_mask = stain_pair[1]
         if stains_mask.sum() != 0:
-            stains = sep.get_list_of_stains((mslice[0], stains_mask))
+            stains = sep.get_list_of_stains((stain_pair[0], stains_mask))
             for stain in stains:
                 tumor, not_tumor = classifier_class.analyze_flair(stain[0])
                 if tumor > not_tumor:
@@ -137,11 +153,11 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
                 new_mask = np.add(new_mask, new_mask_part)
             stains_mask = new_mask
         flair0.append(stains_mask)
-    for mslice in indexed_slices_list[0][1]:
+    for stain_pair in indexed_slices_list[1]:  # [0][1]:
         accepted = []
-        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        stains_mask = stain_pair[1]
         if stains_mask.sum() != 0:
-            stains = sep.get_list_of_stains((mslice[0], stains_mask))
+            stains = sep.get_list_of_stains((stain_pair[0], stains_mask))
             for stain in stains:
                 tumor, not_tumor = classifier_class.analyze_flair(stain[0])
                 if tumor > not_tumor:
@@ -154,11 +170,11 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
                 new_mask = np.add(new_mask, new_mask_part)
             stains_mask = new_mask
         flair1.append(stains_mask)
-    for mslice in indexed_slices_list[0][2]:
+    for stain_pair in indexed_slices_list[2]:  # [0][2]:
         accepted = []
-        stains_mask = (segment.flair(mslice[0])).astype(np.float)
+        stains_mask = stain_pair[1]
         if stains_mask.sum() != 0:
-            stains = sep.get_list_of_stains((mslice[0], stains_mask))
+            stains = sep.get_list_of_stains((stain_pair[0], stains_mask))
             for stain in stains:
                 tumor, not_tumor = classifier_class.analyze_flair(stain[0])
                 if tumor > not_tumor:
@@ -369,6 +385,6 @@ def generate_tumor_map(classifier_class, indexed_slices_list):
     # endregion
     # region Final cuboid normalization
     # TODO tweak parameter
-    final_mask_cube = recreate.binearize_3d_array(final_mask_cube, 2.0)
+    final_mask_cube = recreate.binearize_3d_array(final_mask_cube, offset)
     # endregion
     return final_mask_cube

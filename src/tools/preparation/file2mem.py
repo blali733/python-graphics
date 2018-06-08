@@ -24,16 +24,18 @@ def generate_list_of_patients():
     t2_list = {}
     for rootd, subFolders, files in os.walk("./classify/structured"):
         for file in files:
-            if "Flair" in file:
+            # flair_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
+            if "flair" in file:
                 flair_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
-            elif "T1." in file:
-                t1_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
-            elif "T1c" in file:
-                t1c_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
-            elif "T2" in file:
-                t2_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
+    #         elif "T1." in file:
+    #             t1_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
+    #         elif "T1c" in file:
+    #             t1c_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
+    #         elif "T2" in file:
+    #             t2_list[pathtools.get_folder_name_from_path(rootd, -1)] = file
     for i in range(flair_list.__len__()):
-        patients_list.append((i, flair_list["pat_"+i.__str__()], t1_list["pat_"+i.__str__()], t1c_list["pat_"+i.__str__()], t2_list["pat_"+i.__str__()]))
+        patients_list.append((i, flair_list["pat_" + i.__str__()]))
+    #     patients_list.append((i, flair_list["pat_"+i.__str__()], t1_list["pat_"+i.__str__()], t1c_list["pat_"+i.__str__()], t2_list["pat_"+i.__str__()]))
     return patients_list
 
 

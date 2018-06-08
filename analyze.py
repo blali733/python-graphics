@@ -6,7 +6,7 @@ from src.nnutils import test
 from src.nnutils import teach
 from src.osutils.fileIO.directories import check_classify_input_dir
 from src.tools.preparation.file2mem import generate_list_of_patients, prepare_data
-from src.tools.preparation.slices import generate_tumor_map
+from src.tools.preparation.slices import generate_tumor_map, gen_stains
 
 
 # Kept as reference for checking execution time:
@@ -84,23 +84,39 @@ class Analyze:
         """
         Method responsible for initiating image classification loop.
         """
-        if self.classifier_load_status == 0:
-            print("Load any classifier first.")
-            return
-        else:
-            print("This would classify ALL images in ./classify/structured directory.")
-            answer = input("Do you want to repopulate from classify/raw, this would erase all data? (y/N): ")
-            if 'Y' in answer.capitalize():
-                check_classify_input_dir()
-            patients_list = generate_list_of_patients()
-            for patient in patients_list:
-                flair_slices = mhaSlicer.prepare_testing_pairs(patient[1], patient[0])
-                # t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
-                # t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
-                # t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
-                segmentation = generate_tumor_map(self.classifier_class,
-                                                  (flair_slices))  # , t1_slices, t1c_slices, t2_slices))
-                mhaSlicer.save_segmentation(segmentation, patient[0])
+        # if self.classifier_load_status == 0:
+        #     print("Load any classifier first.")
+        #     return
+        # else:
+        print("Loading classifiers.")
+        model_list = [
+            ("LN10", test.TestClassification("t1LN10")),
+            ("LN25", test.TestClassification("t1LN25")),
+            ("LN50", test.TestClassification("t1LN50")),
+            ("SVGG10", test.TestClassification("t1SVGG10")),
+            ("SVGG25", test.TestClassification("t1SVGG25")),
+            ("SVGG50", test.TestClassification("t1SVGG50")),
+        ]
+        offset_list = [0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5]
+        # print("This would classify ALL images in ./classify/structured directory.")
+        # answer = input("Do you want to repopulate from classify/raw, this would erase all data? (y/N): ")
+        # if 'Y' in answer.capitalize():
+        #     check_classify_input_dir()
+        print("Starting segmentation.")
+        patients_list = generate_list_of_patients()
+        for patient in patients_list:
+            flair_slices = mhaSlicer.prepare_testing_pairs(patient[1], patient[0])
+            # t1_slices = mhaSlicer.prepare_testing_pairs(patient[2], patient[0])
+            # t1c_slices = mhaSlicer.prepare_testing_pairs(patient[3], patient[0])
+            # t2_slices = mhaSlicer.prepare_testing_pairs(patient[4], patient[0])
+            flair_pairs = gen_stains(flair_slices)
+            print("Parsed patient {}".format(patient[0]))
+            for model in model_list:
+                print("Model: {}".format(model[0]))
+                for offset in offset_list:
+                    print("Offset: {}".format(offset))
+                    segmentation = generate_tumor_map(model[1], flair_pairs, offset)
+                    mhaSlicer.save_segmentation(segmentation, patient[0], model[0], offset.__str__().replace(".", ""))
     # endregion
 
     def menu(self):
