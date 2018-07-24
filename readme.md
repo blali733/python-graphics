@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/status-Active-brightgreen.svg">&nbsp;&nbsp;[![Build Status](https://travis-ci.org/blali733/python-graphics.svg?branch=master)](https://travis-ci.org/blali733/python-graphics)
+<img src="https://img.shields.io/badge/status-Stalled-yellow.svg">&nbsp;&nbsp;[![Build Status](https://travis-ci.org/blali733/python-graphics.svg?branch=master)](https://travis-ci.org/blali733/python-graphics)
 
 # Medical image classifier:
 ### System requirements:
